@@ -1,0 +1,68 @@
+{
+    "select_user_type":"select user type",
+    "driver":"driver",
+    "truck_owner":"truck owner",
+    "merchent":"merchent",
+    "ok":"ok",
+    "please_sign_in":"please sign in with your account",
+    "sign_in":"Sign In",
+    "username":"user name",
+    "username_error":"please enter user name",
+    "password_error":"please enter password",
+    "password":"password",
+
+    "shippment_load":"Shippment Load",
+    "commodity_name":"commodity_name",
+    "commodity_weight":"commodity weight",
+    "commodity_quantity":"commodity quantity",
+    "package_type":"package type",
+    "insert_value_validate":"insert value validate",
+    
+    "select_truck_type":"select truck type",
+    "select_truck_type_error":"please select truck type",
+    "choose_shippment_path":"choose shippment path",
+    "pickup_address":"pickup address",
+    "enter_pickup_address":"enter pickup address",
+    "delivery_address":"delivery address",
+    "enter_delivery_address":"enter delivery address",
+    "pick_my_location":"pick my location",
+    "no_result_found":"no results was found",
+    "choose_path_error":"please choose shipment path",
+    
+    "loading_time":"Loading Time",
+    "time":"Time",
+    "date":"Date",
+    "search_truck":"search truck",
+    "pick_date_error":"please pick loading date",
+    
+    "read_more":"read more",
+    "since":"since",
+    "day":"day",
+    "source":"source",
+    "search":"search",
+
+    "list_error":"an error accourd during loading list...",
+
+    "pending":"Pending",
+    "running":"Running",
+    "completed":"Completed",
+    "no_shipments":"no shipments are available to show.",
+    "shipment_number":"Shipment number",
+    "commodity_type":"commodity type",
+
+    "search_result":"search result",
+    "no_tucks":"no trucks have been found",
+    "truck_type":"truck type",
+    "truck_location":"location",
+    "empty_weight":"empty weight",
+    "number_of_axels":"number of axels",
+    "rating":"rating",
+
+    "home":"Home",
+    "shippment_log":"Log",
+    "order_shippment":"Order Truck",
+    "tracking":"Tracking",
+    "tasks":"Tasks"
+
+
+}

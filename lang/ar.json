@@ -1,0 +1,68 @@
+{
+    "select_user_type":"اختر مجال عملك",
+    "driver":"سائق",
+    "truck_owner":"مالك شاحنة",
+    "merchent":"تاجر",
+    "ok":"موافق",
+    "please_sign_in":"الرجاء تسجيل الدخول إلى حسابك",
+    "sign_in":"تسجيل الدخول",
+    "username":"اسم المستخدم",
+    "username_error":"الرجاء ادخال اسم المستخدم",
+    "password_error":"الرجاء ادخال كلمة المرور",
+    "password":"كلمة المرور",
+
+    "shippment_load":"حمولة الشحنة",
+    "commodity_name":"اسم البضاعة",
+    "commodity_weight":"وزن البضاعة",
+    "commodity_quantity":"العدد",
+    "package_type":"نوع الطرد",
+    "insert_value_validate":"الرجاء ادخال قيمة",
+
+    "select_truck_type":"اختر نوع الشاحنة",
+    "select_truck_type_error":"الرجاء اختيار نوع الشاحنة",
+    "choose_shippment_path":"اختر مسار الشحنة",
+    "pickup_address":"عنوان التحميل",
+    "enter_pickup_address":"ادخل عنوان التحميل",
+    "delivery_address":"عنوان التوصيل",
+    "enter_delivery_address":"ادخل عنوان التوصيل",
+    "pick_my_location":"هختر موقعي",
+    "no_result_found":"لم يتم العثور على نتائج",
+    "choose_path_error":"الرجاء تحديد مسار الشحنة",
+
+    "loading_time":"موعد التحميل",
+    "time":"وقت",
+    "date":"تاريخ",
+    "search_truck":"ابحث عن شاحنة",
+    "pick_date_error":"الرجاء اختيار تاريخ التحميل",
+    
+    "read_more":"اقرأ المزيد",
+    "since":"منذ",
+    "day":"يوم",
+    "source":"المصدر",
+    "search":"بحث",
+
+    "list_error":"حدث خطأ أثناء تحميل القائمة...",
+    
+    "pending":"المنتظرة",
+    "running":"الجارية",
+    "completed":"المكتملة",
+    "no_shipments":"لا يوجد شحنات لعرضها",
+    "shipment_number":"رقم الشحنة",
+    "commodity_type":"نوع البضاعة",
+    
+    "search_result":"نتائج البحث",
+    "no_tucks":"لم يتم العثور على شاحنات",
+    "truck_type":"نوع الشاحنة",
+    "truck_location":"المكان",
+    "empty_weight":"الوزن الفارغ",
+    "number_of_axels":"عدد المحاور",
+    "rating":"التقييم",
+
+    "home":"الرئيسية",
+    "shippment_log":"السجل",
+    "order_shippment":"طلب شاحنة",
+    "tracking":"تتبع شحنة",
+    "tasks":"المهام"
+
+
+}
