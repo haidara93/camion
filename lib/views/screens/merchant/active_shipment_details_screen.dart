@@ -272,9 +272,9 @@ class _ActiveShipmentDetailsScreenState
         Container(
           height: 420.h,
           width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            color: AppColor.darkGrey,
-            borderRadius: const BorderRadius.only(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
               topLeft: Radius.circular(13),
               topRight: Radius.circular(13),
             ),
@@ -297,7 +297,6 @@ class _ActiveShipmentDetailsScreenState
                           "truck type: ${widget.shipment.truckType!.name!}",
                           style: TextStyle(
                             fontSize: 19.sp,
-                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -313,7 +312,6 @@ class _ActiveShipmentDetailsScreenState
                       "#${widget.shipment.id!}",
                       style: TextStyle(
                         fontSize: 19.sp,
-                        color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     )
@@ -330,15 +328,11 @@ class _ActiveShipmentDetailsScreenState
                       direction: Axis.horizontal,
                       oppositeContents: Text(
                         '${widget.shipment.pickupDate!.year.toString()}-${widget.shipment.pickupDate!.month.toString()}-${widget.shipment.pickupDate!.day.toString()}',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
+                        style: const TextStyle(),
                       ),
                       contents: Text(
                         widget.shipment.pickupCityLocation!,
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
+                        style: const TextStyle(),
                       ),
                       node: SizedBox(
                         width: MediaQuery.of(context).size.width * .3,
@@ -363,15 +357,11 @@ class _ActiveShipmentDetailsScreenState
                       direction: Axis.horizontal,
                       oppositeContents: Text(
                         '${widget.shipment.pickupDate!.year.toString()}-${widget.shipment.pickupDate!.month.toString()}-${widget.shipment.pickupDate!.day.toString()}',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
+                        style: const TextStyle(),
                       ),
                       contents: Text(
                         widget.shipment.deliveryCityLocation!,
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
+                        style: const TextStyle(),
                       ),
                       node: SizedBox(
                         width: MediaQuery.of(context).size.width * .3,
@@ -408,7 +398,7 @@ class _ActiveShipmentDetailsScreenState
           child: Column(
             children: [
               Card(
-                color: AppColor.darkGrey,
+                color: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(45),
                 ),
@@ -420,7 +410,7 @@ class _ActiveShipmentDetailsScreenState
                       borderRadius: BorderRadius.circular(45)),
                   child: CircleAvatar(
                     radius: 30.h,
-                    backgroundColor: AppColor.darkGrey,
+                    backgroundColor: Colors.white,
                     child: Center(
                       child: Text(
                         "AY",
@@ -453,9 +443,9 @@ class _ActiveShipmentDetailsScreenState
         Container(
           height: 90.h,
           width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-              color: AppColor.darkGrey,
-              borderRadius: const BorderRadius.only(
+          decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(13),
                 topRight: Radius.circular(13),
               )),
@@ -476,7 +466,6 @@ class _ActiveShipmentDetailsScreenState
                       "truck type: ${widget.shipment.truckType!.name!}",
                       style: TextStyle(
                         fontSize: 19.sp,
-                        color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -487,7 +476,6 @@ class _ActiveShipmentDetailsScreenState
                       "commodity name: ${widget.shipment.shipmentItems![0].commodityName!}",
                       style: TextStyle(
                         fontSize: 18.sp,
-                        color: Colors.white,
                       ),
                     ),
                   ],
@@ -496,7 +484,6 @@ class _ActiveShipmentDetailsScreenState
                   "#${widget.shipment.id!}",
                   style: TextStyle(
                     fontSize: 23.sp,
-                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
                 )
@@ -509,7 +496,7 @@ class _ActiveShipmentDetailsScreenState
           child: Column(
             children: [
               Card(
-                color: AppColor.darkGrey,
+                color: Colors.white,
                 elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(45),
@@ -522,7 +509,7 @@ class _ActiveShipmentDetailsScreenState
                       borderRadius: BorderRadius.circular(45)),
                   child: CircleAvatar(
                     radius: 30.h,
-                    backgroundColor: AppColor.darkGrey,
+                    backgroundColor: Colors.white,
                     child: Center(
                       child: Text(
                         "AY",
@@ -584,7 +571,6 @@ class _ActiveShipmentDetailsScreenState
                 "items info",
                 style: TextStyle(
                   fontSize: 17.sp,
-                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -618,7 +604,6 @@ class _ActiveShipmentDetailsScreenState
                             "name: ${widget.shipment.shipmentItems![index].commodityName!}",
                             style: TextStyle(
                               fontSize: 17.sp,
-                              color: Colors.white,
                             ),
                           ),
                           const SizedBox(
@@ -628,7 +613,6 @@ class _ActiveShipmentDetailsScreenState
                             "weight: ${widget.shipment.shipmentItems![index].commodityWeight!}",
                             style: TextStyle(
                               fontSize: 17.sp,
-                              color: Colors.white,
                             ),
                           ),
                           const SizedBox(
@@ -638,7 +622,6 @@ class _ActiveShipmentDetailsScreenState
                             "package type: pallete",
                             style: TextStyle(
                               fontSize: 17.sp,
-                              color: Colors.white,
                             ),
                           ),
                           const Divider(),
@@ -677,7 +660,6 @@ class _ActiveShipmentDetailsScreenState
                 "CO2 fingerprint",
                 style: TextStyle(
                   fontSize: 17.sp,
-                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -690,7 +672,6 @@ class _ActiveShipmentDetailsScreenState
             'Ew: ${_report.ew!.toString()}',
             style: TextStyle(
               fontSize: 17.sp,
-              color: Colors.white,
             ),
           ),
           const SizedBox(
@@ -700,7 +681,6 @@ class _ActiveShipmentDetailsScreenState
             'Gw: ${_report.gw!.toString()}',
             style: TextStyle(
               fontSize: 17.sp,
-              color: Colors.white,
             ),
           ),
           const SizedBox(
@@ -710,7 +690,6 @@ class _ActiveShipmentDetailsScreenState
             'Et: ${_report.et!.toString()}',
             style: TextStyle(
               fontSize: 17.sp,
-              color: Colors.white,
             ),
           ),
           const SizedBox(
@@ -720,7 +699,6 @@ class _ActiveShipmentDetailsScreenState
             'Gt: ${_report.gt!.toString()}',
             style: TextStyle(
               fontSize: 17.sp,
-              color: Colors.white,
             ),
           ),
         ],

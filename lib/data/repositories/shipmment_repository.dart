@@ -88,7 +88,7 @@ class ShippmentRerository {
     print(dataString);
     UserModel userModel = UserModel.fromJson(jsonDecode(dataString!));
 
-    request.fields['merchant'] = userModel.merchant!.id!.toString();
+    request.fields['merchant'] = userModel.merchant!.toString();
     request.fields['total_weight'] = shipment.totalWeight.toString();
     request.fields['truck_type'] = shipment.truckType!.id!.toString();
     request.fields['pickup_city_location'] =

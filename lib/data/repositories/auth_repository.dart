@@ -57,13 +57,13 @@ class AuthRepository {
             var result = jsonDecode(myDataString);
             var userProfile = UserModel.fromJson(result);
             if (userProfile.merchant != null) {
-              prefs.setInt("merchant", userProfile.merchant!.id!);
+              prefs.setInt("merchant", userProfile.merchant!);
             }
             if (userProfile.truckowner != null) {
-              prefs.setInt("truckowner", userProfile.truckowner!.id!);
+              prefs.setInt("truckowner", userProfile.truckowner!);
             }
             if (userProfile.truckuser != null) {
-              prefs.setInt("truckuser", userProfile.truckuser!.id!);
+              prefs.setInt("truckuser", userProfile.truckuser!);
             }
           }
         }

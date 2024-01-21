@@ -5,9 +5,9 @@ class UserModel {
   String? lastName;
   String? phone;
   String? image;
-  Merchant? merchant;
-  TruckOwner? truckowner;
-  Truckuser? truckuser;
+  int? merchant;
+  int? truckowner;
+  int? truckuser;
 
   UserModel(
       {this.id,
@@ -25,14 +25,11 @@ class UserModel {
     username = json['username'];
     firstName = json['first_name'];
     lastName = json['last_name'];
-    phone = json['phone'];
-    image = json['image'];
-    merchant =
-        json['merchant'] != null ? Merchant.fromJson(json['merchant']) : null;
-    truckowner = json['truckowner'];
-    truckuser = json['truckuser'] != null
-        ? Truckuser.fromJson(json['truckuser'])
-        : null;
+    phone = json['phone'] ?? "";
+    image = json['image'] ?? "";
+    merchant = json['merchant'] ?? 0;
+    truckowner = json['truckowner'] ?? 0;
+    truckuser = json['truckuser'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {
@@ -43,15 +40,15 @@ class UserModel {
     data['last_name'] = lastName;
     data['phone'] = phone;
     data['image'] = image;
-    if (merchant != null) {
-      data['merchant'] = merchant!.toJson();
-    }
-    if (truckowner != null) {
-      data['truckowner'] = truckowner!.toJson();
-    }
-    if (truckuser != null) {
-      data['truckuser'] = truckuser!.toJson();
-    }
+    // if (merchant != null) {
+    //   data['merchant'] = merchant!.toJson();
+    // }
+    // if (truckowner != null) {
+    //   data['truckowner'] = truckowner!.toJson();
+    // }
+    // if (truckuser != null) {
+    //   data['truckuser'] = truckuser!.toJson();
+    // }
     return data;
   }
 }
