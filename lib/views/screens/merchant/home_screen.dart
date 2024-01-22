@@ -9,7 +9,8 @@ import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/merchant/active_shipment_screen.dart';
 import 'package:camion/views/screens/merchant/add_shippment_screen.dart';
 import 'package:camion/views/screens/main_screen.dart';
-import 'package:camion/views/screens/merchant/tasks_screen.dart';
+import 'package:camion/views/screens/merchant/shipment_instruction_screen.dart';
+import 'package:camion/views/screens/merchant/shipment_task_screen.dart';
 import 'package:camion/views/screens/shippment_log_screen.dart';
 import 'package:camion/views/screens/tracking_shippment_screen.dart';
 import 'package:camion/views/widgets/custom_app_bar.dart';
@@ -121,10 +122,12 @@ class _HomeScreenState extends State<HomeScreen>
         }
       case 4:
         {
+          BlocProvider.of<ShipmentListBloc>(context)
+              .add(ShipmentListLoadEvent("P"));
           setState(() {
             title = AppLocalizations.of(context)!.translate('tasks');
 
-            currentScreen = TaskScreen();
+            currentScreen = ShipmentTaskScreen();
           });
           break;
         }
