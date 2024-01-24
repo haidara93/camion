@@ -13,8 +13,6 @@ import 'package:camion/views/widgets/custom_botton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TruckDetailsScreen extends StatefulWidget {
   final Truck truck;
@@ -315,75 +313,6 @@ class _TruckDetailsScreenState extends State<TruckDetailsScreen> {
                                 },
                               ),
                             ),
-                            // SizedBox(
-                            //   width: MediaQuery.of(context).size.width * .7,
-                            //   child: CustomButton(
-                            //     title: _loading
-                            //         ? const CircularProgressIndicator()
-                            //         : Text("order truck"),
-                            //     onTap: () async {
-                            //       setState(() {
-                            //         _loading = true;
-                            //       });
-                            //       var prefs =
-                            //           await SharedPreferences.getInstance();
-                            //       var jwt = prefs.getString("token");
-
-                            //       final response = await HttpHelper.get(
-                            //           "https://matjari.app/make_payment/",
-                            //           apiToken: jwt);
-                            //       print(response.body);
-                            //       print(response.statusCode);
-                            //       var jsonBody = jsonDecode(response.body);
-
-                            //       StripeModel stripeModel =
-                            //           StripeModel.fromJson(jsonBody);
-                            //       if (stripeModel.paymentIntent! != "" &&
-                            //           stripeModel.paymentIntent != null) {
-                            //         String _intent = stripeModel.paymentIntent!;
-                            //         await stripe.Stripe.instance
-                            //             .initPaymentSheet(
-                            //           paymentSheetParameters:
-                            //               stripe.SetupPaymentSheetParameters(
-                            //             // Set to true for custom flow
-                            //             customFlow: false,
-                            //             // Main params
-
-                            //             merchantDisplayName: 'Camion',
-                            //             paymentIntentClientSecret:
-                            //                 stripeModel.paymentIntent,
-                            //             // Customer keys
-                            //             customerEphemeralKeySecret:
-                            //                 stripeModel.ephemeralKey,
-                            //             customerId: stripeModel.customer,
-                            //             // Extra options
-                            //             applePay:
-                            //                 const stripe.PaymentSheetApplePay(
-                            //               merchantCountryCode: 'US',
-                            //             ),
-                            //             googlePay:
-                            //                 const stripe.PaymentSheetGooglePay(
-                            //               merchantCountryCode: 'US',
-                            //               testEnv: true,
-                            //             ),
-                            //             // style: ThemeMode.dark,
-                            //           ),
-                            //         );
-                            //         setState(() {
-                            //           _loading = false;
-                            //         });
-                            //         stripe.Stripe.instance
-                            //             .presentPaymentSheet()
-                            //             .onError((error, stackTrace) {
-                            //           print(error);
-                            //           print("error");
-                            //           print("error");
-                            //           print("error");
-                            //         });
-                            //       }
-                            //     },
-                            //   ),
-                            // )
                           ],
                         ),
                         SizedBox(

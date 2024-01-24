@@ -58,6 +58,15 @@
     "number_of_axels":"number of axels",
     "rating":"rating",
 
+    "profile":"profile",
+    "log":"log",
+    "saved":"saved",
+    "my_calculates":"my calculations",
+    "policy":"privacy policy",
+    "settings":"settings",
+    "help":"help",
+    "log_out":"log out",
+
     "home":"Home",
     "shippment_log":"Log",
     "order_shippment":"Order Truck",

@@ -290,6 +290,23 @@ class AddShippmentProvider extends ChangeNotifier {
     _pickup_lat = lat;
     _pickup_lang = lang;
     _pickup_latlng = LatLng(lat, lang);
+    if (_delivery_location_name.isNotEmpty) {
+      getPolyPoints();
+      List<Marker> markers = [];
+      markers.add(
+        Marker(
+          markerId: MarkerId("pickup"),
+          position: LatLng(_pickup_lat, _pickup_lang),
+        ),
+      );
+      markers.add(
+        Marker(
+          markerId: MarkerId("delivery"),
+          position: LatLng(_delivery_lat, _delivery_lang),
+        ),
+      );
+      getBounds(markers);
+    }
     notifyListeners();
   }
 

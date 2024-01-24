@@ -218,12 +218,13 @@ class _SignInScreenState extends State<SignInScreen> {
                                           duration: const Duration(seconds: 3),
                                         ));
 
-                                        Navigator.push(
+                                        Navigator.pushAndRemoveUntil(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 DriverHomeScreen(),
                                           ),
+                                          (route) => false,
                                         );
                                       }
                                       if (state is AuthOwnerSuccessState) {
@@ -238,12 +239,14 @@ class _SignInScreenState extends State<SignInScreen> {
                                           duration: const Duration(seconds: 3),
                                         ));
 
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  OwnerHomeScreen(),
-                                            ));
+                                        Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                OwnerHomeScreen(),
+                                          ),
+                                          (route) => false,
+                                        );
                                       }
                                       if (state is AuthMerchentSuccessState) {
                                         ScaffoldMessenger.of(context)
@@ -257,12 +260,13 @@ class _SignInScreenState extends State<SignInScreen> {
                                           duration: const Duration(seconds: 3),
                                         ));
 
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  HomeScreen(),
-                                            ));
+                                        Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => HomeScreen(),
+                                          ),
+                                          (route) => false,
+                                        );
                                       }
                                       if (state is AuthLoginErrorState) {
                                         ScaffoldMessenger.of(context)

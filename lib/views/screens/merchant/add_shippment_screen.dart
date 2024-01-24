@@ -52,6 +52,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
   bool pickupLoading = false;
   bool deliveryLoading = false;
 
+  bool pickupPosition = false;
+  bool deliveryPosition = false;
+
   List<TextEditingController> commodityName_controllers = [];
   List<TextEditingController> commodityWeight_controllers = [];
   // List<TextEditingController> commodityQuantity_controllers = [];
@@ -75,6 +78,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
 
   var key1 = GlobalKey();
   var key2 = GlobalKey();
+
+  DateTime loadDate = DateTime.now();
+  DateTime loadTime = DateTime.now();
 
   final GlobalKey<FormState> _addShipmentformKey = GlobalKey<FormState>();
   AddShippmentProvider? addShippmentProvider;
@@ -380,6 +386,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
           children: [
             TextButton(
                 onPressed: () {
+                  addShippmentProvider!.setLoadDate(loadDate);
+
                   Navigator.pop(context);
                 },
                 child: Text(
@@ -400,12 +408,13 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                 ],
                 child: cupertino.CupertinoDatePicker(
                   backgroundColor: Colors.white10,
-                  initialDateTime: DateTime.now(),
+                  initialDateTime: loadDate,
                   mode: cupertino.CupertinoDatePickerMode.date,
-                  minimumYear: 2023,
+                  minimumYear: DateTime.now().year,
                   minimumDate: DateTime.now().subtract(const Duration(days: 1)),
-                  maximumYear: 2030,
+                  maximumYear: DateTime.now().year + 1,
                   onDateTimeChanged: (value) {
+                    loadDate = value;
                     addShippmentProvider!.setLoadDate(value);
                     // order_brokerProvider!.setProductDate(value);
                     // order_brokerProvider!.setDateError(false);
@@ -434,6 +443,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
           children: [
             TextButton(
                 onPressed: () {
+                  addShippmentProvider!.setLoadTime(loadTime);
+
                   Navigator.pop(context);
                 },
                 child: Text(
@@ -454,9 +465,10 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                 ],
                 child: cupertino.CupertinoDatePicker(
                   backgroundColor: Colors.white10,
-                  initialDateTime: DateTime.now(),
+                  initialDateTime: loadTime,
                   mode: cupertino.CupertinoDatePickerMode.time,
                   onDateTimeChanged: (value) {
+                    loadTime = value;
                     addShippmentProvider!.setLoadTime(value);
 
                     // order_brokerProvider!.setProductDate(value);
@@ -1133,6 +1145,10 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                       shippmentProvider!.pickup_controller!
                                           .text = suggestion.description;
                                     });
+                                    if (addShippmentProvider!
+                                        .delivery_location_name.isNotEmpty) {
+                                      calculateCo2Report();
+                                    }
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
                                   },
@@ -1140,44 +1156,49 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                 const SizedBox(
                                   height: 5,
                                 ),
-                                !pickupLoading
-                                    ? GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            pickupLoading = true;
-                                          });
-                                          _getCurrentPositionForPickup();
-                                        },
-                                        child: Row(
+                                Visibility(
+                                  visible: !deliveryPosition,
+                                  child: !pickupLoading
+                                      ? GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              pickupLoading = true;
+                                              pickupPosition = true;
+                                            });
+                                            _getCurrentPositionForPickup();
+                                          },
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                Icons.location_on,
+                                                color: AppColor.deepYellow,
+                                              ),
+                                              SizedBox(
+                                                width: 5.w,
+                                              ),
+                                              Text(
+                                                AppLocalizations.of(context)!
+                                                    .translate(
+                                                        'pick_my_location'),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      : const Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
                                           children: [
-                                            Icon(
-                                              Icons.location_on,
-                                              color: AppColor.deepYellow,
-                                            ),
                                             SizedBox(
-                                              width: 5.w,
-                                            ),
-                                            Text(
-                                              AppLocalizations.of(context)!
-                                                  .translate(
-                                                      'pick_my_location'),
+                                              height: 25,
+                                              width: 25,
+                                              child:
+                                                  CircularProgressIndicator(),
                                             ),
                                           ],
                                         ),
-                                      )
-                                    : const Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          SizedBox(
-                                            height: 25,
-                                            width: 25,
-                                            child: CircularProgressIndicator(),
-                                          ),
-                                        ],
-                                      ),
+                                ),
                                 const SizedBox(
                                   height: 12,
                                 ),
@@ -1353,6 +1374,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                 .delivery_controller!
                                                 .text = suggestion.description;
                                           });
+                                          calculateCo2Report();
 
                                           FocusManager.instance.primaryFocus
                                               ?.unfocus();
@@ -1361,46 +1383,51 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                       const SizedBox(
                                         height: 5,
                                       ),
-                                      !deliveryLoading
-                                          ? GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  deliveryLoading = true;
-                                                });
-                                                _getCurrentPositionForDelivery();
-                                              },
-                                              child: Row(
+                                      Visibility(
+                                        visible: !pickupPosition,
+                                        child: !deliveryLoading
+                                            ? GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    deliveryLoading = true;
+                                                    deliveryPosition = true;
+                                                  });
+                                                  _getCurrentPositionForDelivery();
+                                                },
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.location_on,
+                                                      color:
+                                                          AppColor.deepYellow,
+                                                    ),
+                                                    SizedBox(
+                                                      width: 5.w,
+                                                    ),
+                                                    Text(
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .translate(
+                                                              'pick_my_location'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            : const Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.start,
                                                 children: [
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    color: AppColor.deepYellow,
-                                                  ),
                                                   SizedBox(
-                                                    width: 5.w,
-                                                  ),
-                                                  Text(
-                                                    AppLocalizations.of(
-                                                            context)!
-                                                        .translate(
-                                                            'pick_my_location'),
+                                                    height: 25,
+                                                    width: 25,
+                                                    child:
+                                                        CircularProgressIndicator(),
                                                   ),
                                                 ],
                                               ),
-                                            )
-                                          : const Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                SizedBox(
-                                                  height: 25,
-                                                  width: 25,
-                                                  child:
-                                                      CircularProgressIndicator(),
-                                                ),
-                                              ],
-                                            ),
+                                      ),
                                       const SizedBox(
                                         height: 12,
                                       ),
@@ -1927,11 +1954,15 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                           width: 5,
                         ),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * .2,
-                          child: Text(
-                            "${addShippmentProvider!.co2report!.duration}",
-                            style: const TextStyle(
-                              color: Colors.white,
+                          // width: MediaQuery.of(context).size.width * .3,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 5.0),
+                            child: Text(
+                              "${addShippmentProvider!.co2report!.duration}",
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -2069,6 +2100,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
     setState(() {
       pickupLoading = false;
     });
+    if (addShippmentProvider!.delivery_location_name.isNotEmpty) {
+      calculateCo2Report();
+    }
   }
 
   Future<void> _getCurrentPositionForDelivery() async {

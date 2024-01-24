@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:camion/data/models/instruction_model.dart';
 import 'package:camion/data/models/shipment_model.dart';
 import 'package:camion/data/models/user_model.dart';
 import 'package:camion/helpers/http_helper.dart';
@@ -111,6 +112,70 @@ class ShippmentRerository {
     } else {
       final respStr = await response.stream.bytesToString();
       return null;
+    }
+  }
+
+  Future<int?> createShipmentInstruction(ShipmentInstruction shipment) async {
+    prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString("token");
+    var request = http.MultipartRequest(
+        'POST', Uri.parse(SHIPPMENTS_INSTRUCTION_ENDPOINT));
+    request.headers.addAll({
+      HttpHeaders.authorizationHeader: "JWT $token",
+      HttpHeaders.contentTypeHeader: "multipart/form-data"
+    });
+
+    List<Map<String, dynamic>> commodity_items = [];
+    for (var element in shipment.commodityItems!) {
+      var item = element.toJson();
+      commodity_items.add(item);
+    }
+
+    request.fields['shipment'] = shipment.shipment!.toString();
+    request.fields['user_type'] = shipment.userType!;
+    request.fields['charger_name'] = shipment.chargerName!;
+    request.fields['charger_address'] = shipment.chargerAddress!;
+    request.fields['charger_phone'] = shipment.chargerPhone!;
+    request.fields['reciever_name'] = shipment.recieverName!;
+    request.fields['reciever_address'] = shipment.recieverAddress!;
+    request.fields['reciever_phone'] = shipment.recieverPhone!;
+    request.fields['total_weight'] = shipment.totalWeight.toString();
+    request.fields['net_weight'] = shipment.netWeight.toString();
+    request.fields['truck_weight'] = shipment.truckWeight.toString();
+    request.fields['final_weight'] = shipment.finalWeight.toString();
+    request.fields['commodity_items'] = jsonEncode(commodity_items);
+    print(jsonEncode(commodity_items));
+    var response = await request.send();
+    if (response.statusCode == 201) {
+      final respStr = await response.stream.bytesToString();
+      return 1;
+    } else {
+      final respStr = await response.stream.bytesToString();
+      return 0;
+    }
+  }
+
+  Future<int?> createShipmentPayment(ShipmentPayment shipment) async {
+    prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString("token");
+    var request =
+        http.MultipartRequest('POST', Uri.parse(SHIPPMENTS_PAYMENT_ENDPOINT));
+    request.headers.addAll({
+      HttpHeaders.authorizationHeader: "JWT $token",
+      HttpHeaders.contentTypeHeader: "multipart/form-data"
+    });
+
+    request.fields['amount'] = shipment.amount!.toString();
+    request.fields['fees'] = shipment.fees!.toString();
+    request.fields['extra_fees'] = shipment.extraFees!.toString();
+
+    var response = await request.send();
+    if (response.statusCode == 201) {
+      final respStr = await response.stream.bytesToString();
+      return 1;
+    } else {
+      final respStr = await response.stream.bytesToString();
+      return 0;
     }
   }
 

@@ -51,97 +51,109 @@ class _NotificationScreenState extends State<NotificationScreen> {
       child: Scaffold(
         backgroundColor: Colors.grey[200],
         appBar: CustomAppBar(
-          title: "الاشعارات",
+          title: "Notifications",
         ),
         body: SingleChildScrollView(
-          child: Consumer<NotificationProvider>(
-            builder: (context, notificationProvider, child) {
-              return notificationProvider.notifications.isEmpty
-                  ? const Center(
-                      child: Text("لا يوجد اشعارات لعرضها"),
-                    )
-                  : ListView.builder(
-                      itemCount: notificationProvider.notifications.length,
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        // DateTime now = DateTime.now();
-                        // Duration diff = now
-                        //     .difference(state.offers[index].createdDate!);
-                        DateTime now = DateTime.now();
-                        Duration diff = now.difference(DateTime.parse(
-                            notificationProvider
-                                .notifications[index].dateCreated!));
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                                // bottom: BorderSide(
-                                //     color: AppColor.deepBlue, width: 2),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Consumer<NotificationProvider>(
+                  builder: (context, notificationProvider, child) {
+                    return notificationProvider.notifications.isEmpty
+                        ? const Center(
+                            child: Text("There are no Notifications to show."),
+                          )
+                        : ListView.builder(
+                            itemCount:
+                                notificationProvider.notifications.length,
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              // DateTime now = DateTime.now();
+                              // Duration diff = now
+                              //     .difference(state.offers[index].createdDate!);
+                              DateTime now = DateTime.now();
+                              Duration diff = now.difference(DateTime.parse(
+                                  notificationProvider
+                                      .notifications[index].dateCreated!));
+                              return Container(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                      // bottom: BorderSide(
+                                      //     color: AppColor.deepBlue, width: 2),
+                                      ),
+                                  color: notificationProvider
+                                          .notifications[index].isread!
+                                      ? Colors.white
+                                      : Colors.blue[50],
                                 ),
-                            color: notificationProvider
-                                    .notifications[index].isread!
-                                ? Colors.white
-                                : Colors.blue[50],
-                          ),
-                          child: ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            onTap: () {},
-                            leading: Container(
-                              height: 75.h,
-                              width: 75.w,
-                              decoration: BoxDecoration(
-                                  // color: AppColor.lightGoldenYellow,
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: CircleAvatar(
-                                radius: 25.h,
-                                // backgroundColor: AppColor.deepBlue,
-                                child: Center(
-                                  child: (notificationProvider
-                                              .notifications[index]
-                                              .image!
-                                              .length >
-                                          1)
-                                      ? Image.network(
-                                          notificationProvider
-                                              .notifications[index].image!,
-                                          height: 55.h,
-                                          width: 55.w,
-                                          fit: BoxFit.fill,
-                                        )
-                                      : Text(
-                                          notificationProvider
-                                              .notifications[index].image!,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 28.sp,
-                                          ),
-                                        ),
+                                child: ListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  onTap: () {},
+                                  leading: Container(
+                                    height: 75.h,
+                                    width: 75.w,
+                                    decoration: BoxDecoration(
+                                        // color: AppColor.lightGoldenYellow,
+                                        borderRadius: BorderRadius.circular(5)),
+                                    child: CircleAvatar(
+                                      radius: 25.h,
+                                      // backgroundColor: AppColor.deepBlue,
+                                      child: Center(
+                                        child: (notificationProvider
+                                                    .notifications[index]
+                                                    .image!
+                                                    .length >
+                                                1)
+                                            ? Image.network(
+                                                notificationProvider
+                                                    .notifications[index]
+                                                    .image!,
+                                                height: 55.h,
+                                                width: 55.w,
+                                                fit: BoxFit.fill,
+                                              )
+                                            : Text(
+                                                notificationProvider
+                                                    .notifications[index]
+                                                    .image!,
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 28.sp,
+                                                ),
+                                              ),
+                                      ),
+                                    ),
+                                  ),
+                                  title: Text(notificationProvider
+                                      .notifications[index].title!),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(notificationProvider
+                                          .notifications[index].description!),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Text(diffText(diff)),
+                                          SizedBox(
+                                            width: 9.w,
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  dense: false,
                                 ),
-                              ),
-                            ),
-                            title: Text(notificationProvider
-                                .notifications[index].title!),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(notificationProvider
-                                    .notifications[index].description!),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Text(diffText(diff)),
-                                    SizedBox(
-                                      width: 9.w,
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                            dense: false,
-                          ),
-                        );
-                      });
-            },
+                              );
+                            });
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),

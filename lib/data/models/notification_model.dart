@@ -7,7 +7,7 @@ class NotificationModel {
   String? noteficationType;
   bool? isread;
   int? user;
-  int? offer;
+  int? shipment;
 
   NotificationModel({
     this.id,
@@ -18,7 +18,7 @@ class NotificationModel {
     this.noteficationType,
     this.isread,
     this.user,
-    this.offer,
+    this.shipment,
   });
 
   NotificationModel.fromJson(Map<String, dynamic> json) {
@@ -30,7 +30,7 @@ class NotificationModel {
     noteficationType = json['notefication_type'];
     isread = json['isread'];
     user = json['user'];
-    offer = json['offer'];
+    shipment = json['shipment'];
   }
 
   Map<String, dynamic> toJson() {

@@ -1,13 +1,16 @@
 import 'package:camion/Localization/app_localizations.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_list_bloc.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
+import 'package:camion/data/models/shipment_model.dart';
 import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/merchant/shipment_instruction_screen.dart';
+import 'package:camion/views/screens/merchant/shipment_task_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:timelines/timelines.dart';
 
 class ShipmentTaskScreen extends StatefulWidget {
   ShipmentTaskScreen({Key? key}) : super(key: key);
@@ -18,18 +21,14 @@ class ShipmentTaskScreen extends StatefulWidget {
 
 class _ShipmentTaskScreenState extends State<ShipmentTaskScreen>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  int tabIndex = 0;
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _tabController.dispose();
   }
 
   String getOfferStatus(String offer) {
@@ -90,91 +89,10 @@ class _ShipmentTaskScreenState extends State<ShipmentTaskScreen>
                     height: 5,
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 7, vertical: 7),
-                    child: TabBar(
-                      controller: _tabController,
-                      // give the indicator a decoration (color and border radius)
-
-                      // indicator: BoxDecoration(
-                      //   borderRadius: BorderRadius.circular(
-                      //     25.0,
-                      //   ),
-
-                      //   // color: AppColor.activeGreen,
-                      // ),
-
-                      // labelColor: AppColor.deepBlack,
-                      // unselectedLabelColor: Colors.black,
-                      // splashBorderRadius: BorderRadius.circular(25),
-                      onTap: (value) {
-                        switch (value) {
-                          case 0:
-                            BlocProvider.of<ShipmentListBloc>(context)
-                                .add(ShipmentListLoadEvent("P"));
-                            break;
-                          case 1:
-                            BlocProvider.of<ShipmentListBloc>(context)
-                                .add(ShipmentListLoadEvent("C"));
-                            break;
-                          // case 2:
-                          //   BlocProvider.of<ShipmentListBloc>(context)
-                          //       .add(ShipmentListLoadEvent("C"));
-                          //   break;
-                          default:
-                        }
-                        setState(() {
-                          tabIndex = value;
-                        });
-                      },
-                      tabs: [
-                        // first tab [you can add an icon using the icon property]
-                        Tab(
-                          child: Container(
-                            // decoration: BoxDecoration(
-                            //     color: tabIndex == 0
-                            //         ? AppColor.goldenYellow
-                            //         : null,
-                            //     borderRadius: BorderRadius.circular(
-                            //       25.0,
-                            //     ),
-                            //     border: tabIndex != 0
-                            //         ? Border.all(
-                            //             color: AppColor.goldenYellow,
-                            //             width: 2,
-                            //           )
-                            //         : null
-                            //     // color: AppColor.activeGreen,
-                            //     ),
-                            child: Center(
-                                child: Text(AppLocalizations.of(context)!
-                                    .translate('pending'))),
-                          ),
-                        ),
-
-                        // second tab [you can add an icon using the icon property]
-                        // Tab(
-                        //   child: Container(
-                        //     child: Center(
-                        //         child: Text(AppLocalizations.of(context)!
-                        //             .translate('running'))),
-                        //   ),
-                        // ),
-                        Tab(
-                          child: Container(
-                            child: Center(
-                                child: Text(AppLocalizations.of(context)!
-                                    .translate('completed'))),
-                          ),
-                        ),
-                      ],
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8.0,
+                      horizontal: 10.0,
                     ),
-                  ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
                     child: BlocBuilder<ShipmentListBloc, ShipmentListState>(
                       builder: (context, state) {
                         if (state is ShipmentListLoadedSuccess) {
@@ -191,179 +109,228 @@ class _ShipmentTaskScreenState extends State<ShipmentTaskScreen>
                                     // DateTime now = DateTime.now();
                                     // Duration diff = now
                                     //     .difference(state.offers[index].createdDate!);
-                                    return Card(
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(10),
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ShipmentTaskDetailsScreen(
+                                                    shipment:
+                                                        state.shipments[index]),
+                                          ),
+                                        );
+                                      },
+                                      child: Card(
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10),
+                                          ),
                                         ),
-                                      ),
-                                      child: Padding(
-                                        padding:
-                                            EdgeInsets.symmetric(vertical: 5.h),
-                                        child: Column(
-                                          children: [
-                                            ListTile(
-                                              contentPadding: EdgeInsets.zero,
-                                              onTap: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ShipmentInstructionScreen(
-                                                              shipment: state
-                                                                      .shipments[
-                                                                  index]),
-                                                    ));
-                                              },
-                                              leading: Container(
-                                                height: 75.h,
-                                                width: 75.w,
-                                                decoration: BoxDecoration(
-                                                    // color: AppColor.lightGoldenYellow,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5)),
-                                                child: Center(
-                                                  child: SvgPicture.asset(
-                                                    "assets/icons/naval_shipping.svg",
-                                                    height: 55.h,
-                                                    width: 55.w,
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                ),
-                                              ),
-                                              title: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        '${AppLocalizations.of(context)!.translate('shipment_number')}: SA-${state.shipments[index].id!}',
-                                                        style: TextStyle(
-                                                            // color: AppColor.lightBlue,
-                                                            fontSize: 18.sp,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 7.h,
-                                                      ),
-                                                      Text(
-                                                        '${AppLocalizations.of(context)!.translate('commodity_type')}: ${state.shipments[index].shipmentItems![0].commodityName!}',
-                                                        style: TextStyle(
-                                                          // color: AppColor.lightBlue,
-                                                          fontSize: 17.sp,
-                                                        ),
-                                                      ),
-                                                      Text.rich(
-                                                        TextSpan(
-                                                            text: state
-                                                                .shipments[
-                                                                    index]
-                                                                .pickupCityLocation,
-                                                            style: TextStyle(
-                                                              color: AppColor
-                                                                  .deepBlack,
-                                                              fontSize: 17.sp,
-                                                            ),
-                                                            children: [
-                                                              TextSpan(
-                                                                text:
-                                                                    "  --->  ",
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: AppColor
-                                                                      .deepYellow,
-                                                                  fontSize:
-                                                                      17.sp,
-                                                                ),
-                                                              ),
-                                                              TextSpan(
-                                                                text:
-                                                                    "${state.shipments[index].deliveryCityLocation}",
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: AppColor
-                                                                      .deepBlack,
-                                                                  fontSize:
-                                                                      17.sp,
-                                                                ),
-                                                              ),
-                                                            ]),
-                                                      ),
-                                                      // // Text(
-                                                      //     'نوع البضاعة: ${state.offers[index].product!.label!}'),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                              dense: false,
-                                            ),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 5.h),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    // BlocProvider.of<
-                                                    //             OfferDetailsBloc>(
-                                                    //         context)
-                                                    //     .add(
-                                                    //         OfferDetailsLoadEvent(
-                                                    //             state
-                                                    //                 .offers[
-                                                    //                     index]
-                                                    //                 .id!));
-                                                    // Navigator.push(
-                                                    //     context,
-                                                    //     MaterialPageRoute(
-                                                    //       builder: (context) =>
-                                                    //           OrderTrackingScreen(
-                                                    //               type:
-                                                    //                   "trader",
-                                                    //               offer: state
-                                                    //                       .offers[
-                                                    //                   index]),
-                                                    //     ));
-                                                  },
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 3.0),
-                                                    child: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.end,
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      '${AppLocalizations.of(context)!.translate('shipment_number')}: SA-${state.shipments[index].id!}',
+                                                      style: TextStyle(
+                                                          // color: AppColor.lightBlue,
+                                                          fontSize: 18.sp,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 7.h,
+                                                    ),
+
+                                                    SizedBox(
+                                                      height: 70.h,
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          TimelineTile(
+                                                            direction:
+                                                                Axis.horizontal,
+                                                            oppositeContents:
+                                                                Text(
+                                                              '${state.shipments[index].pickupDate!.year.toString()}-${state.shipments[index].pickupDate!.month.toString()}-${state.shipments[index].pickupDate!.day.toString()}',
+                                                            ),
+                                                            contents: Text(
+                                                              state
+                                                                  .shipments[
+                                                                      index]
+                                                                  .pickupCityLocation!,
+                                                            ),
+                                                            node: SizedBox(
+                                                              width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  .25,
+                                                              child:
+                                                                  TimelineNode(
+                                                                indicator: DotIndicator(
+                                                                    color: AppColor
+                                                                        .deepYellow),
+                                                                // startConnector: SolidLineConnector(),
+                                                                endConnector:
+                                                                    DashedLineConnector(
+                                                                        color: AppColor
+                                                                            .deepYellow),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          TimelineTile(
+                                                            direction:
+                                                                Axis.horizontal,
+                                                            oppositeContents:
+                                                                const SizedBox
+                                                                    .shrink(),
+                                                            contents:
+                                                                const SizedBox
+                                                                    .shrink(),
+                                                            node: SizedBox(
+                                                              width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  .25,
+                                                              child: DashedLineConnector(
+                                                                  color: AppColor
+                                                                      .deepYellow),
+                                                            ),
+                                                          ),
+                                                          TimelineTile(
+                                                            direction:
+                                                                Axis.horizontal,
+                                                            oppositeContents:
+                                                                Text(
+                                                              '${state.shipments[index].pickupDate!.year.toString()}-${state.shipments[index].pickupDate!.month.toString()}-${state.shipments[index].pickupDate!.day.toString()}',
+                                                            ),
+                                                            contents: Text(
+                                                              state
+                                                                  .shipments[
+                                                                      index]
+                                                                  .deliveryCityLocation!,
+                                                            ),
+                                                            node: SizedBox(
+                                                              width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  .2,
+                                                              child:
+                                                                  TimelineNode(
+                                                                indicator: DotIndicator(
+                                                                    color: AppColor
+                                                                        .deepYellow),
+                                                                startConnector:
+                                                                    DashedLineConnector(
+                                                                        color: AppColor
+                                                                            .deepYellow),
+                                                                // endConnector: SolidLineConnector(),
+                                                              ),
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 7.h,
+                                                    ),
+                                                    Text(
+                                                      '${AppLocalizations.of(context)!.translate('commodity_type')}: ${state.shipments[index].shipmentItems![0].commodityName!}',
+                                                      style: TextStyle(
+                                                        // color: AppColor.lightBlue,
+                                                        fontSize: 17.sp,
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 7.h,
+                                                    ),
+                                                    Text(
+                                                      '${AppLocalizations.of(context)!.translate('commodity_weight')}: ${state.shipments[index].shipmentItems![0].commodityWeight!}',
+                                                      style: TextStyle(
+                                                        // color: AppColor.lightBlue,
+                                                        fontSize: 17.sp,
+                                                      ),
+                                                    ),
+
+                                                    // // Text(
+                                                    //     'نوع البضاعة: ${state.offers[index].product!.label!}'),
+                                                  ],
+                                                ),
+                                                Container(
+                                                  height: 55.h,
+                                                  width: 55.w,
+                                                  decoration: BoxDecoration(
+                                                      // color: AppColor.lightGoldenYellow,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5)),
+                                                  child: Center(
+                                                    child: Stack(
+                                                      clipBehavior: Clip.none,
                                                       children: [
-                                                        // Text(
-                                                        //   AppLocalizations.of(
-                                                        //           context)!
-                                                        //       .translate(
-                                                        //           'operation_tracking'),
-                                                        //   style: TextStyle(
-                                                        //     color: AppColor
-                                                        //         .lightBlue,
-                                                        //     fontWeight:
-                                                        //         FontWeight.bold,
-                                                        //     fontSize: 17.sp,
-                                                        //   ),
-                                                        // ),
+                                                        Icon(
+                                                          Icons
+                                                              .notifications_none_outlined,
+                                                          color: AppColor
+                                                              .deepYellow,
+                                                          size: 45,
+                                                        ),
+                                                        getunfinishedTasks(state
+                                                                        .shipments[
+                                                                    index]) >
+                                                                0
+                                                            ? Positioned(
+                                                                child:
+                                                                    Container(
+                                                                  height: 25,
+                                                                  width: 25,
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: Colors
+                                                                        .red,
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            45),
+                                                                  ),
+                                                                  child: Center(
+                                                                    child: Text(
+                                                                        getunfinishedTasks(state.shipments[index])
+                                                                            .toString(),
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color:
+                                                                              Colors.white,
+                                                                        )),
+                                                                  ),
+                                                                ),
+                                                              )
+                                                            : const SizedBox
+                                                                .shrink(),
                                                       ],
                                                     ),
                                                   ),
                                                 ),
                                               ],
                                             ),
-                                          ],
+                                          ),
                                         ),
                                       ),
                                     );
@@ -436,5 +403,16 @@ class _ShipmentTaskScreenState extends State<ShipmentTaskScreen>
         );
       },
     );
+  }
+
+  int getunfinishedTasks(Shipment shipment) {
+    var count = 0;
+    if (shipment.shipmentinstruction == null) {
+      count++;
+    }
+    if (shipment.shipmentpayment == null) {
+      count++;
+    }
+    return count;
   }
 }

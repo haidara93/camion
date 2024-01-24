@@ -2,12 +2,15 @@ import 'dart:io';
 
 import 'package:camion/Localization/app_localizations_setup.dart';
 import 'package:camion/business_logic/bloc/auth_bloc.dart';
+import 'package:camion/business_logic/bloc/instructions/instruction_create_bloc.dart';
+import 'package:camion/business_logic/bloc/instructions/payment_create_bloc.dart';
 import 'package:camion/business_logic/bloc/notification_bloc.dart';
 import 'package:camion/business_logic/bloc/order_truck_bloc.dart';
 import 'package:camion/business_logic/bloc/package_type_bloc.dart';
 import 'package:camion/business_logic/bloc/post_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_list_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shippment_create_bloc.dart';
+import 'package:camion/business_logic/bloc/truck/truck_details_bloc.dart';
 import 'package:camion/business_logic/bloc/truck/truck_type_bloc.dart';
 import 'package:camion/business_logic/bloc/truck/trucks_list_bloc.dart';
 import 'package:camion/business_logic/bloc/truck_papers/create_truck_paper_bloc.dart';
@@ -118,6 +121,11 @@ class MyApp extends StatelessWidget {
                             RepositoryProvider.of<TruckRepository>(context)),
                   ),
                   BlocProvider(
+                    create: (context) => TruckDetailsBloc(
+                        truckRepository:
+                            RepositoryProvider.of<TruckRepository>(context)),
+                  ),
+                  BlocProvider(
                     create: (context) => TruckPapersBloc(
                         truckRepository:
                             RepositoryProvider.of<TruckRepository>(context)),
@@ -141,6 +149,18 @@ class MyApp extends StatelessWidget {
                   ),
                   BlocProvider(
                     create: (context) => ShippmentCreateBloc(
+                        shippmentRerository:
+                            RepositoryProvider.of<ShippmentRerository>(
+                                context)),
+                  ),
+                  BlocProvider(
+                    create: (context) => InstructionCreateBloc(
+                        shippmentRerository:
+                            RepositoryProvider.of<ShippmentRerository>(
+                                context)),
+                  ),
+                  BlocProvider(
+                    create: (context) => PaymentCreateBloc(
                         shippmentRerository:
                             RepositoryProvider.of<ShippmentRerository>(
                                 context)),

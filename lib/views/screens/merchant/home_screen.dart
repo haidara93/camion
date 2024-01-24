@@ -1,4 +1,5 @@
 import 'package:camion/Localization/app_localizations.dart';
+import 'package:camion/business_logic/bloc/auth_bloc.dart';
 import 'package:camion/business_logic/bloc/post_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_list_bloc.dart';
 import 'package:camion/business_logic/cubit/bottom_nav_bar_cubit.dart';
@@ -123,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen>
       case 4:
         {
           BlocProvider.of<ShipmentListBloc>(context)
-              .add(ShipmentListLoadEvent("P"));
+              .add(ShipmentListLoadEvent("R"));
           setState(() {
             title = AppLocalizations.of(context)!.translate('tasks');
 
@@ -154,6 +155,192 @@ class _HomeScreenState extends State<HomeScreen>
                 appBar: CustomAppBar(
                   title: title,
                   scaffoldKey: _scaffoldKey,
+                ),
+                drawer: Drawer(
+                  backgroundColor: AppColor.deepBlack,
+                  elevation: 1,
+                  width: MediaQuery.of(context).size.width * .85,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12.w),
+                    child: ListView(children: [
+                      SizedBox(
+                        height: 35.h,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: AppColor.deepYellow,
+                            radius: 35.h,
+                          ),
+                          Text(
+                            "Morad Kara",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 26.sp,
+                                fontWeight: FontWeight.bold),
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 15.h,
+                      ),
+                      const Divider(
+                        color: Colors.white,
+                      ),
+                      ListTile(
+                        leading: SvgPicture.asset(
+                          "assets/icons/profile.svg",
+                          height: 20.h,
+                        ),
+                        title: Text(
+                          AppLocalizations.of(context)!.translate('profile'),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        trailing: Container(
+                          width: 35.w,
+                          height: 20.h,
+                          decoration: BoxDecoration(
+                              color: AppColor.deepYellow,
+                              borderRadius: BorderRadius.circular(2)),
+                          child: Center(
+                            child: Text(
+                              "soon",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12.sp,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          // changeSelectedValue(
+                          //     selectedValue: 0, contxt: context);
+                          // _scaffoldKey.currentState!.closeDrawer();
+                        },
+                        child: ListTile(
+                          leading: SvgPicture.asset(
+                            "assets/icons/settings.svg",
+                            height: 20.h,
+                          ),
+                          title: Text(
+                            AppLocalizations.of(context)!.translate('settings'),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          trailing: Container(
+                            width: 35.w,
+                            height: 20.h,
+                            decoration: BoxDecoration(
+                                color: AppColor.deepYellow,
+                                borderRadius: BorderRadius.circular(2)),
+                            child: Center(
+                              child: Text(
+                                "soon",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12.sp,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const Divider(
+                        color: Colors.white,
+                      ),
+                      ListTile(
+                        leading: SvgPicture.asset(
+                          "assets/icons/help_info.svg",
+                          height: 20.h,
+                        ),
+                        title: Text(
+                          AppLocalizations.of(context)!.translate('help'),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        trailing: Container(
+                          width: 35.w,
+                          height: 20.h,
+                          decoration: BoxDecoration(
+                              color: AppColor.deepYellow,
+                              borderRadius: BorderRadius.circular(2)),
+                          child: Center(
+                            child: Text(
+                              "soon",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12.sp,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const Divider(
+                        color: Colors.white,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          showDialog<void>(
+                            context: context,
+                            barrierDismissible: false, // user must tap button!
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                // <-- SEE HERE
+                                backgroundColor: Colors.white,
+                                title: const Text('Log out'),
+                                content: const SingleChildScrollView(
+                                  child: ListBody(
+                                    children: <Widget>[
+                                      Text('Are you sure want to log out?'),
+                                    ],
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('No'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text('Yes'),
+                                    onPressed: () {
+                                      BlocProvider.of<AuthBloc>(context)
+                                          .add(UserLoggedOut());
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: ListTile(
+                          leading: SvgPicture.asset(
+                            "assets/icons/log_out.svg",
+                            height: 20.h,
+                          ),
+                          title: Text(
+                            AppLocalizations.of(context)!.translate('log_out'),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ]),
+                  ),
                 ),
                 bottomNavigationBar:
                     BlocBuilder<BottomNavBarCubit, BottomNavBarState>(

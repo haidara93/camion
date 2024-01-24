@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:timelines/timelines.dart';
 
 class ShippmentLogScreen extends StatefulWidget {
   ShippmentLogScreen({Key? key}) : super(key: key);
@@ -214,7 +215,7 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                                             5)),
                                                 child: Center(
                                                   child: SvgPicture.asset(
-                                                    "assets/icons/naval_shipping.svg",
+                                                    "assets/icons/commodity_icon.svg",
                                                     height: 55.h,
                                                     width: 55.w,
                                                     fit: BoxFit.fill,
@@ -245,6 +246,104 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                                       SizedBox(
                                                         height: 7.h,
                                                       ),
+
+                                                      SizedBox(
+                                                        height: 70.h,
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            TimelineTile(
+                                                              direction: Axis
+                                                                  .horizontal,
+                                                              oppositeContents:
+                                                                  Text(
+                                                                '${state.shipments[index].pickupDate!.year.toString()}-${state.shipments[index].pickupDate!.month.toString()}-${state.shipments[index].pickupDate!.day.toString()}',
+                                                              ),
+                                                              contents: Text(
+                                                                state
+                                                                    .shipments[
+                                                                        index]
+                                                                    .pickupCityLocation!,
+                                                              ),
+                                                              node: SizedBox(
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    .2,
+                                                                child:
+                                                                    TimelineNode(
+                                                                  indicator: DotIndicator(
+                                                                      color: AppColor
+                                                                          .deepYellow),
+                                                                  // startConnector: SolidLineConnector(),
+                                                                  endConnector:
+                                                                      DashedLineConnector(
+                                                                          color:
+                                                                              AppColor.deepYellow),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            TimelineTile(
+                                                              direction: Axis
+                                                                  .horizontal,
+                                                              oppositeContents:
+                                                                  const SizedBox
+                                                                      .shrink(),
+                                                              contents:
+                                                                  const SizedBox
+                                                                      .shrink(),
+                                                              node: SizedBox(
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    .2,
+                                                                child: DashedLineConnector(
+                                                                    color: AppColor
+                                                                        .deepYellow),
+                                                              ),
+                                                            ),
+                                                            TimelineTile(
+                                                              direction: Axis
+                                                                  .horizontal,
+                                                              oppositeContents:
+                                                                  Text(
+                                                                '${state.shipments[index].pickupDate!.year.toString()}-${state.shipments[index].pickupDate!.month.toString()}-${state.shipments[index].pickupDate!.day.toString()}',
+                                                              ),
+                                                              contents: Text(
+                                                                state
+                                                                    .shipments[
+                                                                        index]
+                                                                    .deliveryCityLocation!,
+                                                              ),
+                                                              node: SizedBox(
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    .3,
+                                                                child:
+                                                                    TimelineNode(
+                                                                  indicator: DotIndicator(
+                                                                      color: AppColor
+                                                                          .deepYellow),
+                                                                  startConnector:
+                                                                      DashedLineConnector(
+                                                                          color:
+                                                                              AppColor.deepYellow),
+                                                                  // endConnector: SolidLineConnector(),
+                                                                ),
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 7.h,
+                                                      ),
                                                       Text(
                                                         '${AppLocalizations.of(context)!.translate('commodity_type')}: ${state.shipments[index].shipmentItems![0].commodityName!}',
                                                         style: TextStyle(
@@ -252,42 +351,17 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                                           fontSize: 17.sp,
                                                         ),
                                                       ),
-                                                      Text.rich(
-                                                        TextSpan(
-                                                            text: state
-                                                                .shipments[
-                                                                    index]
-                                                                .pickupCityLocation,
-                                                            style: TextStyle(
-                                                              color: AppColor
-                                                                  .deepBlack,
-                                                              fontSize: 17.sp,
-                                                            ),
-                                                            children: [
-                                                              TextSpan(
-                                                                text:
-                                                                    "  --->  ",
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: AppColor
-                                                                      .deepYellow,
-                                                                  fontSize:
-                                                                      17.sp,
-                                                                ),
-                                                              ),
-                                                              TextSpan(
-                                                                text:
-                                                                    "${state.shipments[index].deliveryCityLocation}",
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: AppColor
-                                                                      .deepBlack,
-                                                                  fontSize:
-                                                                      17.sp,
-                                                                ),
-                                                              ),
-                                                            ]),
+                                                      SizedBox(
+                                                        height: 7.h,
                                                       ),
+                                                      Text(
+                                                        '${AppLocalizations.of(context)!.translate('commodity_weight')}: ${state.shipments[index].shipmentItems![0].commodityWeight!}',
+                                                        style: TextStyle(
+                                                          // color: AppColor.lightBlue,
+                                                          fontSize: 17.sp,
+                                                        ),
+                                                      ),
+
                                                       // // Text(
                                                       //     'نوع البضاعة: ${state.offers[index].product!.label!}'),
                                                     ],
@@ -295,62 +369,6 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                                 ],
                                               ),
                                               dense: false,
-                                            ),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                              children: [
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    // BlocProvider.of<
-                                                    //             OfferDetailsBloc>(
-                                                    //         context)
-                                                    //     .add(
-                                                    //         OfferDetailsLoadEvent(
-                                                    //             state
-                                                    //                 .offers[
-                                                    //                     index]
-                                                    //                 .id!));
-                                                    // Navigator.push(
-                                                    //     context,
-                                                    //     MaterialPageRoute(
-                                                    //       builder: (context) =>
-                                                    //           OrderTrackingScreen(
-                                                    //               type:
-                                                    //                   "trader",
-                                                    //               offer: state
-                                                    //                       .offers[
-                                                    //                   index]),
-                                                    //     ));
-                                                  },
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 3.0),
-                                                    child: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.end,
-                                                      children: [
-                                                        // Text(
-                                                        //   AppLocalizations.of(
-                                                        //           context)!
-                                                        //       .translate(
-                                                        //           'operation_tracking'),
-                                                        //   style: TextStyle(
-                                                        //     color: AppColor
-                                                        //         .lightBlue,
-                                                        //     fontWeight:
-                                                        //         FontWeight.bold,
-                                                        //     fontSize: 17.sp,
-                                                        //   ),
-                                                        // ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
                                             ),
                                           ],
                                         ),

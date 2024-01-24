@@ -54,7 +54,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                     child: localeState.value.languageCode ==
                                             'en'
                                         ? SvgPicture.asset(
-                                            "assets/icons/arrow-left-ar.svg")
+                                            "assets/icons/arrow-left-en.svg")
                                         : SvgPicture.asset(
                                             "assets/icons/arrow-left-ar.svg"),
                                   ),
@@ -63,7 +63,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                             )
                           : InkWell(
                               onTap: () {
-                                // scaffoldKey!.currentState!.openDrawer();
+                                scaffoldKey!.currentState!.openDrawer();
                               },
                               child: Padding(
                                 padding: EdgeInsets.symmetric(

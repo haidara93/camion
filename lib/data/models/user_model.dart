@@ -107,17 +107,24 @@ class Truckuser {
 class Driver {
   int? id;
   User? user;
+  int? truck;
 
-  Driver({this.id, this.user});
+  Driver({
+    this.id,
+    this.user,
+    this.truck,
+  });
 
   Driver.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     user = json['user'] != null ? new User.fromJson(json['user']) : null;
+    truck = json['truck'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
+    data['truck'] = this.truck;
     if (this.user != null) {
       data['user'] = this.user!.toJson();
     }

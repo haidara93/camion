@@ -31,6 +31,22 @@ class TruckRepository {
     return trucks;
   }
 
+  Future<Truck?> getTruck(int id) async {
+    prefs = await SharedPreferences.getInstance();
+    var jwt = prefs.getString("token");
+
+    var rs = await HttpHelper.get('$TRUCKS_ENDPOINT$id/', apiToken: jwt);
+
+    print(rs.statusCode);
+    if (rs.statusCode == 200) {
+      var myDataString = utf8.decode(rs.bodyBytes);
+
+      var result = jsonDecode(myDataString);
+      return Truck.fromJson(result);
+    }
+    return null;
+  }
+
   Future<List<TruckPaper>> getTruckPapers(int truck) async {
     prefs = await SharedPreferences.getInstance();
     var jwt = prefs.getString("token");

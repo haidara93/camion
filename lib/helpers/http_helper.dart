@@ -20,6 +20,9 @@ const TRUCK_PAPERS_ENDPOINT = '${DOMAIN}camion/truckpapers/';
 const TRUCK_EXPENSES_ENDPOINT = '${DOMAIN}camion/truckfixes/';
 const PACKAGE_TYPES_ENDPOINT = '${DOMAIN}camion/packagestypes/';
 const SHIPPMENTS_ENDPOINT = '${DOMAIN}camion/shippments/';
+const SHIPPMENTS_PAYMENT_ENDPOINT = '${DOMAIN}camion/shipmentpayment/';
+const SHIPPMENTS_INSTRUCTION_ENDPOINT =
+    '${DOMAIN}camion/shippmentinstructions/';
 const NOTIFICATIONS_ENDPOINT = '${DOMAIN}camion/notifecations/';
 
 class HttpHelper {

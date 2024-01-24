@@ -1,12 +1,15 @@
+import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/constants/enums.dart';
 import 'package:camion/data/models/co2_report.dart';
 import 'package:camion/data/models/shipment_model.dart';
 import 'package:camion/data/providers/active_shipment_provider.dart';
 import 'package:camion/data/services/co2_service.dart';
 import 'package:camion/helpers/color_constants.dart';
+import 'package:camion/views/screens/merchant/shipment_task_details_screen.dart';
 import 'package:camion/views/widgets/custom_app_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -270,7 +273,7 @@ class _ActiveShipmentDetailsScreenState
       clipBehavior: Clip.none,
       children: [
         Container(
-          height: 420.h,
+          height: 470.h,
           width: MediaQuery.of(context).size.width,
           decoration: const BoxDecoration(
             color: Colors.white,
@@ -281,41 +284,46 @@ class _ActiveShipmentDetailsScreenState
           ),
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const SizedBox(
-                      width: 50,
-                      height: 50,
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "truck type: ${widget.shipment.truckType!.name!}",
-                          style: TextStyle(
-                            fontSize: 19.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        // Text(
-                        //   "commodity name: ${widget.shipment.shipmentItems![0].commodityName!}",
-                        //   style: TextStyle(
-                        //     fontSize: 19.sp,
-                        //   ),
-                        // ),
-                      ],
-                    ),
-                    Text(
-                      "#${widget.shipment.id!}",
-                      style: TextStyle(
-                        fontSize: 19.sp,
-                        fontWeight: FontWeight.bold,
+              GestureDetector(
+                onTap: () {
+                  changeToHidden();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const SizedBox(
+                        width: 50,
+                        height: 50,
                       ),
-                    )
-                  ],
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "truck type: ${widget.shipment.truckType!.name!}",
+                            style: TextStyle(
+                              fontSize: 19.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          // Text(
+                          //   "commodity name: ${widget.shipment.shipmentItems![0].commodityName!}",
+                          //   style: TextStyle(
+                          //     fontSize: 19.sp,
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                      Text(
+                        "#${widget.shipment.id!}",
+                        style: TextStyle(
+                          fontSize: 19.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
               const Divider(),
@@ -377,19 +385,9 @@ class _ActiveShipmentDetailsScreenState
                 ),
               ),
               const Divider(),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildCommodityWidget(widget.shipment.shipmentItems),
-                  SizedBox(
-                    height: 180.h,
-                    child: VerticalDivider(
-                      color: Colors.grey[300],
-                    ),
-                  ),
-                  _buildCo2Report(),
-                ],
-              ),
+              _buildCommodityWidget(widget.shipment.shipmentItems),
+              const Divider(),
+              _buildCo2Report(),
             ],
           ),
         ),
@@ -431,108 +429,263 @@ class _ActiveShipmentDetailsScreenState
               ),
             ],
           ),
+        ),
+        BlocBuilder<LocaleCubit, LocaleState>(
+          builder: (context, localeState) {
+            return Positioned(
+              top: -20,
+              right: localeState.value.languageCode == 'en' ? 50 : null,
+              left: localeState.value.languageCode == 'en' ? null : 50,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ShipmentTaskDetailsScreen(shipment: widget.shipment),
+                    ),
+                  );
+                },
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      height: 45.h,
+                      width: 45.w,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey[300]!,
+                          width: 1,
+                        ),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(45),
+                      ),
+                      child: Center(
+                        child: Icon(
+                          Icons.notifications_none_outlined,
+                          color: AppColor.deepYellow,
+                          size: 40,
+                        ),
+                      ),
+                    ),
+                    getunfinishedTasks(widget.shipment) > 0
+                        ? Positioned(
+                            top: -4,
+                            left: -1,
+                            child: Container(
+                              height: 25,
+                              width: 25,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(45),
+                              ),
+                              child: Center(
+                                child: Text(
+                                    getunfinishedTasks(widget.shipment)
+                                        .toString(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    )),
+                              ),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ],
     );
   }
 
   Widget _buildPanelWidget(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          height: 90.h,
-          width: MediaQuery.of(context).size.width,
-          decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(13),
-                topRight: Radius.circular(13),
-              )),
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const SizedBox(
-                  width: 50,
-                  height: 50,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      "truck type: ${widget.shipment.truckType!.name!}",
-                      style: TextStyle(
-                        fontSize: 19.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      "commodity name: ${widget.shipment.shipmentItems![0].commodityName!}",
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                      ),
-                    ),
-                  ],
-                ),
-                Text(
-                  "#${widget.shipment.id!}",
-                  style: TextStyle(
-                    fontSize: 23.sp,
-                    fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () {
+        changeToOpen();
+      },
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            height: 100.h,
+            width: MediaQuery.of(context).size.width,
+            decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(13),
+                  topRight: Radius.circular(13),
+                )),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 8,
                   ),
-                )
-              ],
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const SizedBox(
+                        width: 50,
+                        height: 50,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            "truck type: ${widget.shipment.truckType!.name!}",
+                            style: TextStyle(
+                              fontSize: 19.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            "commodity name: ${widget.shipment.shipmentItems![0].commodityName!}",
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        "#${widget.shipment.id!}",
+                        style: TextStyle(
+                          fontSize: 23.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        Positioned(
-          top: -30,
-          child: Column(
-            children: [
-              Card(
-                color: Colors.white,
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(45),
-                ),
-                child: Container(
-                  margin: const EdgeInsets.all(3),
-                  padding: const EdgeInsets.all(1),
-                  decoration: BoxDecoration(
-                      color: AppColor.deepYellow,
-                      borderRadius: BorderRadius.circular(45)),
-                  child: CircleAvatar(
-                    radius: 30.h,
-                    backgroundColor: Colors.white,
-                    child: Center(
-                      child: Text(
-                        "AY",
-                        style: TextStyle(
-                          fontSize: 28.sp,
+          Positioned(
+            top: -30,
+            child: Column(
+              children: [
+                Card(
+                  color: Colors.white,
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(45),
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.all(3),
+                    padding: const EdgeInsets.all(1),
+                    decoration: BoxDecoration(
+                        color: AppColor.deepYellow,
+                        borderRadius: BorderRadius.circular(45)),
+                    child: CircleAvatar(
+                      radius: 30.h,
+                      backgroundColor: Colors.white,
+                      child: Center(
+                        child: Text(
+                          "AY",
+                          style: TextStyle(
+                            fontSize: 28.sp,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Text(
-                "${widget.shipment.driver!.user!.firstName!} ${widget.shipment.driver!.user!.lastName!}",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: AppColor.deepYellow,
+                Text(
+                  "${widget.shipment.driver!.user!.firstName!} ${widget.shipment.driver!.user!.lastName!}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColor.deepYellow,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+          BlocBuilder<LocaleCubit, LocaleState>(
+            builder: (context, localeState) {
+              return Positioned(
+                top: -20,
+                right: localeState.value.languageCode == 'en' ? 50 : null,
+                left: localeState.value.languageCode == 'en' ? null : 50,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ShipmentTaskDetailsScreen(
+                            shipment: widget.shipment),
+                      ),
+                    );
+                  },
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        height: 45.h,
+                        width: 45.w,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey[300]!,
+                            width: 1,
+                          ),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(45),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.notifications_none_outlined,
+                            color: AppColor.deepYellow,
+                            size: 40,
+                          ),
+                        ),
+                      ),
+                      getunfinishedTasks(widget.shipment) > 0
+                          ? Positioned(
+                              top: -4,
+                              left: -1,
+                              child: Container(
+                                height: 25,
+                                width: 25,
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(45),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                      getunfinishedTasks(widget.shipment)
+                                          .toString(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      )),
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
+  }
+
+  int getunfinishedTasks(Shipment shipment) {
+    var count = 0;
+    if (shipment.shipmentinstruction == null) {
+      count++;
+    }
+    if (shipment.shipmentpayment == null) {
+      count++;
+    }
+    return count;
   }
 
   Future<void> mymap(AsyncSnapshot<QuerySnapshot> snapshot) async {
@@ -551,14 +704,17 @@ class _ActiveShipmentDetailsScreenState
 
   _buildCommodityWidget(List<ShipmentItems>? shipmentItems) {
     return SizedBox(
-      height: 200.h,
-      width: MediaQuery.of(context).size.width * .45,
+      height: 145.h,
+      width: MediaQuery.of(context).size.width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              const SizedBox(
+                width: 10,
+              ),
               SizedBox(
                 height: 25.h,
                 width: 25.w,
@@ -577,10 +733,10 @@ class _ActiveShipmentDetailsScreenState
             ],
           ),
           const SizedBox(
-            height: 10,
+            height: 5,
           ),
           SizedBox(
-            height: 160.h,
+            height: 110.h,
             child: Scrollbar(
               controller: _scrollController,
               thumbVisibility: true,
@@ -590,6 +746,7 @@ class _ActiveShipmentDetailsScreenState
                 child: ListView.builder(
                   controller: _scrollController,
                   shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
                   itemCount: widget.shipment.shipmentItems!.length,
                   itemBuilder: (context, index) {
                     return Padding(
@@ -640,14 +797,17 @@ class _ActiveShipmentDetailsScreenState
 
   _buildCo2Report() {
     return SizedBox(
-      height: 140.h,
-      width: MediaQuery.of(context).size.width * .45,
+      height: 100.h,
+      width: MediaQuery.of(context).size.width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              const SizedBox(
+                width: 10,
+              ),
               SizedBox(
                 height: 25.h,
                 width: 25.w,
@@ -668,38 +828,42 @@ class _ActiveShipmentDetailsScreenState
           const SizedBox(
             height: 10,
           ),
-          Text(
-            'Ew: ${_report.ew!.toString()}',
-            style: TextStyle(
-              fontSize: 17.sp,
-            ),
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          Text(
-            'Gw: ${_report.gw!.toString()}',
-            style: TextStyle(
-              fontSize: 17.sp,
-            ),
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          Text(
-            'Et: ${_report.et!.toString()}',
-            style: TextStyle(
-              fontSize: 17.sp,
-            ),
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          Text(
-            'Gt: ${_report.gt!.toString()}',
-            style: TextStyle(
-              fontSize: 17.sp,
-            ),
+          Row(
+            children: [
+              Text(
+                'Ew: ${_report.ew!.toString()}',
+                style: TextStyle(
+                  fontSize: 17.sp,
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Text(
+                'Gw: ${_report.gw!.toString()}',
+                style: TextStyle(
+                  fontSize: 17.sp,
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Text(
+                'Et: ${_report.et!.toString()}',
+                style: TextStyle(
+                  fontSize: 17.sp,
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Text(
+                'Gt: ${_report.gt!.toString()}',
+                style: TextStyle(
+                  fontSize: 17.sp,
+                ),
+              ),
+            ],
           ),
         ],
       ),

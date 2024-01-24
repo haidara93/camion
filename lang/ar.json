@@ -58,6 +58,15 @@
     "number_of_axels":"عدد المحاور",
     "rating":"التقييم",
 
+    "profile":"الملف الشخصي",
+    "log":"السجل",
+    "saved":"المحفوظات",
+    "my_calculates":"حساباتي",
+    "policy":"سياسة الخصوصية",
+    "settings":"الإعدادات",
+    "help":"مساعدة",
+    "log_out":"تسجيل خروج",
+   
     "home":"الرئيسية",
     "shippment_log":"السجل",
     "order_shippment":"طلب شاحنة",

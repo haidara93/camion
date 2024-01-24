@@ -4,6 +4,8 @@ import 'package:camion/data/models/user_model.dart';
 class Shipment {
   int? id;
   int? merchant;
+  int? shipmentinstruction;
+  int? shipmentpayment;
   Driver? driver;
   String? shipmentStatus;
   int? totalWeight;
@@ -22,6 +24,8 @@ class Shipment {
   Shipment(
       {this.id,
       this.merchant,
+      this.shipmentinstruction,
+      this.shipmentpayment,
       this.driver,
       this.shipmentStatus,
       this.totalWeight,
@@ -40,6 +44,8 @@ class Shipment {
   Shipment.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     merchant = json['merchant'];
+    shipmentinstruction = json['shipmentinstruction'];
+    shipmentpayment = json['shipmentpayment'];
     driver = json['driver'] != null ? Driver.fromJson(json['driver']) : null;
     shipmentStatus = json['shipment_status'];
     totalWeight = json['total_weight'];
@@ -66,10 +72,15 @@ class Shipment {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = id;
+    data['shipmentinstruction'] = this.shipmentinstruction;
+    data['shipmentpayment'] = this.shipmentpayment;
+    data['merchant'] = this.merchant;
+    data['driver'] = driver!.id;
+    data['shipment_status'] = this.shipmentStatus;
     data['total_weight'] = totalWeight;
     // data['total_weight_with_truck'] = this.totalWeightWithTruck;
     // data['commodity_image'] = this.commodityImage;
-    data['truck_type'] = truckType;
+    data['truck_type'] = truckType!.id;
     data['pickup_city_location'] = pickupCityLocation;
     data['pickup_city_lat'] = pickupCityLat;
     data['pickup_city_lang'] = pickupCityLang;
