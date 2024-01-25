@@ -8,7 +8,7 @@ sealed class InstructionCreateEvent extends Equatable {
 }
 
 class InstructionCreateButtonPressed extends InstructionCreateEvent {
-  final ShipmentInstruction instruction;
+  final Shipmentinstruction instruction;
 
   InstructionCreateButtonPressed(this.instruction);
 }

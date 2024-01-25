@@ -273,7 +273,7 @@ class _ActiveShipmentDetailsScreenState
       clipBehavior: Clip.none,
       children: [
         Container(
-          height: 470.h,
+          height: 420.h,
           width: MediaQuery.of(context).size.width,
           decoration: const BoxDecoration(
             color: Colors.white,
@@ -289,7 +289,7 @@ class _ActiveShipmentDetailsScreenState
                   changeToHidden();
                 },
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(13.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -392,105 +392,75 @@ class _ActiveShipmentDetailsScreenState
           ),
         ),
         Positioned(
-          top: -30,
-          child: Column(
-            children: [
-              Card(
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(45),
-                ),
-                child: Container(
-                  margin: const EdgeInsets.all(3),
-                  padding: const EdgeInsets.all(1),
-                  decoration: BoxDecoration(
-                      color: AppColor.deepYellow,
-                      borderRadius: BorderRadius.circular(45)),
-                  child: CircleAvatar(
-                    radius: 30.h,
-                    backgroundColor: Colors.white,
-                    child: Center(
-                      child: Text(
-                        "AY",
-                        style: TextStyle(
-                          fontSize: 28.sp,
+          top: -45,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Card(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(45),
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.all(3),
+                    padding: const EdgeInsets.all(1),
+                    decoration: BoxDecoration(
+                        color: AppColor.deepYellow,
+                        borderRadius: BorderRadius.circular(45)),
+                    child: CircleAvatar(
+                      radius: 30.h,
+                      backgroundColor: Colors.white,
+                      child: Center(
+                        child: Text(
+                          "AY",
+                          style: TextStyle(
+                            fontSize: 28.sp,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Text(
-                "${widget.shipment.driver!.user!.firstName!} ${widget.shipment.driver!.user!.lastName!}",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: AppColor.deepYellow,
+                Text(
+                  "${widget.shipment.driver!.user!.firstName!} ${widget.shipment.driver!.user!.lastName!}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColor.deepYellow,
+                    fontSize: 16,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         BlocBuilder<LocaleCubit, LocaleState>(
           builder: (context, localeState) {
             return Positioned(
               top: -20,
-              right: localeState.value.languageCode == 'en' ? 50 : null,
-              left: localeState.value.languageCode == 'en' ? null : 50,
+              right: MediaQuery.of(context).size.width * .45,
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ShipmentTaskDetailsScreen(shipment: widget.shipment),
-                    ),
-                  );
+                  changeToHidden();
                 },
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      height: 45.h,
-                      width: 45.w,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey[300]!,
-                          width: 1,
-                        ),
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(45),
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.notifications_none_outlined,
-                          color: AppColor.deepYellow,
-                          size: 40,
-                        ),
-                      ),
+                child: Container(
+                  height: 45.h,
+                  width: 45.w,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.grey[300]!,
+                      width: 1,
                     ),
-                    getunfinishedTasks(widget.shipment) > 0
-                        ? Positioned(
-                            top: -4,
-                            left: -1,
-                            child: Container(
-                              height: 25,
-                              width: 25,
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(45),
-                              ),
-                              child: Center(
-                                child: Text(
-                                    getunfinishedTasks(widget.shipment)
-                                        .toString(),
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                    )),
-                              ),
-                            ),
-                          )
-                        : const SizedBox.shrink(),
-                  ],
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(45),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.arrow_drop_down_circle_outlined,
+                      color: Colors.grey[600],
+                      size: 40,
+                    ),
+                  ),
                 ),
               ),
             );
@@ -567,106 +537,75 @@ class _ActiveShipmentDetailsScreenState
             ),
           ),
           Positioned(
-            top: -30,
-            child: Column(
-              children: [
-                Card(
-                  color: Colors.white,
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(45),
-                  ),
-                  child: Container(
-                    margin: const EdgeInsets.all(3),
-                    padding: const EdgeInsets.all(1),
-                    decoration: BoxDecoration(
-                        color: AppColor.deepYellow,
-                        borderRadius: BorderRadius.circular(45)),
-                    child: CircleAvatar(
-                      radius: 30.h,
-                      backgroundColor: Colors.white,
-                      child: Center(
-                        child: Text(
-                          "AY",
-                          style: TextStyle(
-                            fontSize: 28.sp,
+            top: -45,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Card(
+                    color: Colors.white,
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(45),
+                    ),
+                    child: Container(
+                      margin: const EdgeInsets.all(3),
+                      padding: const EdgeInsets.all(1),
+                      decoration: BoxDecoration(
+                          color: AppColor.deepYellow,
+                          borderRadius: BorderRadius.circular(45)),
+                      child: CircleAvatar(
+                        radius: 30.h,
+                        backgroundColor: Colors.white,
+                        child: Center(
+                          child: Text(
+                            "AY",
+                            style: TextStyle(
+                              fontSize: 28.sp,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                Text(
-                  "${widget.shipment.driver!.user!.firstName!} ${widget.shipment.driver!.user!.lastName!}",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: AppColor.deepYellow,
+                  Text(
+                    "${widget.shipment.driver!.user!.firstName!} ${widget.shipment.driver!.user!.lastName!}",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColor.deepYellow,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           BlocBuilder<LocaleCubit, LocaleState>(
             builder: (context, localeState) {
               return Positioned(
                 top: -20,
-                right: localeState.value.languageCode == 'en' ? 50 : null,
-                left: localeState.value.languageCode == 'en' ? null : 50,
+                right: MediaQuery.of(context).size.width * .45,
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ShipmentTaskDetailsScreen(
-                            shipment: widget.shipment),
-                      ),
-                    );
+                    changeToOpen();
                   },
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        height: 45.h,
-                        width: 45.w,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey[300]!,
-                            width: 1,
-                          ),
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(45),
-                        ),
-                        child: Center(
-                          child: Icon(
-                            Icons.notifications_none_outlined,
-                            color: AppColor.deepYellow,
-                            size: 40,
-                          ),
-                        ),
+                  child: Container(
+                    height: 45.h,
+                    width: 45.w,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey[300]!,
+                        width: 1,
                       ),
-                      getunfinishedTasks(widget.shipment) > 0
-                          ? Positioned(
-                              top: -4,
-                              left: -1,
-                              child: Container(
-                                height: 25,
-                                width: 25,
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(45),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                      getunfinishedTasks(widget.shipment)
-                                          .toString(),
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                      )),
-                                ),
-                              ),
-                            )
-                          : const SizedBox.shrink(),
-                    ],
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(45),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.arrow_circle_up_outlined,
+                        color: Colors.grey[600],
+                        size: 40,
+                      ),
+                    ),
                   ),
                 ),
               );
@@ -704,7 +643,7 @@ class _ActiveShipmentDetailsScreenState
 
   _buildCommodityWidget(List<ShipmentItems>? shipmentItems) {
     return SizedBox(
-      height: 145.h,
+      height: 125.h,
       width: MediaQuery.of(context).size.width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -736,7 +675,7 @@ class _ActiveShipmentDetailsScreenState
             height: 5,
           ),
           SizedBox(
-            height: 110.h,
+            height: 90.h,
             child: Scrollbar(
               controller: _scrollController,
               thumbVisibility: true,
@@ -749,40 +688,34 @@ class _ActiveShipmentDetailsScreenState
                   scrollDirection: Axis.horizontal,
                   itemCount: widget.shipment.shipmentItems!.length,
                   itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            "name: ${widget.shipment.shipmentItems![index].commodityName!}",
-                            style: TextStyle(
-                              fontSize: 17.sp,
+                    return Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              height: 5,
                             ),
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            "weight: ${widget.shipment.shipmentItems![index].commodityWeight!}",
-                            style: TextStyle(
-                              fontSize: 17.sp,
+                            Text(
+                              "name: ${widget.shipment.shipmentItems![index].commodityName!}",
+                              style: TextStyle(
+                                fontSize: 17.sp,
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            "package type: pallete",
-                            style: TextStyle(
-                              fontSize: 17.sp,
+                            const SizedBox(
+                              height: 5,
                             ),
-                          ),
-                          const Divider(),
-                        ],
+                            Text(
+                              "weight: ${widget.shipment.shipmentItems![index].commodityWeight!}",
+                              style: TextStyle(
+                                fontSize: 17.sp,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -797,75 +730,43 @@ class _ActiveShipmentDetailsScreenState
 
   _buildCo2Report() {
     return SizedBox(
-      height: 100.h,
+      height: 50.h,
       width: MediaQuery.of(context).size.width,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const SizedBox(
-                width: 10,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 30,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+              height: 30,
+              width: 30,
+              child: SvgPicture.asset("assets/icons/co2fingerprint.svg"),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * .35,
+              child: Text(
+                "Total kilograms of CO2: ${_report!.et}",
+                // style: const TextStyle(
+                //   color: Colors.white,
+                // ),
               ),
-              SizedBox(
-                height: 25.h,
-                width: 25.w,
-                child: SvgPicture.asset("assets/icons/co2fingerprint.svg"),
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * .35,
+              child: Text(
+                "Total energy consumption: ${_report!.gt}",
+                // style: const TextStyle(
+                //   color: Colors.white,
+                // ),
               ),
-              const SizedBox(
-                width: 5,
-              ),
-              Text(
-                "CO2 fingerprint",
-                style: TextStyle(
-                  fontSize: 17.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Row(
-            children: [
-              Text(
-                'Ew: ${_report.ew!.toString()}',
-                style: TextStyle(
-                  fontSize: 17.sp,
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              Text(
-                'Gw: ${_report.gw!.toString()}',
-                style: TextStyle(
-                  fontSize: 17.sp,
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              Text(
-                'Et: ${_report.et!.toString()}',
-                style: TextStyle(
-                  fontSize: 17.sp,
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              Text(
-                'Gt: ${_report.gt!.toString()}',
-                style: TextStyle(
-                  fontSize: 17.sp,
-                ),
-              ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/merchant/home_screen.dart';
 import 'package:camion/views/screens/owner/owner_home_screen.dart';
 import 'package:camion/views/widgets/custom_botton.dart';
+import 'package:camion/views/widgets/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -284,8 +285,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                     builder: (context, state) {
                                       if (state is AuthLoggingInProgressState) {
                                         return CustomButton(
-                                          title:
-                                              const CircularProgressIndicator(),
+                                          title: const LoadingIndicator(),
                                           onTap: () {},
                                         );
                                       } else {

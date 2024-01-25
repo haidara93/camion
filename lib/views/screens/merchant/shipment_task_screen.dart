@@ -1,14 +1,12 @@
 import 'package:camion/Localization/app_localizations.dart';
-import 'package:camion/business_logic/bloc/shipments/shipment_list_bloc.dart';
+import 'package:camion/business_logic/bloc/shipments/active_shipment_list_bloc.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/data/models/shipment_model.dart';
 import 'package:camion/helpers/color_constants.dart';
-import 'package:camion/views/screens/merchant/shipment_instruction_screen.dart';
 import 'package:camion/views/screens/merchant/shipment_task_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timelines/timelines.dart';
 
@@ -93,9 +91,10 @@ class _ShipmentTaskScreenState extends State<ShipmentTaskScreen>
                       vertical: 8.0,
                       horizontal: 10.0,
                     ),
-                    child: BlocBuilder<ShipmentListBloc, ShipmentListState>(
+                    child: BlocBuilder<ActiveShipmentListBloc,
+                        ActiveShipmentListState>(
                       builder: (context, state) {
-                        if (state is ShipmentListLoadedSuccess) {
+                        if (state is ActiveShipmentListLoadedSuccess) {
                           return state.shipments.isEmpty
                               ? Center(
                                   child: Text(AppLocalizations.of(context)!

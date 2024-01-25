@@ -1,10 +1,12 @@
 import 'package:camion/Localization/app_localizations.dart';
 import 'package:camion/business_logic/bloc/auth_bloc.dart';
 import 'package:camion/business_logic/bloc/post_bloc.dart';
+import 'package:camion/business_logic/bloc/shipments/active_shipment_list_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_list_bloc.dart';
 import 'package:camion/business_logic/cubit/bottom_nav_bar_cubit.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/data/providers/add_shippment_provider.dart';
+import 'package:camion/data/providers/task_num_provider.dart';
 import 'package:camion/data/services/fcm_service.dart';
 import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/merchant/active_shipment_screen.dart';
@@ -123,8 +125,8 @@ class _HomeScreenState extends State<HomeScreen>
         }
       case 4:
         {
-          BlocProvider.of<ShipmentListBloc>(context)
-              .add(ShipmentListLoadEvent("R"));
+          BlocProvider.of<ActiveShipmentListBloc>(context)
+              .add(ActiveShipmentListLoadEvent());
           setState(() {
             title = AppLocalizations.of(context)!.translate('tasks');
 
@@ -187,35 +189,6 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                       const Divider(
                         color: Colors.white,
-                      ),
-                      ListTile(
-                        leading: SvgPicture.asset(
-                          "assets/icons/profile.svg",
-                          height: 20.h,
-                        ),
-                        title: Text(
-                          AppLocalizations.of(context)!.translate('profile'),
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        trailing: Container(
-                          width: 35.w,
-                          height: 20.h,
-                          decoration: BoxDecoration(
-                              color: AppColor.deepYellow,
-                              borderRadius: BorderRadius.circular(2)),
-                          child: Center(
-                            child: Text(
-                              "soon",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12.sp,
-                              ),
-                            ),
-                          ),
-                        ),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -566,51 +539,110 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
                             Tab(
                               height: 66.h,
-                              icon: navigationValue == 4
-                                  ? Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
+                              icon: Consumer<TaskNumProvider>(
+                                builder: (context, value, child) {
+                                  return BlocListener<ActiveShipmentListBloc,
+                                      ActiveShipmentListState>(
+                                    listener: (context, state) {
+                                      print(state);
+                                      if (state
+                                          is ActiveShipmentListLoadedSuccess) {
+                                        var taskNum = 0;
+                                        for (var element in state.shipments) {
+                                          if (element.shipmentinstruction ==
+                                              null) {
+                                            taskNum++;
+                                          }
+                                          if (element.shipmentpayment == null) {
+                                            taskNum++;
+                                          }
+                                        }
+                                        value.setTaskNum(taskNum);
+                                      }
+                                    },
+                                    child: Stack(
                                       children: [
-                                        SvgPicture.asset(
-                                          "assets/icons/task_selected.svg",
-                                          width: 36.w,
-                                          height: 36.h,
-                                        ),
-                                        localeState.value.languageCode == 'en'
-                                            ? const SizedBox(
-                                                height: 4,
+                                        navigationValue == 4
+                                            ? Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  SvgPicture.asset(
+                                                    "assets/icons/task_selected.svg",
+                                                    width: 36.w,
+                                                    height: 36.h,
+                                                  ),
+                                                  localeState.value
+                                                              .languageCode ==
+                                                          'en'
+                                                      ? const SizedBox(
+                                                          height: 4,
+                                                        )
+                                                      : const SizedBox.shrink(),
+                                                  Text(
+                                                    AppLocalizations.of(
+                                                            context)!
+                                                        .translate('tasks'),
+                                                    style: TextStyle(
+                                                        color:
+                                                            AppColor.deepYellow,
+                                                        fontSize: 15.sp),
+                                                  )
+                                                ],
+                                              )
+                                            : Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  SvgPicture.asset(
+                                                    "assets/icons/tasks.svg",
+                                                    width: 30.w,
+                                                    height: 30.h,
+                                                  ),
+                                                  localeState.value
+                                                              .languageCode ==
+                                                          'en'
+                                                      ? const SizedBox(
+                                                          height: 4,
+                                                        )
+                                                      : const SizedBox.shrink(),
+                                                  Text(
+                                                    AppLocalizations.of(
+                                                            context)!
+                                                        .translate('tasks'),
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 15.sp),
+                                                  )
+                                                ],
+                                              ),
+                                        value.taskNum > 0
+                                            ? Positioned(
+                                                child: Container(
+                                                  height: 25,
+                                                  width: 25,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            45),
+                                                  ),
+                                                  child: Center(
+                                                    child: Text(
+                                                        value.taskNum
+                                                            .toString(),
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                        )),
+                                                  ),
+                                                ),
                                               )
                                             : const SizedBox.shrink(),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .translate('tasks'),
-                                          style: TextStyle(
-                                              color: AppColor.deepYellow,
-                                              fontSize: 15.sp),
-                                        )
-                                      ],
-                                    )
-                                  : Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        SvgPicture.asset(
-                                          "assets/icons/tasks.svg",
-                                          width: 30.w,
-                                          height: 30.h,
-                                        ),
-                                        localeState.value.languageCode == 'en'
-                                            ? const SizedBox(
-                                                height: 4,
-                                              )
-                                            : const SizedBox.shrink(),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .translate('tasks'),
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 15.sp),
-                                        )
                                       ],
                                     ),
+                                  );
+                                },
+                              ),
                             ),
                           ],
                         ),

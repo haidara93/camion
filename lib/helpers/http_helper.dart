@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 const DOMAIN = 'https://matjari.app/';
 
-const LOGIN_ENDPOINT = '${DOMAIN}auth/jwt/create/';
+const LOGIN_ENDPOINT = '${DOMAIN}camionauth/jwt/create/';
 const USERS_ENDPOINT = '${DOMAIN}auth/users/';
 const PROFILE_ENDPOINT = '${DOMAIN}auth/users/me';
 const POSTS_ENDPOINT = '${DOMAIN}camion/posts/';

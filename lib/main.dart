@@ -8,6 +8,7 @@ import 'package:camion/business_logic/bloc/notification_bloc.dart';
 import 'package:camion/business_logic/bloc/order_truck_bloc.dart';
 import 'package:camion/business_logic/bloc/package_type_bloc.dart';
 import 'package:camion/business_logic/bloc/post_bloc.dart';
+import 'package:camion/business_logic/bloc/shipments/active_shipment_list_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_list_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shippment_create_bloc.dart';
 import 'package:camion/business_logic/bloc/truck/truck_details_bloc.dart';
@@ -21,6 +22,7 @@ import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/data/providers/active_shipment_provider.dart';
 import 'package:camion/data/providers/add_shippment_provider.dart';
 import 'package:camion/data/providers/notification_provider.dart';
+import 'package:camion/data/providers/task_num_provider.dart';
 import 'package:camion/data/repositories/auth_repository.dart';
 import 'package:camion/data/repositories/notification_repository.dart';
 import 'package:camion/data/repositories/post_repository.dart';
@@ -177,6 +179,12 @@ class MyApp extends StatelessWidget {
                             RepositoryProvider.of<ShippmentRerository>(
                                 context)),
                   ),
+                  BlocProvider(
+                    create: (context) => ActiveShipmentListBloc(
+                        shippmentRerository:
+                            RepositoryProvider.of<ShippmentRerository>(
+                                context)),
+                  ),
                   BlocProvider(create: (context) => BottomNavBarCubit()),
                   BlocProvider(
                       create: (context) =>
@@ -185,6 +193,7 @@ class MyApp extends StatelessWidget {
                 ],
                 child: MultiProvider(
                   providers: [
+                    ChangeNotifierProvider(create: (_) => TaskNumProvider()),
                     ChangeNotifierProvider(
                         create: (_) => NotificationProvider()),
                     ChangeNotifierProvider(

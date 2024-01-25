@@ -43,7 +43,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                               },
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
-                                    vertical: 13.h, horizontal: 10.w),
+                                    vertical: 15.h, horizontal: 15.w),
                                 child: SizedBox(
                                   // margin:
                                   //     EdgeInsets.symmetric(vertical: 13.h, horizontal: 3.w),
@@ -67,7 +67,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                               },
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
-                                    vertical: 13.h, horizontal: 10.w),
+                                    vertical: 15.h, horizontal: 15.w),
                                 child: SizedBox(
                                   height: 35.h,
                                   width: 35.w,
@@ -84,74 +84,81 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       SizedBox(
                         width: 2.w,
                       ),
-                      Consumer<NotificationProvider>(
-                          builder: (context, notificationProvider, child) {
-                        return BlocListener<NotificationBloc,
-                            NotificationState>(
-                          listener: (context, state) {
-                            if (state is NotificationLoadedSuccess) {
-                              notificationProvider
-                                  .initNotifications(state.notifications);
-                            }
-                          },
-                          child: InkWell(
-                            // borderRadius: BorderRadius.circular(45),
-                            onTap: () {
-                              notificationProvider.clearNotReadedNotification();
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => NotificationScreen(),
-                                  ));
-                              // scaffoldKey.currentState!.openDrawer();
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 13.h, horizontal: 10.w),
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  SizedBox(
-                                    height: 35.h,
-                                    width: 35.h,
-                                    child: Center(
-                                      child: SvgPicture.asset(
-                                          "assets/icons/notification.svg"),
+                      scaffoldKey == null
+                          ? const SizedBox.shrink()
+                          : Consumer<NotificationProvider>(
+                              builder: (context, notificationProvider, child) {
+                              return BlocListener<NotificationBloc,
+                                  NotificationState>(
+                                listener: (context, state) {
+                                  if (state is NotificationLoadedSuccess) {
+                                    notificationProvider
+                                        .initNotifications(state.notifications);
+                                  }
+                                },
+                                child: InkWell(
+                                  // borderRadius: BorderRadius.circular(45),
+                                  onTap: () {
+                                    notificationProvider
+                                        .clearNotReadedNotification();
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              NotificationScreen(),
+                                        ));
+                                    // scaffoldKey.currentState!.openDrawer();
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 13.h, horizontal: 10.w),
+                                    child: Stack(
+                                      clipBehavior: Clip.none,
+                                      children: [
+                                        SizedBox(
+                                          height: 35.h,
+                                          width: 35.h,
+                                          child: Center(
+                                            child: SvgPicture.asset(
+                                                "assets/icons/notification.svg"),
+                                          ),
+                                        ),
+                                        notificationProvider
+                                                    .notreadednotifications !=
+                                                0
+                                            ? Positioned(
+                                                right: -7.w,
+                                                top: -10.h,
+                                                child: Container(
+                                                  height: 20.h,
+                                                  width: 20.h,
+                                                  decoration: BoxDecoration(
+                                                    // color: AppColor.goldenYellow,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            45),
+                                                  ),
+                                                  child: Center(
+                                                    child: Text(
+                                                      notificationProvider
+                                                          .notreadednotifications
+                                                          .toString(),
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            : const SizedBox.shrink()
+                                      ],
                                     ),
                                   ),
-                                  notificationProvider.notreadednotifications !=
-                                          0
-                                      ? Positioned(
-                                          right: -7.w,
-                                          top: -10.h,
-                                          child: Container(
-                                            height: 20.h,
-                                            width: 20.h,
-                                            decoration: BoxDecoration(
-                                              // color: AppColor.goldenYellow,
-                                              borderRadius:
-                                                  BorderRadius.circular(45),
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                notificationProvider
-                                                    .notreadednotifications
-                                                    .toString(),
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      : const SizedBox.shrink()
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
+                                ),
+                              );
+                            }),
                     ],
                   ),
                   SizedBox(

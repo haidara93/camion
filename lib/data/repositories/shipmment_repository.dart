@@ -115,7 +115,7 @@ class ShippmentRerository {
     }
   }
 
-  Future<int?> createShipmentInstruction(ShipmentInstruction shipment) async {
+  Future<int?> createShipmentInstruction(Shipmentinstruction shipment) async {
     prefs = await SharedPreferences.getInstance();
     var token = prefs.getString("token");
     var request = http.MultipartRequest(
@@ -164,10 +164,12 @@ class ShippmentRerository {
       HttpHeaders.authorizationHeader: "JWT $token",
       HttpHeaders.contentTypeHeader: "multipart/form-data"
     });
+    request.fields['shipment'] = shipment.shipment!.toString();
 
     request.fields['amount'] = shipment.amount!.toString();
     request.fields['fees'] = shipment.fees!.toString();
     request.fields['extra_fees'] = shipment.extraFees!.toString();
+    request.fields['payment_method'] = shipment.paymentMethod!.toString();
 
     var response = await request.send();
     if (response.statusCode == 201) {

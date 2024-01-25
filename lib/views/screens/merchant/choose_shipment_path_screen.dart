@@ -8,6 +8,7 @@ import 'package:camion/data/providers/add_shippment_provider.dart';
 import 'package:camion/data/services/places_service.dart';
 import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/merchant/add_shippment_pickup_map.dart';
+import 'package:camion/views/widgets/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -265,7 +266,7 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
                             return Container(
                               color: Colors.white,
                               child: const Center(
-                                child: CircularProgressIndicator(),
+                                child: LoadingIndicator(),
                               ),
                             );
                           },
@@ -366,7 +367,7 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
                                   SizedBox(
                                     height: 45,
                                     width: 45,
-                                    child: CircularProgressIndicator(),
+                                    child: LoadingIndicator(),
                                   ),
                                 ],
                               ),
@@ -462,7 +463,7 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
                                   return Container(
                                     color: Colors.white,
                                     child: const Center(
-                                      child: CircularProgressIndicator(),
+                                      child: LoadingIndicator(),
                                     ),
                                   );
                                 },
@@ -569,7 +570,7 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
                                         SizedBox(
                                           height: 25,
                                           width: 25,
-                                          child: CircularProgressIndicator(),
+                                          child: LoadingIndicator(),
                                         ),
                                       ],
                                     ),

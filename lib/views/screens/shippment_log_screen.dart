@@ -94,19 +94,6 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                         const EdgeInsets.symmetric(horizontal: 7, vertical: 7),
                     child: TabBar(
                       controller: _tabController,
-                      // give the indicator a decoration (color and border radius)
-
-                      // indicator: BoxDecoration(
-                      //   borderRadius: BorderRadius.circular(
-                      //     25.0,
-                      //   ),
-
-                      //   // color: AppColor.activeGreen,
-                      // ),
-
-                      // labelColor: AppColor.deepBlack,
-                      // unselectedLabelColor: Colors.black,
-                      // splashBorderRadius: BorderRadius.circular(25),
                       onTap: (value) {
                         switch (value) {
                           case 0:
@@ -117,10 +104,6 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                             BlocProvider.of<ShipmentListBloc>(context)
                                 .add(ShipmentListLoadEvent("C"));
                             break;
-                          // case 2:
-                          //   BlocProvider.of<ShipmentListBloc>(context)
-                          //       .add(ShipmentListLoadEvent("C"));
-                          //   break;
                           default:
                         }
                         setState(() {
@@ -131,35 +114,12 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                         // first tab [you can add an icon using the icon property]
                         Tab(
                           child: Container(
-                            // decoration: BoxDecoration(
-                            //     color: tabIndex == 0
-                            //         ? AppColor.goldenYellow
-                            //         : null,
-                            //     borderRadius: BorderRadius.circular(
-                            //       25.0,
-                            //     ),
-                            //     border: tabIndex != 0
-                            //         ? Border.all(
-                            //             color: AppColor.goldenYellow,
-                            //             width: 2,
-                            //           )
-                            //         : null
-                            //     // color: AppColor.activeGreen,
-                            //     ),
                             child: Center(
                                 child: Text(AppLocalizations.of(context)!
                                     .translate('pending'))),
                           ),
                         ),
 
-                        // second tab [you can add an icon using the icon property]
-                        // Tab(
-                        //   child: Container(
-                        //     child: Center(
-                        //         child: Text(AppLocalizations.of(context)!
-                        //             .translate('running'))),
-                        //   ),
-                        // ),
                         Tab(
                           child: Container(
                             child: Center(
@@ -272,7 +232,7 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                                                             context)
                                                                         .size
                                                                         .width *
-                                                                    .2,
+                                                                    .18,
                                                                 child:
                                                                     TimelineNode(
                                                                   indicator: DotIndicator(
@@ -300,7 +260,7 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                                                             context)
                                                                         .size
                                                                         .width *
-                                                                    .2,
+                                                                    .18,
                                                                 child: DashedLineConnector(
                                                                     color: AppColor
                                                                         .deepYellow),

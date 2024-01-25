@@ -20,6 +20,7 @@ import 'package:camion/views/screens/merchant/add_shippment_pickup_map.dart';
 import 'package:camion/views/screens/merchant/choose_shipment_path_screen.dart';
 import 'package:camion/views/screens/select_truck_screen.dart';
 import 'package:camion/views/widgets/custom_botton.dart';
+import 'package:camion/views/widgets/loading_indicator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -75,6 +76,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
   bool pathError = false;
   bool dateError = false;
   bool co2Loading = false;
+  bool co2error = false;
 
   var key1 = GlobalKey();
   var key2 = GlobalKey();
@@ -153,9 +155,15 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                       BlocProvider.of<BottomNavBarCubit>(context).emitShow();
                     },
                     onEditingComplete: () {
-                      // evaluatePrice();
+                      if (evaluateCo2()) {
+                        calculateCo2Report();
+                      }
                     },
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      if (evaluateCo2()) {
+                        calculateCo2Report();
+                      }
+                    },
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -168,6 +176,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                       commodityName_controller.text = newValue!;
                     },
                     onFieldSubmitted: (value) {
+                      if (evaluateCo2()) {
+                        calculateCo2Report();
+                      }
                       FocusManager.instance.primaryFocus?.unfocus();
                       BlocProvider.of<BottomNavBarCubit>(context).emitShow();
                     },
@@ -204,9 +215,15 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                       BlocProvider.of<BottomNavBarCubit>(context).emitShow();
                     },
                     onEditingComplete: () {
-                      // evaluatePrice();
+                      if (evaluateCo2()) {
+                        calculateCo2Report();
+                      }
                     },
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      if (evaluateCo2()) {
+                        calculateCo2Report();
+                      }
+                    },
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -219,6 +236,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                       commodityWeight_controller.text = newValue!;
                     },
                     onFieldSubmitted: (value) {
+                      if (evaluateCo2()) {
+                        calculateCo2Report();
+                      }
                       FocusManager.instance.primaryFocus?.unfocus();
                       BlocProvider.of<BottomNavBarCubit>(context).emitShow();
                     },
@@ -291,9 +311,16 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                   ),
                   onTapOutside: (event) {},
                   onEditingComplete: () {
+                    if (evaluateCo2()) {
+                      calculateCo2Report();
+                    }
                     // evaluatePrice();
                   },
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    if (evaluateCo2()) {
+                      calculateCo2Report();
+                    }
+                  },
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -306,6 +333,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                     commodityName_controller.text = newValue!;
                   },
                   onFieldSubmitted: (value) {
+                    if (evaluateCo2()) {
+                      calculateCo2Report();
+                    }
                     FocusManager.instance.primaryFocus?.unfocus();
                     BlocProvider.of<BottomNavBarCubit>(context).emitShow();
                   },
@@ -341,9 +371,15 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                   ),
                   onTapOutside: (event) {},
                   onEditingComplete: () {
-                    // evaluatePrice();
+                    if (evaluateCo2()) {
+                      calculateCo2Report();
+                    }
                   },
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    if (evaluateCo2()) {
+                      calculateCo2Report();
+                    }
+                  },
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -356,6 +392,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                     commodityWeight_controller.text = newValue!;
                   },
                   onFieldSubmitted: (value) {
+                    if (evaluateCo2()) {
+                      calculateCo2Report();
+                    }
                     FocusManager.instance.primaryFocus?.unfocus();
                     BlocProvider.of<BottomNavBarCubit>(context).emitShow();
                   },
@@ -483,6 +522,25 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
     );
   }
 
+  bool evaluateCo2() {
+    for (var element in commodityName_controllers) {
+      if (element.text.isEmpty) {
+        return false;
+      }
+    }
+    for (var element in commodityWeight_controllers) {
+      if (element.text.isEmpty) {
+        return false;
+      }
+    }
+    if (addShippmentProvider!.delivery_location_name.isNotEmpty &&
+        addShippmentProvider!.pickup_location_name.isNotEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LocaleCubit, LocaleState>(
@@ -502,7 +560,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 4),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -511,34 +570,56 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                             ),
                             EnsureVisibleWhenFocused(
                               focusNode: _commodity_node,
-                              child: Container(
-                                key: key1,
-                                child: Form(
-                                  key: _addShipmentformKey,
-                                  child: ListView(
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    children: _children,
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Container(
+                                    key: key1,
+                                    child: Form(
+                                      key: _addShipmentformKey,
+                                      child: ListView(
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        children: _children,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: _add,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Icon(
-                                  Icons.add_circle_outline,
-                                  color: AppColor.deepYellow,
-                                ),
+                                  Positioned(
+                                    bottom: -15,
+                                    child: GestureDetector(
+                                      onTap: _add,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(45),
+                                          border: Border.all(
+                                            color: Colors.grey[400]!,
+                                            width: 2,
+                                          ),
+                                        ),
+                                        padding: const EdgeInsets.all(1.0),
+                                        child: Icon(
+                                          Icons.add_circle_outline,
+                                          color: AppColor.deepYellow,
+                                          size: 25,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
+                      const SizedBox(
+                        height: 7,
+                      ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 2.5),
                         child: EnsureVisibleWhenFocused(
                           focusNode: _truck_node,
                           child: Card(
@@ -615,16 +696,6 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                               .id!;
                                                           previousIndex = index;
                                                         });
-                                                        // setSelectedPanel(3);
-                                                        // orderBrokerProvider
-                                                        //     .setPackageError(
-                                                        //         false);
-                                                        // orderBrokerProvider
-                                                        //     .setpackageTypeId(
-                                                        //         state
-                                                        //             .packageTypes[
-                                                        //                 index]
-                                                        //             .id!);
                                                       },
                                                       child: Stack(
                                                         clipBehavior: Clip.none,
@@ -647,7 +718,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                                     ? AppColor
                                                                         .deepYellow
                                                                     : AppColor
-                                                                        .deepBlack,
+                                                                        .darkGrey,
                                                                 width: 2.w,
                                                               ),
                                                             ),
@@ -751,6 +822,16 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                                               trucknum[index]++;
                                                                               truckNumControllers[index].text = trucknum[index].toString();
                                                                             });
+                                                                          } else {
+                                                                            setState(() {
+                                                                              truckError = false;
+                                                                              truckNumControllers[previousIndex].text = "";
+                                                                              trucknum[previousIndex] = 0;
+                                                                              truckNumControllers[index].text = "1";
+                                                                              trucknum[index] = 1;
+                                                                              truckType = state.truckTypes[index].id!;
+                                                                              previousIndex = index;
+                                                                            });
                                                                           }
                                                                         },
                                                                         child:
@@ -776,7 +857,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                                       ),
                                                                       SizedBox(
                                                                         width:
-                                                                            50.w,
+                                                                            70.w,
                                                                         height:
                                                                             55.h,
                                                                         child:
@@ -787,6 +868,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                                           //     _nodeTabaleh,
                                                                           enabled:
                                                                               false,
+
                                                                           textAlign:
                                                                               TextAlign.center,
                                                                           style:
@@ -806,6 +888,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                                                 "",
                                                                             alignLabelWithHint:
                                                                                 true,
+                                                                            contentPadding:
+                                                                                EdgeInsets.zero,
                                                                           ),
                                                                           scrollPadding:
                                                                               EdgeInsets.only(
@@ -971,7 +1055,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 2.5),
                         child: Card(
                           color: Colors.white,
                           child: Padding(
@@ -1017,7 +1102,16 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                 .viewInsets
                                                 .bottom +
                                             150),
+                                    onTapOutside: (event) {
+                                      BlocProvider.of<BottomNavBarCubit>(
+                                              context)
+                                          .emitShow();
+                                    },
                                     onTap: () {
+                                      BlocProvider.of<BottomNavBarCubit>(
+                                              context)
+                                          .emitHide();
+
                                       shippmentProvider
                                               .pickup_controller!.selection =
                                           TextSelection(
@@ -1069,6 +1163,10 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                     onSubmitted: (value) {
                                       // BlocProvider.of<StopScrollCubit>(context)
                                       //     .emitEnable();
+                                      BlocProvider.of<BottomNavBarCubit>(
+                                              context)
+                                          .emitShow();
+
                                       FocusManager.instance.primaryFocus
                                           ?.unfocus();
                                     },
@@ -1077,7 +1175,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                     return Container(
                                       color: Colors.white,
                                       child: const Center(
-                                        child: CircularProgressIndicator(),
+                                        child: LoadingIndicator(),
                                       ),
                                     );
                                   },
@@ -1145,10 +1243,12 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                       shippmentProvider!.pickup_controller!
                                           .text = suggestion.description;
                                     });
-                                    if (addShippmentProvider!
-                                        .delivery_location_name.isNotEmpty) {
+                                    if (evaluateCo2()) {
                                       calculateCo2Report();
                                     }
+                                    BlocProvider.of<BottomNavBarCubit>(context)
+                                        .emitShow();
+
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
                                   },
@@ -1193,8 +1293,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                             SizedBox(
                                               height: 25,
                                               width: 25,
-                                              child:
-                                                  CircularProgressIndicator(),
+                                              child: LoadingIndicator(),
                                             ),
                                           ],
                                         ),
@@ -1234,7 +1333,16 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                       .viewInsets
                                                       .bottom +
                                                   150),
+                                          onTapOutside: (event) {
+                                            BlocProvider.of<BottomNavBarCubit>(
+                                                    context)
+                                                .emitShow();
+                                          },
                                           onTap: () {
+                                            BlocProvider.of<BottomNavBarCubit>(
+                                                    context)
+                                                .emitHide();
+
                                             shippmentProvider!
                                                     .delivery_controller!
                                                     .selection =
@@ -1290,6 +1398,10 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                           onSubmitted: (value) {
                                             // BlocProvider.of<StopScrollCubit>(context)
                                             //     .emitEnable();
+                                            BlocProvider.of<BottomNavBarCubit>(
+                                                    context)
+                                                .emitShow();
+
                                             FocusManager.instance.primaryFocus
                                                 ?.unfocus();
                                           },
@@ -1298,8 +1410,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                           return Container(
                                             color: Colors.white,
                                             child: const Center(
-                                              child:
-                                                  CircularProgressIndicator(),
+                                              child: LoadingIndicator(),
                                             ),
                                           );
                                         },
@@ -1375,6 +1486,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                 .text = suggestion.description;
                                           });
                                           calculateCo2Report();
+                                          BlocProvider.of<BottomNavBarCubit>(
+                                                  context)
+                                              .emitShow();
 
                                           FocusManager.instance.primaryFocus
                                               ?.unfocus();
@@ -1422,8 +1536,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                   SizedBox(
                                                     height: 25,
                                                     width: 25,
-                                                    child:
-                                                        CircularProgressIndicator(),
+                                                    child: LoadingIndicator(),
                                                   ),
                                                 ],
                                               ),
@@ -1583,6 +1696,13 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                         ),
                       ),
                       Visibility(
+                        visible: co2error,
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text("please complete shipment load info"),
+                        ),
+                      ),
+                      Visibility(
                         visible: shippmentProvider
                                 .delivery_location_name.isNotEmpty &&
                             shippmentProvider.co2report != null,
@@ -1596,7 +1716,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                             : shipmentStatistics(),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 2.5),
                         child: Card(
                           color: Colors.white,
                           child: Padding(
@@ -1700,7 +1821,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 2.5),
                         child: BlocConsumer<ShippmentCreateBloc,
                             ShippmentCreateState>(
                           listener: (context, state) {
@@ -1728,7 +1850,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                           builder: (context, state) {
                             if (state is ShippmentLoadingProgressState) {
                               return CustomButton(
-                                title: const CircularProgressIndicator(),
+                                title: const LoadingIndicator(),
                                 onTap: () {},
                               );
                             } else {
@@ -1858,6 +1980,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                           },
                         ),
                       ),
+                      SizedBox(
+                        height: 7.h,
+                      ),
                     ],
                   );
                 },
@@ -1886,69 +2011,12 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          height: 30,
-                          width: 30,
-                          child: SvgPicture.asset(
-                              "assets/icons/co2fingerprint.svg"),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * .18,
-                          child: Text(
-                            "Ew: ${addShippmentProvider!.co2report!.ew}",
-                            style: const TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * .18,
-                          child: Text(
-                            "Gw: ${addShippmentProvider!.co2report!.gw}",
-                            style: const TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * .18,
-                          child: Text(
-                            "Et: ${addShippmentProvider!.co2report!.et}",
-                            style: const TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * .18,
-                          child: Text(
-                            "Gt: ${addShippmentProvider!.co2report!.gt}",
-                            style: const TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Divider(
-                    color: AppColor.lightGrey,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         SizedBox(
                           height: 30,
                           width: 30,
-                          child:
-                              SvgPicture.asset("assets/icons/time_report.svg"),
+                          child: SvgPicture.asset("assets/icons/time.svg"),
                         ),
                         const SizedBox(
                           width: 5,
@@ -1966,6 +2034,17 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                             ),
                           ),
                         ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        SizedBox(
+                          height: 30,
+                          width: 30,
+                          child: SvgPicture.asset("assets/icons/distance.svg"),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
                         SizedBox(
                           width: MediaQuery.of(context).size.width * .2,
                           child: Text(
@@ -1978,11 +2057,49 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                       ],
                     ),
                   ),
+                  Divider(
+                    color: AppColor.lightGrey,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                          height: 30,
+                          width: 30,
+                          child: SvgPicture.asset(
+                              "assets/icons/co2fingerprint.svg"),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * .35,
+                          child: Text(
+                            "Total kilograms of CO2: ${addShippmentProvider!.co2report!.et}",
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * .35,
+                          child: Text(
+                            "Total energy consumption: ${addShippmentProvider!.co2report!.gt}",
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   void calculateCo2Report() {

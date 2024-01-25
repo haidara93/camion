@@ -1,11 +1,12 @@
+import 'package:camion/data/models/instruction_model.dart';
 import 'package:camion/data/models/truck_type_model.dart';
 import 'package:camion/data/models/user_model.dart';
 
 class Shipment {
   int? id;
   int? merchant;
-  int? shipmentinstruction;
-  int? shipmentpayment;
+  Shipmentinstruction? shipmentinstruction;
+  ShipmentPayment? shipmentpayment;
   Driver? driver;
   String? shipmentStatus;
   int? totalWeight;
@@ -44,8 +45,14 @@ class Shipment {
   Shipment.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     merchant = json['merchant'];
-    shipmentinstruction = json['shipmentinstruction'];
-    shipmentpayment = json['shipmentpayment'];
+    print('shipmentinstruction');
+    print(json['shipmentinstruction']);
+    shipmentinstruction = json['shipmentinstruction'] != null
+        ? Shipmentinstruction.fromJson(json['shipmentinstruction'])
+        : null;
+    shipmentpayment = json['shipmentpayment'] != null
+        ? ShipmentPayment.fromJson(json['shipmentpayment'])
+        : null;
     driver = json['driver'] != null ? Driver.fromJson(json['driver']) : null;
     shipmentStatus = json['shipment_status'];
     totalWeight = json['total_weight'];

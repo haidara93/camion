@@ -10,6 +10,7 @@ import 'package:camion/helpers/http_helper.dart';
 import 'package:camion/views/screens/control_view.dart';
 import 'package:camion/views/widgets/custom_app_bar.dart';
 import 'package:camion/views/widgets/custom_botton.dart';
+import 'package:camion/views/widgets/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -291,7 +292,7 @@ class _TruckDetailsScreenState extends State<TruckDetailsScreen> {
                                 builder: (context, state) {
                                   if (state is OrderTruckLoadingProgressState) {
                                     return CustomButton(
-                                      title: const CircularProgressIndicator(),
+                                      title: const LoadingIndicator(),
                                       onTap: () {},
                                     );
                                   } else {
