@@ -1,3 +1,4 @@
+import 'package:camion/Localization/app_localizations.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/constants/enums.dart';
 import 'package:camion/data/models/co2_report.dart';
@@ -153,7 +154,7 @@ class _ActiveShipmentDetailsScreenState
     return SafeArea(
       child: Scaffold(
         appBar: CustomAppBar(
-          title: "shipment details",
+          title: AppLocalizations.of(context)!.translate('shipment_details'),
         ),
         body: StreamBuilder(
           stream: FirebaseFirestore.instance.collection('location').snapshots(),
@@ -301,7 +302,7 @@ class _ActiveShipmentDetailsScreenState
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "truck type: ${widget.shipment.truckType!.name!}",
+                            "${AppLocalizations.of(context)!.translate('truck_type')}: ${widget.shipment.truckType!.name!}",
                             style: TextStyle(
                               fontSize: 19.sp,
                               fontWeight: FontWeight.bold,
@@ -506,7 +507,7 @@ class _ActiveShipmentDetailsScreenState
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            "truck type: ${widget.shipment.truckType!.name!}",
+                            "${AppLocalizations.of(context)!.translate('truck_type')}: ${widget.shipment.truckType!.name!}",
                             style: TextStyle(
                               fontSize: 19.sp,
                               fontWeight: FontWeight.bold,
@@ -516,7 +517,7 @@ class _ActiveShipmentDetailsScreenState
                             height: 5,
                           ),
                           Text(
-                            "commodity name: ${widget.shipment.shipmentItems![0].commodityName!}",
+                            "${AppLocalizations.of(context)!.translate('commodity_name')}: ${widget.shipment.shipmentItems![0].commodityName!}",
                             style: TextStyle(
                               fontSize: 18.sp,
                             ),
@@ -643,7 +644,7 @@ class _ActiveShipmentDetailsScreenState
 
   _buildCommodityWidget(List<ShipmentItems>? shipmentItems) {
     return SizedBox(
-      height: 125.h,
+      height: 135.h,
       width: MediaQuery.of(context).size.width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -663,7 +664,7 @@ class _ActiveShipmentDetailsScreenState
                 width: 5,
               ),
               Text(
-                "items info",
+                AppLocalizations.of(context)!.translate('items_info'),
                 style: TextStyle(
                   fontSize: 17.sp,
                   fontWeight: FontWeight.bold,
@@ -675,7 +676,7 @@ class _ActiveShipmentDetailsScreenState
             height: 5,
           ),
           SizedBox(
-            height: 90.h,
+            height: 95.h,
             child: Scrollbar(
               controller: _scrollController,
               thumbVisibility: true,
@@ -689,6 +690,7 @@ class _ActiveShipmentDetailsScreenState
                   itemCount: widget.shipment.shipmentItems!.length,
                   itemBuilder: (context, index) {
                     return Card(
+                      elevation: 2,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5)),
                       child: Padding(
@@ -700,7 +702,7 @@ class _ActiveShipmentDetailsScreenState
                               height: 5,
                             ),
                             Text(
-                              "name: ${widget.shipment.shipmentItems![index].commodityName!}",
+                              "${AppLocalizations.of(context)!.translate('commodity_name')}: ${widget.shipment.shipmentItems![index].commodityName!}",
                               style: TextStyle(
                                 fontSize: 17.sp,
                               ),
@@ -709,7 +711,7 @@ class _ActiveShipmentDetailsScreenState
                               height: 5,
                             ),
                             Text(
-                              "weight: ${widget.shipment.shipmentItems![index].commodityWeight!}",
+                              "${AppLocalizations.of(context)!.translate('commodity_weight')}: ${widget.shipment.shipmentItems![index].commodityWeight!}",
                               style: TextStyle(
                                 fontSize: 17.sp,
                               ),
@@ -750,7 +752,7 @@ class _ActiveShipmentDetailsScreenState
             SizedBox(
               width: MediaQuery.of(context).size.width * .35,
               child: Text(
-                "Total kilograms of CO2: ${_report!.et}",
+                "${AppLocalizations.of(context)!.translate('total_co2')}: ${_report!.et}",
                 // style: const TextStyle(
                 //   color: Colors.white,
                 // ),
@@ -759,7 +761,7 @@ class _ActiveShipmentDetailsScreenState
             SizedBox(
               width: MediaQuery.of(context).size.width * .35,
               child: Text(
-                "Total energy consumption: ${_report!.gt}",
+                "${AppLocalizations.of(context)!.translate('energy_consumption')}: ${_report!.gt}",
                 // style: const TextStyle(
                 //   color: Colors.white,
                 // ),

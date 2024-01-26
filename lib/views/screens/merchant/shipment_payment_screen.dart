@@ -142,7 +142,6 @@ class _ShipmentPaymentScreenState extends State<ShipmentPaymentScreen> {
                                       SizedBox(
                                         height: 7.h,
                                       ),
-
                                       SizedBox(
                                         height: 70.h,
                                         child: Row(
@@ -221,26 +220,6 @@ class _ShipmentPaymentScreenState extends State<ShipmentPaymentScreen> {
                                       SizedBox(
                                         height: 7.h,
                                       ),
-                                      Text(
-                                        '${AppLocalizations.of(context)!.translate('commodity_type')}: ${widget.shipment.shipmentItems![0].commodityName!}',
-                                        style: TextStyle(
-                                          // color: AppColor.lightBlue,
-                                          fontSize: 17.sp,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 7.h,
-                                      ),
-                                      Text(
-                                        '${AppLocalizations.of(context)!.translate('commodity_weight')}: ${widget.shipment.shipmentItems![0].commodityWeight!}',
-                                        style: TextStyle(
-                                          // color: AppColor.lightBlue,
-                                          fontSize: 17.sp,
-                                        ),
-                                      ),
-
-                                      // // Text(
-                                      //     'نوع البضاعة: ${state.offers[index].product!.label!}'),
                                     ],
                                   ),
                                 ],
@@ -268,7 +247,8 @@ class _ShipmentPaymentScreenState extends State<ShipmentPaymentScreen> {
                                     width: double.infinity,
                                   ),
                                   Text(
-                                    'operation cost',
+                                    AppLocalizations.of(context)!
+                                        .translate('operation_cost'),
                                     style: TextStyle(
                                         // color: AppColor.lightBlue,
                                         fontSize: 18.sp,
@@ -278,7 +258,7 @@ class _ShipmentPaymentScreenState extends State<ShipmentPaymentScreen> {
                                     height: 7.h,
                                   ),
                                   Text(
-                                    'price: ${state.truck.price!}',
+                                    '${AppLocalizations.of(context)!.translate('price')}: ${state.truck.price!}',
                                     style: TextStyle(
                                       // color: AppColor.lightBlue,
                                       fontSize: 17.sp,
@@ -288,7 +268,7 @@ class _ShipmentPaymentScreenState extends State<ShipmentPaymentScreen> {
                                     height: 7.h,
                                   ),
                                   Text(
-                                    'extra fees: ${state.truck.fees!}',
+                                    '${AppLocalizations.of(context)!.translate('extra_fees')}: ${state.truck.fees!}',
                                     style: TextStyle(
                                       // color: AppColor.lightBlue,
                                       fontSize: 17.sp,
@@ -296,6 +276,55 @@ class _ShipmentPaymentScreenState extends State<ShipmentPaymentScreen> {
                                   ),
                                   SizedBox(
                                     height: 7.h,
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        widget.shipment.shipmentpayment != null,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(
+                                          width: double.infinity,
+                                        ),
+                                        Divider(
+                                          height: 7.h,
+                                        ),
+                                        Text(
+                                          '${AppLocalizations.of(context)!.translate('total_amount')}: ${(widget.shipment.shipmentpayment!.amount! + widget.shipment.shipmentpayment!.fees! + widget.shipment.shipmentpayment!.extraFees!)}',
+                                          style: TextStyle(
+                                            // color: AppColor.lightBlue,
+                                            fontSize: 17.sp,
+                                          ),
+                                        ),
+                                        Divider(
+                                          height: 7.h,
+                                        ),
+                                        Text(
+                                          '${AppLocalizations.of(context)!.translate('payment_date')}: ${setLoadDate(widget.shipment.shipmentpayment!.created_date!)}',
+                                          style: TextStyle(
+                                            // color: AppColor.lightBlue,
+                                            fontSize: 17.sp,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 7.h,
+                                        ),
+                                        Divider(
+                                          height: 7.h,
+                                        ),
+                                        Text(
+                                          '${AppLocalizations.of(context)!.translate('payment_method')}: VISA Card',
+                                          style: TextStyle(
+                                            // color: AppColor.lightBlue,
+                                            fontSize: 17.sp,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 7.h,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -310,7 +339,8 @@ class _ShipmentPaymentScreenState extends State<ShipmentPaymentScreen> {
                                   child: CustomButton(
                                     title: _loading
                                         ? const LoadingIndicator()
-                                        : const Text("Pay Now"),
+                                        : Text(AppLocalizations.of(context)!
+                                            .translate('pay_now')),
                                     onTap: () async {
                                       setState(() {
                                         _loading = true;
@@ -390,71 +420,7 @@ class _ShipmentPaymentScreenState extends State<ShipmentPaymentScreen> {
                                     },
                                   ),
                                 )
-                              : Column(
-                                  children: [
-                                    SizedBox(
-                                      height: 5.h,
-                                    ),
-                                    Card(
-                                      elevation: 1,
-                                      clipBehavior: Clip.antiAlias,
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(10),
-                                        ),
-                                      ),
-                                      color: Colors.white,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const SizedBox(
-                                              width: double.infinity,
-                                            ),
-                                            SizedBox(
-                                              height: 7.h,
-                                            ),
-                                            Text(
-                                              'total amount: ${(widget.shipment.shipmentpayment!.amount! + widget.shipment.shipmentpayment!.fees! + widget.shipment.shipmentpayment!.extraFees!)}',
-                                              style: TextStyle(
-                                                // color: AppColor.lightBlue,
-                                                fontSize: 17.sp,
-                                              ),
-                                            ),
-                                            Divider(
-                                              height: 7.h,
-                                            ),
-                                            Text(
-                                              'payment date: ${setLoadDate(widget.shipment.shipmentpayment!.created_date!)}',
-                                              style: TextStyle(
-                                                // color: AppColor.lightBlue,
-                                                fontSize: 17.sp,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 7.h,
-                                            ),
-                                            Divider(
-                                              height: 7.h,
-                                            ),
-                                            Text(
-                                              'payment method: VISA Card',
-                                              style: TextStyle(
-                                                // color: AppColor.lightBlue,
-                                                fontSize: 17.sp,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 7.h,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
+                              : const SizedBox.shrink()
                         ],
                       );
                     } else {
@@ -519,11 +485,12 @@ class _ShipmentPaymentScreenState extends State<ShipmentPaymentScreen> {
                     listener: (context, state) {
                       if (state is PaymentCreateSuccessState) {
                         taskProvider.decreaseTaskNum();
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content:
-                              Text('Payment has been created successfully.'),
-                          duration: Duration(seconds: 3),
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: localeState.value.languageCode == 'en'
+                              ? const Text(
+                                  'Payment has been created successfully.')
+                              : const Text('تم الدفع بنجاح'),
+                          duration: const Duration(seconds: 3),
                         ));
 
                         Navigator.pushAndRemoveUntil(

@@ -1,3 +1,4 @@
+import 'package:camion/Localization/app_localizations.dart';
 import 'package:camion/business_logic/bloc/truck/truck_details_bloc.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/data/models/shipment_model.dart';
@@ -56,7 +57,8 @@ class _ShipmentTaskDetailsScreenState extends State<ShipmentTaskDetailsScreen>
           child: SafeArea(
             child: Scaffold(
               appBar: CustomAppBar(
-                title: "shipment tasks",
+                title:
+                    AppLocalizations.of(context)!.translate('shipment_tasks'),
               ),
               backgroundColor: Colors.grey[200],
               body: SingleChildScrollView(
@@ -130,7 +132,9 @@ class _ShipmentTaskDetailsScreenState extends State<ShipmentTaskDetailsScreen>
                                           child: FittedBox(
                                             fit: BoxFit.scaleDown,
                                             child: Text(
-                                              'shipment instruction',
+                                              AppLocalizations.of(context)!
+                                                  .translate(
+                                                      'shipment_instruction'),
                                               style: TextStyle(
                                                   // color: AppColor.lightBlue,
                                                   fontSize: 18.sp,
@@ -149,12 +153,16 @@ class _ShipmentTaskDetailsScreenState extends State<ShipmentTaskDetailsScreen>
                                       child:
                                           widget.shipment.shipmentinstruction ==
                                                   null
-                                              ? const Text(
-                                                  "shipment instruction is not completed.",
+                                              ? Text(
+                                                  AppLocalizations.of(context)!
+                                                      .translate(
+                                                          'instruction_not_complete'),
                                                   maxLines: 2,
                                                 )
-                                              : const Text(
-                                                  "shipment instruction is completed.",
+                                              : Text(
+                                                  AppLocalizations.of(context)!
+                                                      .translate(
+                                                          'instruction_complete'),
                                                   maxLines: 2,
                                                 ),
                                     ),
@@ -226,7 +234,9 @@ class _ShipmentTaskDetailsScreenState extends State<ShipmentTaskDetailsScreen>
                                           child: FittedBox(
                                             fit: BoxFit.scaleDown,
                                             child: Text(
-                                              'shipment payment',
+                                              AppLocalizations.of(context)!
+                                                  .translate(
+                                                      'payment_instruction'),
                                               style: TextStyle(
                                                   // color: AppColor.lightBlue,
                                                   fontSize: 18.sp,
@@ -244,12 +254,16 @@ class _ShipmentTaskDetailsScreenState extends State<ShipmentTaskDetailsScreen>
                                           .4,
                                       child: widget.shipment.shipmentpayment ==
                                               null
-                                          ? const Text(
-                                              "shipment payment is not completed.",
+                                          ? Text(
+                                              AppLocalizations.of(context)!
+                                                  .translate(
+                                                      'payment_not_complete'),
                                               maxLines: 2,
                                             )
-                                          : const Text(
-                                              "shipment payment is completed.",
+                                          : Text(
+                                              AppLocalizations.of(context)!
+                                                  .translate(
+                                                      'payment_complete'),
                                               maxLines: 2,
                                             ),
                                     ),

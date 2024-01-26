@@ -74,7 +74,6 @@ class _MainScreenState extends State<MainScreen> {
                           DateTime now = DateTime.now();
                           Duration diff =
                               now.difference(state.posts[index].date!);
-                          print(state.posts[index].image!);
                           return Card(
                             elevation: 1,
                             clipBehavior: Clip.antiAlias,
@@ -99,8 +98,10 @@ class _MainScreenState extends State<MainScreen> {
                                         height: 225.h,
                                         width: double.infinity,
                                         color: Colors.grey[300],
-                                        child: const Center(
-                                          child: Text("error on loading "),
+                                        child: Center(
+                                          child: Text(AppLocalizations.of(
+                                                  context)!
+                                              .translate('image_load_error')),
                                         ),
                                       );
                                     },
@@ -155,13 +156,6 @@ class _MainScreenState extends State<MainScreen> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.end,
                                           children: [
-                                            // GestureDetector(
-                                            //   child: state
-                                            //           .posts[index].is_saved!
-                                            //       ? const Icon(Icons.bookmark)
-                                            //       : const Icon(
-                                            //           Icons.bookmark_border),
-                                            // ),
                                             GestureDetector(
                                                 onTap: () {
                                                   setState(() {

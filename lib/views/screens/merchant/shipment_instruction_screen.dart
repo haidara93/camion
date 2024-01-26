@@ -149,7 +149,8 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
-                              "Shipment loading?unloading Location Info",
+                              AppLocalizations.of(context)!
+                                  .translate('shipment_path_info'),
                               style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
@@ -243,7 +244,9 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Text("select your identity",
+                                Text(
+                                    AppLocalizations.of(context)!
+                                        .translate('select_your_identity'),
                                     style: TextStyle(
                                       fontSize: 17,
                                       fontWeight: FontWeight.bold,
@@ -260,12 +263,13 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                     contentPadding: EdgeInsets.zero,
                                     value: "C",
                                     groupValue: selectedRadioTile,
-                                    title: const FittedBox(
+                                    title: FittedBox(
                                       fit: BoxFit.scaleDown,
                                       child: Text(
-                                        "merchant",
+                                        AppLocalizations.of(context)!
+                                            .translate('charger'),
                                         overflow: TextOverflow.fade,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 16,
                                         ),
                                       ),
@@ -287,12 +291,13 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                     contentPadding: EdgeInsets.zero,
                                     value: "M",
                                     groupValue: selectedRadioTile,
-                                    title: const FittedBox(
+                                    title: FittedBox(
                                       fit: BoxFit.scaleDown,
                                       child: Text(
-                                        "mediator",
+                                        AppLocalizations.of(context)!
+                                            .translate('mediator'),
                                         overflow: TextOverflow.fade,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 16,
                                         ),
                                       ),
@@ -315,12 +320,13 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
 
                                     value: "R",
                                     groupValue: selectedRadioTile,
-                                    title: const FittedBox(
+                                    title: FittedBox(
                                       fit: BoxFit.scaleDown,
                                       child: Text(
-                                        "reciever",
+                                        AppLocalizations.of(context)!
+                                            .translate('reciever'),
                                         overflow: TextOverflow.fade,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 16,
                                         ),
                                       ),
@@ -373,7 +379,9 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Text("Charger Info",
+                                  Text(
+                                      AppLocalizations.of(context)!
+                                          .translate('charger_info'),
                                       style: TextStyle(
                                         fontSize: 17,
                                         fontWeight: FontWeight.bold,
@@ -401,9 +409,10 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                     widget.shipment.shipmentinstruction == null,
                                 textInputAction: TextInputAction.done,
                                 style: const TextStyle(fontSize: 18),
-                                decoration: const InputDecoration(
-                                  labelText: "charger name",
-                                  contentPadding: EdgeInsets.symmetric(
+                                decoration: InputDecoration(
+                                  labelText: AppLocalizations.of(context)!
+                                      .translate('charger_name'),
+                                  contentPadding: const EdgeInsets.symmetric(
                                       vertical: 11.0, horizontal: 9.0),
                                 ),
                                 onTapOutside: (event) {},
@@ -446,9 +455,10 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                         .bottom),
                                 textInputAction: TextInputAction.done,
                                 style: const TextStyle(fontSize: 18),
-                                decoration: const InputDecoration(
-                                  labelText: "charger address",
-                                  contentPadding: EdgeInsets.symmetric(
+                                decoration: InputDecoration(
+                                  labelText: AppLocalizations.of(context)!
+                                      .translate('charger_address'),
+                                  contentPadding: const EdgeInsets.symmetric(
                                       vertical: 11.0, horizontal: 9.0),
                                 ),
                                 onTapOutside: (event) {
@@ -497,9 +507,10 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                 textInputAction: TextInputAction.done,
                                 keyboardType: TextInputType.phone,
                                 style: const TextStyle(fontSize: 18),
-                                decoration: const InputDecoration(
-                                  labelText: "charger phone",
-                                  contentPadding: EdgeInsets.symmetric(
+                                decoration: InputDecoration(
+                                  labelText: AppLocalizations.of(context)!
+                                      .translate('charger_phone'),
+                                  contentPadding: const EdgeInsets.symmetric(
                                       vertical: 11.0, horizontal: 9.0),
                                 ),
                                 onTapOutside: (event) {
@@ -561,7 +572,9 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    Text("Reciever Info",
+                                    Text(
+                                        AppLocalizations.of(context)!
+                                            .translate('reciever_info'),
                                         style: TextStyle(
                                           fontSize: 17,
                                           fontWeight: FontWeight.bold,
@@ -591,9 +604,10 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                           .bottom),
                                   textInputAction: TextInputAction.done,
                                   style: const TextStyle(fontSize: 18),
-                                  decoration: const InputDecoration(
-                                    labelText: "reciever name",
-                                    contentPadding: EdgeInsets.symmetric(
+                                  decoration: InputDecoration(
+                                    labelText: AppLocalizations.of(context)!
+                                        .translate('reciever_name'),
+                                    contentPadding: const EdgeInsets.symmetric(
                                         vertical: 11.0, horizontal: 9.0),
                                   ),
                                   onTapOutside: (event) {},
@@ -637,9 +651,10 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                           .bottom),
                                   textInputAction: TextInputAction.done,
                                   style: const TextStyle(fontSize: 18),
-                                  decoration: const InputDecoration(
-                                    labelText: "reciever address",
-                                    contentPadding: EdgeInsets.symmetric(
+                                  decoration: InputDecoration(
+                                    labelText: AppLocalizations.of(context)!
+                                        .translate('reciever_address'),
+                                    contentPadding: const EdgeInsets.symmetric(
                                         vertical: 11.0, horizontal: 9.0),
                                   ),
                                   onTapOutside: (event) {
@@ -690,9 +705,10 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                   textInputAction: TextInputAction.done,
                                   keyboardType: TextInputType.phone,
                                   style: const TextStyle(fontSize: 18),
-                                  decoration: const InputDecoration(
-                                    labelText: "reciever phone",
-                                    contentPadding: EdgeInsets.symmetric(
+                                  decoration: InputDecoration(
+                                    labelText: AppLocalizations.of(context)!
+                                        .translate('reciever_phone'),
+                                    contentPadding: const EdgeInsets.symmetric(
                                         vertical: 11.0, horizontal: 9.0),
                                   ),
                                   onTapOutside: (event) {
@@ -762,7 +778,9 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                   SizedBox(
                                     width:
                                         MediaQuery.of(context).size.width * .6,
-                                    child: Text('Commodity Info',
+                                    child: Text(
+                                        AppLocalizations.of(context)!
+                                            .translate('commodity_info'),
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           fontSize: 17,
@@ -778,7 +796,7 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                   itemCount:
                                       widget.shipment.shipmentItems!.length,
                                   shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
+                                  physics: const NeverScrollableScrollPhysics(),
                                   itemBuilder: (context, index) {
                                     return Card(
                                       color: Colors.white,
@@ -833,11 +851,15 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                                     TextInputAction.done,
                                                 style: const TextStyle(
                                                     fontSize: 18),
-                                                decoration:
-                                                    const InputDecoration(
-                                                  labelText: "commodity name",
+                                                decoration: InputDecoration(
+                                                  labelText:
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .translate(
+                                                              'commodity_name'),
                                                   contentPadding:
-                                                      EdgeInsets.symmetric(
+                                                      const EdgeInsets
+                                                          .symmetric(
                                                           vertical: 11.0,
                                                           horizontal: 9.0),
                                                 ),
@@ -895,11 +917,14 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                                     TextInputAction.done,
                                                 style: const TextStyle(
                                                     fontSize: 18),
-                                                decoration:
-                                                    const InputDecoration(
-                                                  labelText: "commodity weight",
+                                                decoration: InputDecoration(
+                                                  labelText: AppLocalizations
+                                                          .of(context)!
+                                                      .translate(
+                                                          'commodity_weight'),
                                                   contentPadding:
-                                                      EdgeInsets.symmetric(
+                                                      const EdgeInsets
+                                                          .symmetric(
                                                           vertical: 11.0,
                                                           horizontal: 9.0),
                                                 ),
@@ -965,12 +990,14 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                                     TextInputType.number,
                                                 style: const TextStyle(
                                                     fontSize: 18),
-                                                decoration:
-                                                    const InputDecoration(
-                                                  labelText:
-                                                      "commodity quantity",
+                                                decoration: InputDecoration(
+                                                  labelText: AppLocalizations
+                                                          .of(context)!
+                                                      .translate(
+                                                          'commodity_quantity'),
                                                   contentPadding:
-                                                      EdgeInsets.symmetric(
+                                                      const EdgeInsets
+                                                          .symmetric(
                                                           vertical: 11.0,
                                                           horizontal: 9.0),
                                                 ),
@@ -1041,16 +1068,17 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                                       style: const TextStyle(
                                                           fontSize: 18),
                                                       decoration:
-                                                          const InputDecoration(
-                                                        labelText:
-                                                            "Package Type",
+                                                          InputDecoration(
+                                                        labelText: AppLocalizations
+                                                                .of(context)!
+                                                            .translate(
+                                                                'package_type'),
                                                         contentPadding:
-                                                            EdgeInsets
+                                                            const EdgeInsets
                                                                 .symmetric(
-                                                                    vertical:
-                                                                        11.0,
-                                                                    horizontal:
-                                                                        9.0),
+                                                                vertical: 11.0,
+                                                                horizontal:
+                                                                    9.0),
                                                       ),
                                                     )
                                                   : BlocBuilder<PackageTypeBloc,
@@ -1141,7 +1169,8 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                                               ),
                                                               iconStyleData:
                                                                   IconStyleData(
-                                                                icon: Icon(
+                                                                icon:
+                                                                    const Icon(
                                                                   Icons
                                                                       .keyboard_arrow_down_sharp,
                                                                 ),
@@ -1265,7 +1294,8 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
-                              "Other Info",
+                              AppLocalizations.of(context)!
+                                  .translate('other_info'),
                               style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
@@ -1300,9 +1330,10 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                 textInputAction: TextInputAction.done,
                                 keyboardType: TextInputType.number,
                                 style: const TextStyle(fontSize: 18),
-                                decoration: const InputDecoration(
-                                  labelText: "total weight",
-                                  contentPadding: EdgeInsets.symmetric(
+                                decoration: InputDecoration(
+                                  labelText: AppLocalizations.of(context)!
+                                      .translate('total_weight'),
+                                  contentPadding: const EdgeInsets.symmetric(
                                       vertical: 11.0, horizontal: 9.0),
                                 ),
                                 onTapOutside: (event) {},
@@ -1345,9 +1376,10 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                 textInputAction: TextInputAction.done,
                                 keyboardType: TextInputType.number,
                                 style: const TextStyle(fontSize: 18),
-                                decoration: const InputDecoration(
-                                  labelText: "net weight",
-                                  contentPadding: EdgeInsets.symmetric(
+                                decoration: InputDecoration(
+                                  labelText: AppLocalizations.of(context)!
+                                      .translate('net_weight'),
+                                  contentPadding: const EdgeInsets.symmetric(
                                       vertical: 11.0, horizontal: 9.0),
                                 ),
                                 onTapOutside: (event) {},
@@ -1398,9 +1430,10 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                 textInputAction: TextInputAction.done,
                                 keyboardType: TextInputType.number,
                                 style: const TextStyle(fontSize: 18),
-                                decoration: const InputDecoration(
-                                  labelText: "truck weight",
-                                  contentPadding: EdgeInsets.symmetric(
+                                decoration: InputDecoration(
+                                  labelText: AppLocalizations.of(context)!
+                                      .translate('truck_weight'),
+                                  contentPadding: const EdgeInsets.symmetric(
                                       vertical: 11.0, horizontal: 9.0),
                                 ),
                                 onTapOutside: (event) {},
@@ -1443,9 +1476,10 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                 textInputAction: TextInputAction.done,
                                 keyboardType: TextInputType.number,
                                 style: const TextStyle(fontSize: 18),
-                                decoration: const InputDecoration(
-                                  labelText: "final weight",
-                                  contentPadding: EdgeInsets.symmetric(
+                                decoration: InputDecoration(
+                                  labelText: AppLocalizations.of(context)!
+                                      .translate('final_weight'),
+                                  contentPadding: const EdgeInsets.symmetric(
                                       vertical: 11.0, horizontal: 9.0),
                                 ),
                                 onTapOutside: (event) {},
@@ -1492,11 +1526,13 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                           taskProvider.decreaseTaskNum();
 
                           if (state is InstructionCreateSuccessState) {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                              content: Text(
-                                  'shipment instruction has been created successfully.'),
-                              duration: Duration(seconds: 3),
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: localeState.value.languageCode == 'en'
+                                  ? const Text(
+                                      'shipment instruction has been created successfully.')
+                                  : const Text(
+                                      'تم اضافة تعليمات الشحن بنجاح..'),
+                              duration: const Duration(seconds: 3),
                             ));
                             Navigator.push(
                                 context,
@@ -1517,7 +1553,8 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                           } else {
                             return CustomButton(
                               title: Text(
-                                "Create Instruction",
+                                AppLocalizations.of(context)!
+                                    .translate('add_instruction'),
                                 style: TextStyle(
                                   fontSize: 20.sp,
                                 ),

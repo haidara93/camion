@@ -12,16 +12,15 @@ import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/merchant/active_shipment_screen.dart';
 import 'package:camion/views/screens/merchant/add_shippment_screen.dart';
 import 'package:camion/views/screens/main_screen.dart';
-import 'package:camion/views/screens/merchant/shipment_instruction_screen.dart';
 import 'package:camion/views/screens/merchant/shipment_task_screen.dart';
 import 'package:camion/views/screens/shippment_log_screen.dart';
-import 'package:camion/views/screens/tracking_shippment_screen.dart';
 import 'package:camion/views/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -86,7 +85,6 @@ class _HomeScreenState extends State<HomeScreen>
       case 0:
         {
           BlocProvider.of<PostBloc>(context).add(PostLoadEvent());
-          print("sdfsdf");
           setState(() {
             title = AppLocalizations.of(context)!.translate('home');
             currentScreen = MainScreen();
@@ -191,10 +189,21 @@ class _HomeScreenState extends State<HomeScreen>
                         color: Colors.white,
                       ),
                       GestureDetector(
-                        onTap: () {
-                          // changeSelectedValue(
-                          //     selectedValue: 0, contxt: context);
-                          // _scaffoldKey.currentState!.closeDrawer();
+                        onTap: () async {
+                          if (AppLocalizations.of(context)!.isEnLocale!) {
+                            BlocProvider.of<LocaleCubit>(context).toArabic();
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            prefs.setString("language", "ar");
+                          } else {
+                            BlocProvider.of<LocaleCubit>(context).toEnglish();
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            prefs.setString("language", "en");
+                          }
+                          Future.delayed(const Duration(milliseconds: 500))
+                              .then((value) =>
+                                  _scaffoldKey.currentState!.closeDrawer());
                         },
                         child: ListTile(
                           leading: SvgPicture.asset(
@@ -202,28 +211,30 @@ class _HomeScreenState extends State<HomeScreen>
                             height: 20.h,
                           ),
                           title: Text(
-                            AppLocalizations.of(context)!.translate('settings'),
+                            localeState.value.languageCode != 'en'
+                                ? "اللغة: English"
+                                : "language: العربية",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.bold),
                           ),
-                          trailing: Container(
-                            width: 35.w,
-                            height: 20.h,
-                            decoration: BoxDecoration(
-                                color: AppColor.deepYellow,
-                                borderRadius: BorderRadius.circular(2)),
-                            child: Center(
-                              child: Text(
-                                "soon",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12.sp,
-                                ),
-                              ),
-                            ),
-                          ),
+                          // trailing: Container(
+                          //   width: 35.w,
+                          //   height: 20.h,
+                          //   decoration: BoxDecoration(
+                          //       color: AppColor.deepYellow,
+                          //       borderRadius: BorderRadius.circular(2)),
+                          //   child: Center(
+                          //     child: Text(
+                          //       "soon",
+                          //       style: TextStyle(
+                          //         color: Colors.white,
+                          //         fontSize: 12.sp,
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                         ),
                       ),
                       const Divider(
@@ -270,23 +281,27 @@ class _HomeScreenState extends State<HomeScreen>
                               return AlertDialog(
                                 // <-- SEE HERE
                                 backgroundColor: Colors.white,
-                                title: const Text('Log out'),
-                                content: const SingleChildScrollView(
+                                title: Text(AppLocalizations.of(context)!
+                                    .translate('log_out')),
+                                content: SingleChildScrollView(
                                   child: ListBody(
                                     children: <Widget>[
-                                      Text('Are you sure want to log out?'),
+                                      Text(AppLocalizations.of(context)!
+                                          .translate('log_out_confirm')),
                                     ],
                                   ),
                                 ),
                                 actions: <Widget>[
                                   TextButton(
-                                    child: const Text('No'),
+                                    child: Text(AppLocalizations.of(context)!
+                                        .translate('no')),
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },
                                   ),
                                   TextButton(
-                                    child: const Text('Yes'),
+                                    child: Text(AppLocalizations.of(context)!
+                                        .translate('yes')),
                                     onPressed: () {
                                       BlocProvider.of<AuthBloc>(context)
                                           .add(UserLoggedOut());
@@ -337,7 +352,6 @@ class _HomeScreenState extends State<HomeScreen>
                           },
                           tabs: [
                             Tab(
-                              // text: "طلب مخلص",
                               height: 66.h,
                               icon: navigationValue == 0
                                   ? Column(
@@ -544,7 +558,6 @@ class _HomeScreenState extends State<HomeScreen>
                                   return BlocListener<ActiveShipmentListBloc,
                                       ActiveShipmentListState>(
                                     listener: (context, state) {
-                                      print(state);
                                       if (state
                                           is ActiveShipmentListLoadedSuccess) {
                                         var taskNum = 0;
@@ -631,7 +644,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                     child: Text(
                                                         value.taskNum
                                                             .toString(),
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                           color: Colors.white,
                                                         )),
                                                   ),

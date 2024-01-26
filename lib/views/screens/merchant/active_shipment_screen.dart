@@ -177,7 +177,7 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                                 ),
                                                               ),
                                                               Text(
-                                                                "commodity name: ${state.shipments[index].shipmentItems![0].commodityName!}",
+                                                                "${AppLocalizations.of(context)!.translate('commodity_name')}: ${state.shipments[index].shipmentItems![0].commodityName!}",
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize:

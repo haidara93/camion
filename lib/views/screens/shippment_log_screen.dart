@@ -113,19 +113,15 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                       tabs: [
                         // first tab [you can add an icon using the icon property]
                         Tab(
-                          child: Container(
-                            child: Center(
-                                child: Text(AppLocalizations.of(context)!
-                                    .translate('pending'))),
-                          ),
+                          child: Center(
+                              child: Text(AppLocalizations.of(context)!
+                                  .translate('pending'))),
                         ),
 
                         Tab(
-                          child: Container(
-                            child: Center(
-                                child: Text(AppLocalizations.of(context)!
-                                    .translate('completed'))),
-                          ),
+                          child: Center(
+                              child: Text(AppLocalizations.of(context)!
+                                  .translate('completed'))),
                         ),
                       ],
                     ),

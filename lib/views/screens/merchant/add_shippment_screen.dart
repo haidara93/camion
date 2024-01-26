@@ -430,7 +430,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                   Navigator.pop(context);
                 },
                 child: Text(
-                  "ok",
+                  AppLocalizations.of(context)!.translate('ok'),
                   style: TextStyle(
                     color: AppColor.darkGrey,
                     fontSize: 20,
@@ -487,7 +487,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                   Navigator.pop(context);
                 },
                 child: Text(
-                  "ok",
+                  AppLocalizations.of(context)!.translate('ok'),
                   style: TextStyle(
                     color: AppColor.darkGrey,
                     fontSize: 20,
@@ -746,9 +746,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                                               .grey[
                                                                           300],
                                                                       child:
-                                                                          const Center(
+                                                                          Center(
                                                                         child: Text(
-                                                                            "error on loading "),
+                                                                            AppLocalizations.of(context)!.translate('image_load_error')),
                                                                       ),
                                                                     );
                                                                   },
@@ -1589,7 +1589,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                 width: 70,
                                 child: Center(
                                   child: Text(
-                                    "normal",
+                                    AppLocalizations.of(context)!
+                                        .translate('normal'),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18.sp,
@@ -1607,7 +1608,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                 width: 70,
                                 child: Center(
                                   child: Text(
-                                    "satellite",
+                                    AppLocalizations.of(context)!
+                                        .translate('satellite'),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18.sp,
@@ -1697,9 +1699,10 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                       ),
                       Visibility(
                         visible: co2error,
-                        child: const Padding(
+                        child: Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text("please complete shipment load info"),
+                          child: Text(AppLocalizations.of(context)!
+                              .translate('shipment_load_complete_error')),
                         ),
                       ),
                       Visibility(
@@ -1829,9 +1832,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                             print(state);
                             if (state is ShippmentCreateSuccessState) {
                               ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                    'shipment has been created successfully.'),
+                                  .showSnackBar(SnackBar(
+                                content: Text(AppLocalizations.of(context)!
+                                    .translate('shipment_created_success')),
                                 duration: Duration(seconds: 3),
                               ));
                               BlocProvider.of<TrucksListBloc>(context)
@@ -2077,7 +2080,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                         SizedBox(
                           width: MediaQuery.of(context).size.width * .35,
                           child: Text(
-                            "Total kilograms of CO2: ${addShippmentProvider!.co2report!.et}",
+                            "${AppLocalizations.of(context)!.translate('total_co2')}: ${addShippmentProvider!.co2report!.et}",
                             style: const TextStyle(
                               color: Colors.white,
                             ),
@@ -2086,7 +2089,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                         SizedBox(
                           width: MediaQuery.of(context).size.width * .35,
                           child: Text(
-                            "Total energy consumption: ${addShippmentProvider!.co2report!.gt}",
+                            "${AppLocalizations.of(context)!.translate('energy_consumption')}: ${addShippmentProvider!.co2report!.gt}",
                             style: const TextStyle(
                               color: Colors.white,
                             ),

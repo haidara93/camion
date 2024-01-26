@@ -54,6 +54,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  final LocaleCubit localeCubit = LocaleCubit();
+  await localeCubit.initializeFromPreferences();
+
   Stripe.publishableKey =
       "pk_test_51IZr3HApYMiHRCEPfSdLaWzGSzImzW2kc61cSI4mYf3JptVXsfFj2SG1xcBLBgLVdvW8EXckH50FgzKZeNp454dK00xplc6hCI";
   Stripe.merchantIdentifier = "AcrossMena";
