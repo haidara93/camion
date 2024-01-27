@@ -11,6 +11,7 @@ import 'package:camion/views/widgets/custom_app_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -147,6 +148,7 @@ class _ActiveShipmentDetailsScreenState
     }
   }
 
+  var count = 25;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -156,105 +158,163 @@ class _ActiveShipmentDetailsScreenState
         appBar: CustomAppBar(
           title: AppLocalizations.of(context)!.translate('shipment_details'),
         ),
-        body: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('location').snapshots(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            print("snapshot.hasData");
-            print(snapshot.hasData);
-
-            print(snapshot);
-            if (_added) {
-              mymap(snapshot);
-            }
-            if (!snapshot.hasData) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            print(snapshot.data!.docs.singleWhere(
-                (element) => element.id == widget.user_id)['latitude']);
-            return Consumer<ActiveShippmentProvider>(
-              builder: (context, shipmentProvider, child) {
-                return AnimatedBuilder(
-                  animation: _animationController,
-                  builder: (context, child) {
-                    return Stack(
-                      children: [
-                        GoogleMap(
-                          mapType: MapType.normal,
-                          zoomControlsEnabled: false,
-                          markers: {
-                            Marker(
-                              position: LatLng(
-                                snapshot.data!.docs.singleWhere((element) =>
-                                    element.id == widget.user_id)['latitude'],
-                                snapshot.data!.docs.singleWhere((element) =>
-                                    element.id == widget.user_id)['longitude'],
-                              ),
-                              markerId: const MarkerId('id'),
-                              icon: BitmapDescriptor.defaultMarkerWithHue(
-                                  BitmapDescriptor.hueMagenta),
+        body: Consumer<ActiveShippmentProvider>(
+            builder: (context, shipmentProvider, child) {
+          return StreamBuilder(
+            stream:
+                FirebaseFirestore.instance.collection('location').snapshots(),
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (_added) {
+                mymap(snapshot);
+              }
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              // if (count < 0) {
+              //   if (snapshot.data!.docs.singleWhere((element) =>
+              //           element.id == widget.user_id)['reach_pickup'] ??
+              //       false) {
+              //     shipmentProvider.getTruckPolylineCoordinates(
+              //         LatLng(
+              //           snapshot.data!.docs.singleWhere((element) =>
+              //               element.id == widget.user_id)['latitude'],
+              //           snapshot.data!.docs.singleWhere((element) =>
+              //               element.id == widget.user_id)['longitude'],
+              //         ),
+              //         LatLng(widget.shipment.deliveryCityLat!,
+              //             widget.shipment.deliveryCityLang!));
+              //   } else {
+              //     shipmentProvider.getTruckPolylineCoordinates(
+              //         LatLng(
+              //           snapshot.data!.docs.singleWhere((element) =>
+              //               element.id == widget.user_id)['latitude'],
+              //           snapshot.data!.docs.singleWhere((element) =>
+              //               element.id == widget.user_id)['longitude'],
+              //         ),
+              //         LatLng(widget.shipment.pickupCityLat!,
+              //             widget.shipment.pickupCityLang!));
+              //   }
+              // } else {
+              //   count--;
+              // }
+              return AnimatedBuilder(
+                animation: _animationController,
+                builder: (context, child) {
+                  return Stack(
+                    children: [
+                      GoogleMap(
+                        mapType: MapType.normal,
+                        zoomControlsEnabled: false,
+                        markers: {
+                          Marker(
+                            position: LatLng(
+                              snapshot.data!.docs.singleWhere((element) =>
+                                  element.id == widget.user_id)['latitude'],
+                              snapshot.data!.docs.singleWhere((element) =>
+                                  element.id == widget.user_id)['longitude'],
                             ),
-                            Marker(
-                              markerId: const MarkerId("pickup"),
-                              position: LatLng(widget.shipment.pickupCityLat!,
-                                  widget.shipment.pickupCityLang!),
+                            markerId: const MarkerId('id'),
+                            icon: BitmapDescriptor.defaultMarkerWithHue(
+                                BitmapDescriptor.hueMagenta),
+                          ),
+                          Marker(
+                            markerId: const MarkerId("pickup"),
+                            position: LatLng(widget.shipment.pickupCityLat!,
+                                widget.shipment.pickupCityLang!),
+                          ),
+                          Marker(
+                            markerId: const MarkerId("delivery"),
+                            position: LatLng(widget.shipment.deliveryCityLat!,
+                                widget.shipment.deliveryCityLang!),
+                          ),
+                        },
+                        initialCameraPosition: CameraPosition(
+                            target: LatLng(
+                              snapshot.data!.docs.singleWhere((element) =>
+                                  element.id == widget.user_id)['latitude'],
+                              snapshot.data!.docs.singleWhere((element) =>
+                                  element.id == widget.user_id)['longitude'],
                             ),
-                            Marker(
-                              markerId: const MarkerId("delivery"),
-                              position: LatLng(widget.shipment.deliveryCityLat!,
-                                  widget.shipment.deliveryCityLang!),
-                            ),
-                          },
-                          initialCameraPosition: CameraPosition(
-                              target: LatLng(
-                                snapshot.data!.docs.singleWhere((element) =>
-                                    element.id == widget.user_id)['latitude'],
-                                snapshot.data!.docs.singleWhere((element) =>
-                                    element.id == widget.user_id)['longitude'],
-                              ),
-                              zoom: 14.47),
-                          onMapCreated: (GoogleMapController controller) async {
-                            setState(() {
-                              _controller = controller;
-                              _controller.setMapStyle(_mapStyle);
-                              _added = true;
-                            });
-                          },
-                          polylines: {
-                            Polyline(
-                              polylineId: const PolylineId("route"),
-                              points:
-                                  shipmentProvider.polylineCoordinates.length >
-                                          widget.index
-                                      ? shipmentProvider
-                                          .polylineCoordinates[widget.index]
-                                      : [],
-                              color: AppColor.deepYellow,
-                              width: 7,
-                            ),
-                          },
-                        ),
-                        AnimatedPositioned(
-                          duration: panelTransation,
-                          curve: Curves.decelerate,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          child: GestureDetector(
-                            onVerticalDragUpdate: _onVerticalGesture,
-                            child: AnimatedSwitcher(
-                              duration: panelTransation,
-                              child: _buildPanelOption(context),
-                            ),
+                            zoom: 14.47),
+                        onMapCreated: (GoogleMapController controller) async {
+                          setState(() {
+                            _controller = controller;
+                            _controller.setMapStyle(_mapStyle);
+                            _added = true;
+                          });
+                        },
+                        polylines: {
+                          Polyline(
+                            polylineId: const PolylineId("route"),
+                            points:
+                                shipmentProvider.polylineCoordinates.length >
+                                        widget.index
+                                    ? shipmentProvider
+                                        .polylineCoordinates[widget.index]
+                                    : [],
+                            color: AppColor.deepYellow,
+                            width: 7,
+                          ),
+                          // Polyline(
+                          //   polylineId: const PolylineId("truckroute"),
+                          //   points: shipmentProvider.truckpolylineCoordinates,
+                          //   color: Colors.green.withOpacity(.6),
+                          //   width: 8,
+                          // ),
+                          // snapshot.data!.docs.singleWhere((element) =>
+                          //         element.id ==
+                          //         widget.user_id)['reach_pickup']??false
+                          //     ? getpolylineCoordinates(
+                          // LatLng(
+                          //   snapshot.data!.docs.singleWhere(
+                          //       (element) =>
+                          //           element.id ==
+                          //           widget.user_id)['latitude'],
+                          //   snapshot.data!.docs.singleWhere(
+                          //       (element) =>
+                          //           element.id ==
+                          //           widget.user_id)['longitude'],
+                          // ),
+                          // LatLng(widget.shipment.deliveryCityLat!,
+                          //     widget.shipment.deliveryCityLang!),
+                          //       )
+                          //     : getpolylineCoordinates(
+                          //         LatLng(
+                          //           snapshot.data!.docs.singleWhere(
+                          //               (element) =>
+                          //                   element.id ==
+                          //                   widget.user_id)['latitude'],
+                          //           snapshot.data!.docs.singleWhere(
+                          //               (element) =>
+                          //                   element.id ==
+                          //                   widget.user_id)['longitude'],
+                          //         ),
+                          //         LatLng(widget.shipment.pickupCityLat!,
+                          //             widget.shipment.pickupCityLang!),
+                          //       )
+                        },
+                      ),
+                      AnimatedPositioned(
+                        duration: panelTransation,
+                        curve: Curves.decelerate,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: GestureDetector(
+                          onVerticalDragUpdate: _onVerticalGesture,
+                          child: AnimatedSwitcher(
+                            duration: panelTransation,
+                            child: _buildPanelOption(context),
                           ),
                         ),
-                      ],
-                    );
-                  },
-                );
-              },
-            );
-          },
-        ),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          );
+        }),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:camion/Localization/app_localizations.dart';
 import 'package:camion/business_logic/bloc/shipments/active_shipment_list_bloc.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
+import 'package:camion/data/models/instruction_model.dart';
 import 'package:camion/data/models/shipment_model.dart';
 import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/merchant/shipment_task_details_screen.dart';
@@ -110,13 +111,20 @@ class _ShipmentTaskScreenState extends State<ShipmentTaskScreen>
                                     //     .difference(state.offers[index].createdDate!);
                                     return GestureDetector(
                                       onTap: () {
+                                        var hasinstruction = false;
+                                        if (state.shipments[index]
+                                                .shipmentinstruction !=
+                                            null) {
+                                          hasinstruction = true;
+                                        }
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 ShipmentTaskDetailsScreen(
-                                                    shipment:
-                                                        state.shipments[index]),
+                                              shipment: state.shipments[index],
+                                              hasinstruction: hasinstruction,
+                                            ),
                                           ),
                                         );
                                       },

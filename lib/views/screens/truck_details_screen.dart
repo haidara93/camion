@@ -299,7 +299,7 @@ class _TruckDetailsScreenState extends State<TruckDetailsScreen> {
                                     return CustomButton(
                                       title: Text(
                                         AppLocalizations.of(context)!
-                                            .translate('search_truck'),
+                                            .translate('order_truck'),
                                         style: TextStyle(
                                           fontSize: 20.sp,
                                         ),

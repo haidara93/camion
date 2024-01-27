@@ -27,11 +27,11 @@ class ChooseShippmentPathScreen extends StatefulWidget {
 }
 
 class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
-  AddShippmentProvider? addShippmentProvider;
   List<PlaceSearch> searchResults = [];
 
   bool pickupLoading = false;
   bool deliveryLoading = false;
+  AddShippmentProvider? addShippmentProvider;
 
   @override
   void initState() {

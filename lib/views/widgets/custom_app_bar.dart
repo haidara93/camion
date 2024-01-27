@@ -41,22 +41,25 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                               onTap: () {
                                 Navigator.pop(context);
                               },
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 15.h, horizontal: 15.w),
-                                child: SizedBox(
-                                  // margin:
-                                  //     EdgeInsets.symmetric(vertical: 13.h, horizontal: 3.w),
-                                  height: 35.h,
-                                  width: 35.w,
+                              child: AbsorbPointer(
+                                absorbing: true,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 15.h, horizontal: 15.w),
+                                  child: SizedBox(
+                                    // margin:
+                                    //     EdgeInsets.symmetric(vertical: 13.h, horizontal: 3.w),
+                                    height: 35.h,
+                                    width: 35.w,
 
-                                  child: Center(
-                                    child: localeState.value.languageCode ==
-                                            'en'
-                                        ? SvgPicture.asset(
-                                            "assets/icons/arrow-left-en.svg")
-                                        : SvgPicture.asset(
-                                            "assets/icons/arrow-left-ar.svg"),
+                                    child: Center(
+                                      child: localeState.value.languageCode ==
+                                              'en'
+                                          ? SvgPicture.asset(
+                                              "assets/icons/arrow-left-en.svg")
+                                          : SvgPicture.asset(
+                                              "assets/icons/arrow-left-ar.svg"),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -65,18 +68,21 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                               onTap: () {
                                 scaffoldKey!.currentState!.openDrawer();
                               },
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 15.h, horizontal: 15.w),
-                                child: SizedBox(
-                                  height: 35.h,
-                                  width: 35.w,
-                                  child: Center(
-                                    child: SvgPicture.asset(localeState
-                                                .value.languageCode ==
-                                            'en'
-                                        ? "assets/icons/drawer_icon_en.svg"
-                                        : "assets/icons/drawer_icon_ar.svg"),
+                              child: AbsorbPointer(
+                                absorbing: true,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 15.h, horizontal: 15.w),
+                                  child: SizedBox(
+                                    height: 35.h,
+                                    width: 35.w,
+                                    child: Center(
+                                      child: SvgPicture.asset(localeState
+                                                  .value.languageCode ==
+                                              'en'
+                                          ? "assets/icons/drawer_icon_en.svg"
+                                          : "assets/icons/drawer_icon_ar.svg"),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -109,51 +115,54 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                         ));
                                     // scaffoldKey.currentState!.openDrawer();
                                   },
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 13.h, horizontal: 10.w),
-                                    child: Stack(
-                                      clipBehavior: Clip.none,
-                                      children: [
-                                        SizedBox(
-                                          height: 35.h,
-                                          width: 35.h,
-                                          child: Center(
-                                            child: SvgPicture.asset(
-                                                "assets/icons/notification.svg"),
+                                  child: AbsorbPointer(
+                                    absorbing: true,
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 13.h, horizontal: 10.w),
+                                      child: Stack(
+                                        clipBehavior: Clip.none,
+                                        children: [
+                                          SizedBox(
+                                            height: 35.h,
+                                            width: 35.h,
+                                            child: Center(
+                                              child: SvgPicture.asset(
+                                                  "assets/icons/notification.svg"),
+                                            ),
                                           ),
-                                        ),
-                                        notificationProvider
-                                                    .notreadednotifications !=
-                                                0
-                                            ? Positioned(
-                                                right: -7.w,
-                                                top: -10.h,
-                                                child: Container(
-                                                  height: 20.h,
-                                                  width: 20.h,
-                                                  decoration: BoxDecoration(
-                                                    // color: AppColor.goldenYellow,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            45),
-                                                  ),
-                                                  child: Center(
-                                                    child: Text(
-                                                      notificationProvider
-                                                          .notreadednotifications
-                                                          .toString(),
-                                                      style: const TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                          notificationProvider
+                                                      .notreadednotifications !=
+                                                  0
+                                              ? Positioned(
+                                                  right: -7.w,
+                                                  top: -10.h,
+                                                  child: Container(
+                                                    height: 20.h,
+                                                    width: 20.h,
+                                                    decoration: BoxDecoration(
+                                                      // color: AppColor.goldenYellow,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              45),
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(
+                                                        notificationProvider
+                                                            .notreadednotifications
+                                                            .toString(),
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink()
-                                      ],
+                                                )
+                                              : const SizedBox.shrink()
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),

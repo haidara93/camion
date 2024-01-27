@@ -13,9 +13,11 @@ import 'package:flutter_svg/svg.dart';
 
 class ShipmentTaskDetailsScreen extends StatefulWidget {
   final Shipment shipment;
+  final bool hasinstruction;
   ShipmentTaskDetailsScreen({
     Key? key,
     required this.shipment,
+    required this.hasinstruction,
   }) : super(key: key);
 
   @override
@@ -276,7 +278,10 @@ class _ShipmentTaskDetailsScreenState extends State<ShipmentTaskDetailsScreen>
                       ),
                     ),
                     instructionSelect
-                        ? ShipmentInstructionScreen(shipment: widget.shipment)
+                        ? ShipmentInstructionScreen(
+                            shipment: widget.shipment,
+                            hasinstruction: widget.hasinstruction,
+                          )
                         : ShipmentPaymentScreen(shipment: widget.shipment),
                   ],
                 ),

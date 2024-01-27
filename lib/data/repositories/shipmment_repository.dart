@@ -78,15 +78,14 @@ class ShippmentRerository {
       HttpHeaders.authorizationHeader: "JWT $token",
       HttpHeaders.contentTypeHeader: "multipart/form-data"
     });
-
     List<Map<String, dynamic>> shipment_items = [];
     for (var element in shipment.shipmentItems!) {
       var item = element.toJson();
       shipment_items.add(item);
     }
+    print("asdad");
 
     var dataString = prefs.getString("userProfile");
-    print(dataString);
     UserModel userModel = UserModel.fromJson(jsonDecode(dataString!));
 
     request.fields['merchant'] = userModel.merchant!.toString();
@@ -102,15 +101,16 @@ class ShippmentRerository {
     request.fields['delivery_city_lang'] = shipment.deliveryCityLang.toString();
     request.fields['pickup_date'] = shipment.pickupDate.toString();
     request.fields['shipment_items'] = jsonEncode(shipment_items);
-    print(jsonEncode(shipment_items));
+    print(jsonEncode(request.fields));
     var response = await request.send();
+    print(response.statusCode);
     if (response.statusCode == 201) {
       final respStr = await response.stream.bytesToString();
-      print(respStr);
       var res = jsonDecode(respStr);
       return res['truck_type'];
     } else {
       final respStr = await response.stream.bytesToString();
+      print(respStr);
       return null;
     }
   }

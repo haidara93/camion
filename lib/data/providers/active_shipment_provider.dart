@@ -12,6 +12,9 @@ class ActiveShippmentProvider extends ChangeNotifier {
   List<List<LatLng>> _polylineCoordinates = [];
   List<List<LatLng>> get polylineCoordinates => _polylineCoordinates;
 
+  List<LatLng> _truckpolylineCoordinates = [];
+  List<LatLng> get truckpolylineCoordinates => _truckpolylineCoordinates;
+
   List<bool> _finished = [];
   List<bool> get finished => _finished;
 
@@ -27,6 +30,30 @@ class ActiveShippmentProvider extends ChangeNotifier {
     _maps.add(null);
     _maps[index] = controller;
     _maps[index]!.setMapStyle(_mapStyle);
+    notifyListeners();
+  }
+
+  void getTruckPolylineCoordinates(LatLng position1, LatLng position2) async {
+    List<LatLng> _polyline = [];
+    PolylinePoints polylinePoints = PolylinePoints();
+    _polyline = [];
+
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      "AIzaSyADOoc8dgS4K4_qk9Hyp441jWtDSumfU7w",
+      PointLatLng(position1.latitude, position1.longitude),
+      PointLatLng(position2.latitude, position2.longitude),
+    );
+    if (result.points.isNotEmpty) {
+      result.points.forEach((element) {
+        _polyline.add(
+          LatLng(
+            element.latitude,
+            element.longitude,
+          ),
+        );
+      });
+    }
+    print("1111111111111111111111111111");
     notifyListeners();
   }
 

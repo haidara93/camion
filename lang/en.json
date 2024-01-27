@@ -115,6 +115,8 @@
     "extra_fees":"extra fees",
     "shipment_tasks":"Shipment Tasks",
     "shipment_details":"Shipment Details",
+    
+    "order_truck":"Order Truck",
 
     "home":"Home",
     "shippment_log":"Log",

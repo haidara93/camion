@@ -23,9 +23,11 @@ import 'package:timelines/timelines.dart';
 
 class ShipmentInstructionScreen extends StatefulWidget {
   final Shipment shipment;
+  final bool hasinstruction;
   ShipmentInstructionScreen({
     Key? key,
     required this.shipment,
+    required this.hasinstruction,
   }) : super(key: key);
 
   @override
@@ -363,8 +365,12 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                   visible: (selectedRadioTile.isEmpty ||
                           selectedRadioTile == "M" ||
                           selectedRadioTile == "R") ||
-                      (widget.shipment.shipmentinstruction!.userType == "M" ||
-                          widget.shipment.shipmentinstruction!.userType == "R"),
+                      (widget.hasinstruction
+                          ? (widget.shipment.shipmentinstruction!.userType ==
+                                  "M") ||
+                              (widget.shipment.shipmentinstruction!.userType ==
+                                  "R")
+                          : false),
                   child: Column(
                     children: [
                       Card(
@@ -555,9 +561,13 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                     visible: (selectedRadioTile.isEmpty ||
                             selectedRadioTile == "M" ||
                             selectedRadioTile == "C") ||
-                        (widget.shipment.shipmentinstruction!.userType == "M" ||
-                            widget.shipment.shipmentinstruction!.userType ==
-                                "C"),
+                        (widget.hasinstruction
+                            ? (widget.shipment.shipmentinstruction!.userType ==
+                                    "M") ||
+                                (widget.shipment.shipmentinstruction!
+                                        .userType ==
+                                    "C")
+                            : false),
                     child: Column(
                       children: [
                         Card(

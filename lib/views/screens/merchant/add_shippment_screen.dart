@@ -266,148 +266,153 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
 
     commodityName_controllers.add(commodityName_controller);
     commodityWeight_controllers.add(commodityWeight_controller);
-    // commodityQuantity_controllers.add(commodityQuantity_controller);
-    // commodityPackageTypes.add(null);
 
-    _children = List.from(_children)
-      ..add(
-        Card(
-          color: Colors.white,
-          margin: const EdgeInsets.all(5),
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10.0, vertical: 7.5),
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 12,
-                ),
-                TextFormField(
-                  controller: commodityName_controller,
-                  onTap: () {
-                    BlocProvider.of<BottomNavBarCubit>(context).emitHide();
-                    commodityName_controller.selection = TextSelection(
-                        baseOffset: 0,
-                        extentOffset:
-                            commodityName_controller.value.text.length);
-                  },
-                  // focusNode: _nodeWeight,
-                  // enabled: !valueEnabled,
-                  scrollPadding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom + 50),
-                  textInputAction: TextInputAction.done,
-                  // keyboardType:
-                  //     const TextInputType.numberWithOptions(
-                  //         decimal: true, signed: true),
-                  // inputFormatters: [
-                  //   DecimalFormatter(),
-                  // ],
-                  style: const TextStyle(fontSize: 18),
-                  decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!
-                        .translate('commodity_name'),
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 11.0, horizontal: 9.0),
-                  ),
-                  onTapOutside: (event) {},
-                  onEditingComplete: () {
-                    if (evaluateCo2()) {
-                      calculateCo2Report();
-                    }
-                    // evaluatePrice();
-                  },
-                  onChanged: (value) {
-                    if (evaluateCo2()) {
-                      calculateCo2Report();
-                    }
-                  },
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return AppLocalizations.of(context)!
-                          .translate('insert_value_validate');
-                    }
-                    return null;
-                  },
-                  onSaved: (newValue) {
-                    commodityName_controller.text = newValue!;
-                  },
-                  onFieldSubmitted: (value) {
-                    if (evaluateCo2()) {
-                      calculateCo2Report();
-                    }
-                    FocusManager.instance.primaryFocus?.unfocus();
-                    BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-                  },
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                TextFormField(
-                  controller: commodityWeight_controller,
-                  onTap: () {
-                    BlocProvider.of<BottomNavBarCubit>(context).emitHide();
-                    commodityWeight_controller.selection = TextSelection(
-                        baseOffset: 0,
-                        extentOffset:
-                            commodityWeight_controller.value.text.length);
-                  },
-                  // focusNode: _nodeWeight,
-                  // enabled: !valueEnabled,
-                  scrollPadding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom + 50),
-                  textInputAction: TextInputAction.done,
-                  keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true, signed: true),
-                  inputFormatters: [
-                    DecimalFormatter(),
-                  ],
-                  style: const TextStyle(fontSize: 18),
-                  decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!
-                        .translate('commodity_weight'),
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 11.0, horizontal: 9.0),
-                  ),
-                  onTapOutside: (event) {},
-                  onEditingComplete: () {
-                    if (evaluateCo2()) {
-                      calculateCo2Report();
-                    }
-                  },
-                  onChanged: (value) {
-                    if (evaluateCo2()) {
-                      calculateCo2Report();
-                    }
-                  },
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return AppLocalizations.of(context)!
-                          .translate('insert_value_validate');
-                    }
-                    return null;
-                  },
-                  onSaved: (newValue) {
-                    commodityWeight_controller.text = newValue!;
-                  },
-                  onFieldSubmitted: (value) {
-                    if (evaluateCo2()) {
-                      calculateCo2Report();
-                    }
-                    FocusManager.instance.primaryFocus?.unfocus();
-                    BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-                  },
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    setState(() => ++_count);
+    // _children = List.from(_children)
+    //   ..add(
+    //     Card(
+    //       color: Colors.white,
+    //       margin: const EdgeInsets.all(5),
+    //       child: Padding(
+    //         padding:
+    //             const EdgeInsets.symmetric(horizontal: 10.0, vertical: 7.5),
+    //         child: Column(
+    //           children: [
+    //             const SizedBox(
+    //               height: 12,
+    //             ),
+    //             TextFormField(
+    //               controller: commodityName_controller,
+    //               onTap: () {
+    //                 BlocProvider.of<BottomNavBarCubit>(context).emitHide();
+    //                 commodityName_controller.selection = TextSelection(
+    //                     baseOffset: 0,
+    //                     extentOffset:
+    //                         commodityName_controller.value.text.length);
+    //               },
+    //               // focusNode: _nodeWeight,
+    //               // enabled: !valueEnabled,
+    //               scrollPadding: EdgeInsets.only(
+    //                   bottom: MediaQuery.of(context).viewInsets.bottom + 50),
+    //               textInputAction: TextInputAction.done,
+    //               // keyboardType:
+    //               //     const TextInputType.numberWithOptions(
+    //               //         decimal: true, signed: true),
+    //               // inputFormatters: [
+    //               //   DecimalFormatter(),
+    //               // ],
+    //               style: const TextStyle(fontSize: 18),
+    //               decoration: InputDecoration(
+    //                 labelText: AppLocalizations.of(context)!
+    //                     .translate('commodity_name'),
+    //                 contentPadding: const EdgeInsets.symmetric(
+    //                     vertical: 11.0, horizontal: 9.0),
+    //               ),
+    //               onTapOutside: (event) {},
+    //               onEditingComplete: () {
+    //                 if (evaluateCo2()) {
+    //                   calculateCo2Report();
+    //                 }
+    //                 // evaluatePrice();
+    //               },
+    //               onChanged: (value) {
+    //                 if (evaluateCo2()) {
+    //                   calculateCo2Report();
+    //                 }
+    //               },
+    //               autovalidateMode: AutovalidateMode.onUserInteraction,
+    //               validator: (value) {
+    //                 if (value!.isEmpty) {
+    //                   return AppLocalizations.of(context)!
+    //                       .translate('insert_value_validate');
+    //                 }
+    //                 return null;
+    //               },
+    //               onSaved: (newValue) {
+    //                 commodityName_controller.text = newValue!;
+    //               },
+    //               onFieldSubmitted: (value) {
+    //                 if (evaluateCo2()) {
+    //                   calculateCo2Report();
+    //                 }
+    //                 FocusManager.instance.primaryFocus?.unfocus();
+    //                 BlocProvider.of<BottomNavBarCubit>(context).emitShow();
+    //               },
+    //             ),
+    //             const SizedBox(
+    //               height: 12,
+    //             ),
+    //             TextFormField(
+    //               controller: commodityWeight_controller,
+    //               onTap: () {
+    //                 BlocProvider.of<BottomNavBarCubit>(context).emitHide();
+    //                 commodityWeight_controller.selection = TextSelection(
+    //                     baseOffset: 0,
+    //                     extentOffset:
+    //                         commodityWeight_controller.value.text.length);
+    //               },
+    //               // focusNode: _nodeWeight,
+    //               // enabled: !valueEnabled,
+    //               scrollPadding: EdgeInsets.only(
+    //                   bottom: MediaQuery.of(context).viewInsets.bottom + 50),
+    //               textInputAction: TextInputAction.done,
+    //               keyboardType: const TextInputType.numberWithOptions(
+    //                   decimal: true, signed: true),
+    //               inputFormatters: [
+    //                 DecimalFormatter(),
+    //               ],
+    //               style: const TextStyle(fontSize: 18),
+    //               decoration: InputDecoration(
+    //                 labelText: AppLocalizations.of(context)!
+    //                     .translate('commodity_weight'),
+    //                 contentPadding: const EdgeInsets.symmetric(
+    //                     vertical: 11.0, horizontal: 9.0),
+    //               ),
+    //               onTapOutside: (event) {},
+    //               onEditingComplete: () {
+    //                 if (evaluateCo2()) {
+    //                   calculateCo2Report();
+    //                 }
+    //               },
+    //               onChanged: (value) {
+    //                 if (evaluateCo2()) {
+    //                   calculateCo2Report();
+    //                 }
+    //               },
+    //               autovalidateMode: AutovalidateMode.onUserInteraction,
+    //               validator: (value) {
+    //                 if (value!.isEmpty) {
+    //                   return AppLocalizations.of(context)!
+    //                       .translate('insert_value_validate');
+    //                 }
+    //                 return null;
+    //               },
+    //               onSaved: (newValue) {
+    //                 commodityWeight_controller.text = newValue!;
+    //               },
+    //               onFieldSubmitted: (value) {
+    //                 if (evaluateCo2()) {
+    //                   calculateCo2Report();
+    //                 }
+    //                 FocusManager.instance.primaryFocus?.unfocus();
+    //                 BlocProvider.of<BottomNavBarCubit>(context).emitShow();
+    //               },
+    //             ),
+    //             const SizedBox(
+    //               height: 12,
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //   );
+    setState(() => _count++);
+    print(_count);
+  }
+
+  void remove(int index) {
+    commodityName_controllers.removeAt(index);
+    commodityWeight_controllers.removeAt(index);
+    setState(() => _count--);
   }
 
   _showDatePicker() {
@@ -577,33 +582,371 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                     key: key1,
                                     child: Form(
                                       key: _addShipmentformKey,
-                                      child: ListView(
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        children: _children,
-                                      ),
+                                      child: ListView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          itemCount: _count,
+                                          itemBuilder: (context, index) {
+                                            return Stack(
+                                              children: [
+                                                Card(
+                                                  color: Colors.white,
+                                                  margin:
+                                                      const EdgeInsets.all(5),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 10.0,
+                                                        vertical: 7.5),
+                                                    child: Column(
+                                                      children: [
+                                                        const SizedBox(
+                                                          height: 30,
+                                                        ),
+                                                        TextFormField(
+                                                          controller:
+                                                              commodityName_controllers[
+                                                                  index],
+                                                          onTap: () {
+                                                            BlocProvider.of<
+                                                                        BottomNavBarCubit>(
+                                                                    context)
+                                                                .emitHide();
+                                                            commodityName_controllers[
+                                                                        index]
+                                                                    .selection =
+                                                                TextSelection(
+                                                                    baseOffset:
+                                                                        0,
+                                                                    extentOffset: commodityName_controllers[
+                                                                            index]
+                                                                        .value
+                                                                        .text
+                                                                        .length);
+                                                          },
+                                                          // focusNode: _nodeWeight,
+                                                          // enabled: !valueEnabled,
+                                                          scrollPadding: EdgeInsets.only(
+                                                              bottom: MediaQuery.of(
+                                                                          context)
+                                                                      .viewInsets
+                                                                      .bottom +
+                                                                  50),
+                                                          textInputAction:
+                                                              TextInputAction
+                                                                  .done,
+                                                          // keyboardType:
+                                                          //     const TextInputType.numberWithOptions(
+                                                          //         decimal: true, signed: true),
+                                                          // inputFormatters: [
+                                                          //   DecimalFormatter(),
+                                                          // ],
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 18),
+                                                          decoration:
+                                                              InputDecoration(
+                                                            labelText: AppLocalizations
+                                                                    .of(
+                                                                        context)!
+                                                                .translate(
+                                                                    'commodity_name'),
+                                                            contentPadding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                                    vertical:
+                                                                        11.0,
+                                                                    horizontal:
+                                                                        9.0),
+                                                          ),
+                                                          onTapOutside:
+                                                              (event) {},
+                                                          onEditingComplete:
+                                                              () {
+                                                            if (evaluateCo2()) {
+                                                              calculateCo2Report();
+                                                            }
+                                                            // evaluatePrice();
+                                                          },
+                                                          onChanged: (value) {
+                                                            if (evaluateCo2()) {
+                                                              calculateCo2Report();
+                                                            }
+                                                          },
+                                                          autovalidateMode:
+                                                              AutovalidateMode
+                                                                  .onUserInteraction,
+                                                          validator: (value) {
+                                                            if (value!
+                                                                .isEmpty) {
+                                                              return AppLocalizations
+                                                                      .of(
+                                                                          context)!
+                                                                  .translate(
+                                                                      'insert_value_validate');
+                                                            }
+                                                            return null;
+                                                          },
+                                                          onSaved: (newValue) {
+                                                            commodityName_controllers[
+                                                                        index]
+                                                                    .text =
+                                                                newValue!;
+                                                          },
+                                                          onFieldSubmitted:
+                                                              (value) {
+                                                            if (evaluateCo2()) {
+                                                              calculateCo2Report();
+                                                            }
+                                                            FocusManager
+                                                                .instance
+                                                                .primaryFocus
+                                                                ?.unfocus();
+                                                            BlocProvider.of<
+                                                                        BottomNavBarCubit>(
+                                                                    context)
+                                                                .emitShow();
+                                                          },
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 12,
+                                                        ),
+                                                        TextFormField(
+                                                          controller:
+                                                              commodityWeight_controllers[
+                                                                  index],
+                                                          onTap: () {
+                                                            BlocProvider.of<
+                                                                        BottomNavBarCubit>(
+                                                                    context)
+                                                                .emitHide();
+                                                            commodityWeight_controllers[
+                                                                        index]
+                                                                    .selection =
+                                                                TextSelection(
+                                                                    baseOffset:
+                                                                        0,
+                                                                    extentOffset: commodityWeight_controllers[
+                                                                            index]
+                                                                        .value
+                                                                        .text
+                                                                        .length);
+                                                          },
+                                                          // focusNode: _nodeWeight,
+                                                          // enabled: !valueEnabled,
+                                                          scrollPadding: EdgeInsets.only(
+                                                              bottom: MediaQuery.of(
+                                                                          context)
+                                                                      .viewInsets
+                                                                      .bottom +
+                                                                  50),
+                                                          textInputAction:
+                                                              TextInputAction
+                                                                  .done,
+                                                          keyboardType:
+                                                              const TextInputType
+                                                                  .numberWithOptions(
+                                                                  decimal: true,
+                                                                  signed: true),
+                                                          inputFormatters: [
+                                                            DecimalFormatter(),
+                                                          ],
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 18),
+                                                          decoration:
+                                                              InputDecoration(
+                                                            labelText: AppLocalizations
+                                                                    .of(
+                                                                        context)!
+                                                                .translate(
+                                                                    'commodity_weight'),
+                                                            contentPadding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                                    vertical:
+                                                                        11.0,
+                                                                    horizontal:
+                                                                        9.0),
+                                                          ),
+                                                          onTapOutside:
+                                                              (event) {},
+                                                          onEditingComplete:
+                                                              () {
+                                                            if (evaluateCo2()) {
+                                                              calculateCo2Report();
+                                                            }
+                                                          },
+                                                          onChanged: (value) {
+                                                            if (evaluateCo2()) {
+                                                              calculateCo2Report();
+                                                            }
+                                                          },
+                                                          autovalidateMode:
+                                                              AutovalidateMode
+                                                                  .onUserInteraction,
+                                                          validator: (value) {
+                                                            if (value!
+                                                                .isEmpty) {
+                                                              return AppLocalizations
+                                                                      .of(
+                                                                          context)!
+                                                                  .translate(
+                                                                      'insert_value_validate');
+                                                            }
+                                                            return null;
+                                                          },
+                                                          onSaved: (newValue) {
+                                                            commodityWeight_controllers[
+                                                                        index]
+                                                                    .text =
+                                                                newValue!;
+                                                          },
+                                                          onFieldSubmitted:
+                                                              (value) {
+                                                            if (evaluateCo2()) {
+                                                              calculateCo2Report();
+                                                            }
+                                                            FocusManager
+                                                                .instance
+                                                                .primaryFocus
+                                                                ?.unfocus();
+                                                            BlocProvider.of<
+                                                                        BottomNavBarCubit>(
+                                                                    context)
+                                                                .emitShow();
+                                                          },
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 12,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                Positioned(
+                                                  left: localeState.value
+                                                              .languageCode ==
+                                                          'en'
+                                                      ? 5
+                                                      : null,
+                                                  right: localeState.value
+                                                              .languageCode ==
+                                                          'en'
+                                                      ? null
+                                                      : 5,
+                                                  top: 5,
+                                                  child: Container(
+                                                    height: 30,
+                                                    width: 35,
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          AppColor.deepYellow,
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                        topLeft: localeState
+                                                                    .value
+                                                                    .languageCode ==
+                                                                'en'
+                                                            ? Radius.circular(
+                                                                15)
+                                                            : Radius.circular(
+                                                                5),
+                                                        topRight: localeState
+                                                                    .value
+                                                                    .languageCode ==
+                                                                'en'
+                                                            ? Radius.circular(5)
+                                                            : Radius.circular(
+                                                                15),
+                                                        bottomLeft:
+                                                            Radius.circular(5),
+                                                        bottomRight:
+                                                            Radius.circular(5),
+                                                      ),
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(
+                                                        (index + 1).toString(),
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                (_count > 1) && (index != 0)
+                                                    ? Positioned(
+                                                        right: localeState.value
+                                                                    .languageCode ==
+                                                                'en'
+                                                            ? 0
+                                                            : null,
+                                                        left: localeState.value
+                                                                    .languageCode ==
+                                                                'en'
+                                                            ? null
+                                                            : 0,
+                                                        child: GestureDetector(
+                                                          onTap: () {
+                                                            remove(index);
+                                                            // _showAlertDialog(index);
+                                                          },
+                                                          child: Container(
+                                                            height: 30,
+                                                            width: 30,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: Colors.red,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          45),
+                                                            ),
+                                                            child: const Center(
+                                                              child: Icon(
+                                                                Icons.close,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      )
+                                                    : const SizedBox.shrink(),
+                                              ],
+                                            );
+                                          }),
                                     ),
                                   ),
                                   Positioned(
-                                    bottom: -15,
+                                    bottom: -18,
                                     child: GestureDetector(
                                       onTap: _add,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(45),
-                                          border: Border.all(
-                                            color: Colors.grey[400]!,
-                                            width: 2,
+                                      child: AbsorbPointer(
+                                        absorbing: true,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(45),
+                                              border: Border.all(
+                                                color: Colors.grey[400]!,
+                                                width: 2,
+                                              ),
+                                            ),
+                                            padding: const EdgeInsets.all(1.0),
+                                            child: Icon(
+                                              Icons.add_circle_outline,
+                                              color: AppColor.deepYellow,
+                                              size: 25,
+                                            ),
                                           ),
-                                        ),
-                                        padding: const EdgeInsets.all(1.0),
-                                        child: Icon(
-                                          Icons.add_circle_outline,
-                                          color: AppColor.deepYellow,
-                                          size: 25,
                                         ),
                                       ),
                                     ),
