@@ -7,6 +7,7 @@ class NotificationModel {
   String? noteficationType;
   bool? isread;
   int? user;
+  int? sender;
   int? shipment;
 
   NotificationModel({
@@ -18,6 +19,7 @@ class NotificationModel {
     this.noteficationType,
     this.isread,
     this.user,
+    this.sender,
     this.shipment,
   });
 
@@ -30,6 +32,7 @@ class NotificationModel {
     noteficationType = json['notefication_type'];
     isread = json['isread'];
     user = json['user'];
+    sender = json['sender'];
     shipment = json['shipment'];
   }
 
@@ -42,6 +45,7 @@ class NotificationModel {
     data['notefication_type'] = noteficationType;
     data['isread'] = isread;
     data['user'] = user;
+    data['sender'] = sender;
     return data;
   }
 }

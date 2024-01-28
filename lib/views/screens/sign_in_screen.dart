@@ -1,6 +1,7 @@
 import 'package:camion/Localization/app_localizations.dart';
 import 'package:camion/business_logic/bloc/auth_bloc.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
+import 'package:camion/views/screens/control_view.dart';
 import 'package:camion/views/screens/driver/driver_home_screen.dart';
 import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/merchant/home_screen.dart';
@@ -222,8 +223,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                         Navigator.pushAndRemoveUntil(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) =>
-                                                DriverHomeScreen(),
+                                            builder: (context) => ControlView(),
                                           ),
                                           (route) => false,
                                         );
@@ -243,8 +243,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                         Navigator.pushAndRemoveUntil(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) =>
-                                                OwnerHomeScreen(),
+                                            builder: (context) => ControlView(),
                                           ),
                                           (route) => false,
                                         );
@@ -264,7 +263,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                         Navigator.pushAndRemoveUntil(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => HomeScreen(),
+                                            builder: (context) => ControlView(),
                                           ),
                                           (route) => false,
                                         );

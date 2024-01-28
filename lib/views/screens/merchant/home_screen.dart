@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:camion/Localization/app_localizations.dart';
 import 'package:camion/business_logic/bloc/auth_bloc.dart';
 import 'package:camion/business_logic/bloc/post_bloc.dart';
@@ -5,6 +7,7 @@ import 'package:camion/business_logic/bloc/shipments/active_shipment_list_bloc.d
 import 'package:camion/business_logic/bloc/shipments/shipment_list_bloc.dart';
 import 'package:camion/business_logic/cubit/bottom_nav_bar_cubit.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
+import 'package:camion/data/models/user_model.dart';
 import 'package:camion/data/providers/add_shippment_provider.dart';
 import 'package:camion/data/providers/task_num_provider.dart';
 import 'package:camion/data/services/fcm_service.dart';
@@ -39,6 +42,18 @@ class _HomeScreenState extends State<HomeScreen>
   NotificationServices notificationServices = NotificationServices();
   late TabController _tabController;
   AddShippmentProvider? addShippmentProvider;
+  late SharedPreferences prefs;
+
+  bool userloading = true;
+  late UserModel _usermodel;
+  getUserData() async {
+    prefs = await SharedPreferences.getInstance();
+    _usermodel =
+        UserModel.fromJson(jsonDecode(prefs.getString("userProfile")!));
+    setState(() {
+      userloading = false;
+    });
+  }
 
   @override
   void initState() {
@@ -58,6 +73,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      getUserData();
       addShippmentProvider =
           Provider.of<AddShippmentProvider>(context, listen: false);
       setState(() {
@@ -172,14 +188,49 @@ class _HomeScreenState extends State<HomeScreen>
                           CircleAvatar(
                             backgroundColor: AppColor.deepYellow,
                             radius: 35.h,
+                            child: userloading
+                                ? Center(
+                                    child: Text(
+                                      "AY",
+                                      style: TextStyle(
+                                        fontSize: 28.sp,
+                                      ),
+                                    ),
+                                  )
+                                : (_usermodel.image!.isNotEmpty ||
+                                        _usermodel.image! != null)
+                                    ? ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(180),
+                                        child: Image.network(
+                                          _usermodel.image!,
+                                          fit: BoxFit.fill,
+                                        ),
+                                      )
+                                    : Center(
+                                        child: Text(
+                                          "AY",
+                                          style: TextStyle(
+                                            fontSize: 28.sp,
+                                          ),
+                                        ),
+                                      ),
                           ),
-                          Text(
-                            "Morad Kara",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 26.sp,
-                                fontWeight: FontWeight.bold),
-                          )
+                          userloading
+                              ? Text(
+                                  "",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 26.sp,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              : Text(
+                                  "${_usermodel.firstName!} ${_usermodel.lastName!}",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 26.sp,
+                                      fontWeight: FontWeight.bold),
+                                )
                         ],
                       ),
                       SizedBox(

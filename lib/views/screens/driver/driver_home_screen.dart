@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:camion/Localization/app_localizations.dart';
+import 'package:camion/business_logic/bloc/auth_bloc.dart';
 import 'package:camion/business_logic/bloc/post_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_list_bloc.dart';
 import 'package:camion/business_logic/cubit/bottom_nav_bar_cubit.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
+import 'package:camion/data/models/user_model.dart';
 import 'package:camion/data/services/fcm_service.dart';
 import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/merchant/add_shippment_screen.dart';
@@ -43,16 +46,18 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
 
   _getLocation() async {
     prefs = await SharedPreferences.getInstance();
+    var userprofile =
+        UserModel.fromJson(jsonDecode(prefs.getString("userProfile")!));
     var driverId = prefs.getInt("truckuser");
     try {
       final loc.LocationData _locationResult = await location.getLocation();
       await FirebaseFirestore.instance
           .collection('location')
-          .doc('driver$driverId')
+          .doc('driver${userprofile.id}')
           .set({
         'latitude': _locationResult.latitude,
         'longitude': _locationResult.longitude,
-        'name': 'john'
+        'name': '${userprofile.firstName!} ${userprofile.lastName!}'
       }, SetOptions(merge: true));
     } catch (e) {
       print(e);
@@ -60,6 +65,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
   }
 
   Future<void> _listenLocation() async {
+    prefs = await SharedPreferences.getInstance();
+    var userprofile =
+        UserModel.fromJson(jsonDecode(prefs.getString("userProfile")!));
+    var driverId = prefs.getInt("truckuser");
     _locationSubscription = location.onLocationChanged.handleError((onError) {
       print(onError);
       _locationSubscription?.cancel();
@@ -69,10 +78,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
     }).listen((loc.LocationData currentlocation) async {
       print(currentlocation);
 
-      await FirebaseFirestore.instance.collection('location').doc('user1').set({
+      await FirebaseFirestore.instance
+          .collection('location')
+          .doc('driver${userprofile.id}')
+          .set({
         'latitude': currentlocation.latitude,
         'longitude': currentlocation.longitude,
-        'name': 'john'
+        'name': '${userprofile.firstName!} ${userprofile.lastName!}'
       }, SetOptions(merge: true));
     });
   }
@@ -190,6 +202,180 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                 appBar: CustomAppBar(
                   title: title,
                   scaffoldKey: _scaffoldKey,
+                ),
+                drawer: Drawer(
+                  backgroundColor: AppColor.deepBlack,
+                  elevation: 1,
+                  width: MediaQuery.of(context).size.width * .85,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12.w),
+                    child: ListView(children: [
+                      SizedBox(
+                        height: 35.h,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: AppColor.deepYellow,
+                            radius: 35.h,
+                          ),
+                          Text(
+                            "Morad Kara",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 26.sp,
+                                fontWeight: FontWeight.bold),
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 15.h,
+                      ),
+                      const Divider(
+                        color: Colors.white,
+                      ),
+                      GestureDetector(
+                        onTap: () async {
+                          if (AppLocalizations.of(context)!.isEnLocale!) {
+                            BlocProvider.of<LocaleCubit>(context).toArabic();
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            prefs.setString("language", "ar");
+                          } else {
+                            BlocProvider.of<LocaleCubit>(context).toEnglish();
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            prefs.setString("language", "en");
+                          }
+                          Future.delayed(const Duration(milliseconds: 500))
+                              .then((value) =>
+                                  _scaffoldKey.currentState!.closeDrawer());
+                        },
+                        child: ListTile(
+                          leading: SvgPicture.asset(
+                            "assets/icons/settings.svg",
+                            height: 20.h,
+                          ),
+                          title: Text(
+                            localeState.value.languageCode != 'en'
+                                ? "اللغة: English"
+                                : "language: العربية",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          // trailing: Container(
+                          //   width: 35.w,
+                          //   height: 20.h,
+                          //   decoration: BoxDecoration(
+                          //       color: AppColor.deepYellow,
+                          //       borderRadius: BorderRadius.circular(2)),
+                          //   child: Center(
+                          //     child: Text(
+                          //       "soon",
+                          //       style: TextStyle(
+                          //         color: Colors.white,
+                          //         fontSize: 12.sp,
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                        ),
+                      ),
+                      const Divider(
+                        color: Colors.white,
+                      ),
+                      ListTile(
+                        leading: SvgPicture.asset(
+                          "assets/icons/help_info.svg",
+                          height: 20.h,
+                        ),
+                        title: Text(
+                          AppLocalizations.of(context)!.translate('help'),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        trailing: Container(
+                          width: 35.w,
+                          height: 20.h,
+                          decoration: BoxDecoration(
+                              color: AppColor.deepYellow,
+                              borderRadius: BorderRadius.circular(2)),
+                          child: Center(
+                            child: Text(
+                              "soon",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12.sp,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const Divider(
+                        color: Colors.white,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          showDialog<void>(
+                            context: context,
+                            barrierDismissible: false, // user must tap button!
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                // <-- SEE HERE
+                                backgroundColor: Colors.white,
+                                title: Text(AppLocalizations.of(context)!
+                                    .translate('log_out')),
+                                content: SingleChildScrollView(
+                                  child: ListBody(
+                                    children: <Widget>[
+                                      Text(AppLocalizations.of(context)!
+                                          .translate('log_out_confirm')),
+                                    ],
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text(AppLocalizations.of(context)!
+                                        .translate('no')),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text(AppLocalizations.of(context)!
+                                        .translate('yes')),
+                                    onPressed: () {
+                                      BlocProvider.of<AuthBloc>(context)
+                                          .add(UserLoggedOut());
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: ListTile(
+                          leading: SvgPicture.asset(
+                            "assets/icons/log_out.svg",
+                            height: 20.h,
+                          ),
+                          title: Text(
+                            AppLocalizations.of(context)!.translate('log_out'),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ]),
+                  ),
                 ),
                 bottomNavigationBar:
                     BlocBuilder<BottomNavBarCubit, BottomNavBarState>(

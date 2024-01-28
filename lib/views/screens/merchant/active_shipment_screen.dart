@@ -26,9 +26,23 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
   bool _loading = true;
   String _mapStyle = "";
 
+  late BitmapDescriptor pickupicon;
+  late BitmapDescriptor deliveryicon;
+
+  createMarkerIcons() async {
+    pickupicon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(), "assets/icons/location1.png");
+    deliveryicon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(), "assets/icons/location2.png");
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      createMarkerIcons();
+    });
     rootBundle.loadString('assets/style/map_style.json').then((string) {
       _mapStyle = string;
     });
@@ -243,6 +257,8 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                                         state
                                                                             .shipments[index]
                                                                             .pickupCityLang!),
+                                                                    icon:
+                                                                        pickupicon,
                                                                   ),
                                                                   Marker(
                                                                     markerId:
@@ -256,6 +272,8 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                                         state
                                                                             .shipments[index]
                                                                             .deliveryCityLang!),
+                                                                    icon:
+                                                                        deliveryicon,
                                                                   ),
                                                                 },
                                                                 polylines: {
