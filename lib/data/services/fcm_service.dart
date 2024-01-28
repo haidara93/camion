@@ -8,6 +8,7 @@ import 'package:camion/business_logic/bloc/shipments/shipment_details_bloc.dart'
 // import 'package:camion/business_logic/bloc/offer_details_bloc.dart';
 import 'package:camion/data/providers/notification_provider.dart';
 import 'package:camion/firebase_options.dart';
+import 'package:camion/views/screens/merchant/active_shipment_details_from_notification.dart';
 import 'package:camion/views/screens/merchant/shipment_task_details_from_notification.dart';
 // import 'package:camion/views/screens/broker/order_details_screen.dart';
 // import 'package:camion/views/screens/trader/log_screens/offer_details_screen.dart';
@@ -147,6 +148,16 @@ class NotificationServices {
           builder: (context) => ShipmentTaskDetailsFromNotificationScreen(),
         ),
       );
+      BlocProvider.of<ShipmentDetailsBloc>(context)
+          .add(ShipmentDetailsLoadEvent(int.parse(message.data['shipmentId'])));
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ActiveShipmentDetailsFromNotificationScreen(
+              user_id: 'driver${int.parse(message.data['sender'])}',
+            ),
+          ));
     }
     // else if (message.data['notefication_type'] == "O") {
     //   BlocProvider.of<OfferDetailsBloc>(context)
