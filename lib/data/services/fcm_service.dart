@@ -81,6 +81,8 @@ class NotificationServices {
       sound: true,
     );
 
+    // messaging.re
+
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       if (kDebugMode) {
         print('user granted permission');
