@@ -1,4 +1,5 @@
 import 'package:camion/business_logic/bloc/auth_bloc.dart';
+import 'package:camion/business_logic/bloc/notification_bloc.dart';
 import 'package:camion/business_logic/bloc/package_type_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/active_shipment_list_bloc.dart';
 import 'package:camion/business_logic/bloc/truck/truck_type_bloc.dart';
@@ -31,6 +32,8 @@ class ControlView extends StatelessWidget {
             );
           } else if (state is InternetConnected) {
             BlocProvider.of<BottomNavBarCubit>(context).emitShow();
+            BlocProvider.of<NotificationBloc>(context)
+                .add(NotificationLoadEvent());
             return BlocBuilder<AuthBloc, AuthState>(
               builder: (context, state) {
                 if (state is AuthDriverSuccessState) {

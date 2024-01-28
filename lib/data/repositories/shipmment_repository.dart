@@ -196,4 +196,20 @@ class ShippmentRerository {
       return false;
     }
   }
+
+  Future<Shipment?> getShipment(int id) async {
+    prefs = await SharedPreferences.getInstance();
+    var jwt = prefs.getString("token");
+
+    var rs = await HttpHelper.get('$SHIPPMENTS_ENDPOINT$id/', apiToken: jwt);
+
+    print(rs.statusCode);
+    if (rs.statusCode == 200) {
+      var myDataString = utf8.decode(rs.bodyBytes);
+
+      var result = jsonDecode(myDataString);
+      return Shipment.fromJson(result);
+    }
+    return null;
+  }
 }

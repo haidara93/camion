@@ -35,6 +35,17 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
   AddShippmentProvider? addShippmentProvider;
 
   LatLng? selectedPosition;
+  late BitmapDescriptor pickupicon;
+  late BitmapDescriptor deliveryicon;
+
+  createMarkerIcons() async {
+    pickupicon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(size: Size(30, 50)),
+        "assets/icons/location1.png");
+    deliveryicon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(), "assets/icons/location2.png");
+    setState(() {});
+  }
 
   @override
   void initState() {
@@ -42,6 +53,7 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
       addShippmentProvider =
           Provider.of<AddShippmentProvider>(context, listen: false);
       addShippmentProvider!.initMapbounds();
+      createMarkerIcons();
     });
     super.initState();
   }
@@ -86,6 +98,16 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Pick Location",
+          style: TextStyle(
+            // color: AppColor.lightBlue,
+            fontSize: 19.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Stack(
           alignment: Alignment.center,
@@ -103,27 +125,30 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
                     //   Get.back();
                     // });
 
-                    setState(() {
-                      selectedPosition = tapPosition;
-                      myMarker = new Set();
-                      myMarker.add(Marker(
-                          markerId: MarkerId(tapPosition.toString()),
-                          position: tapPosition));
-                    });
+                    // setState(() {
+                    //   selectedPosition = tapPosition;
+                    //   myMarker = new Set();
+                    //   myMarker.add(Marker(
+                    //       markerId: MarkerId(tapPosition.toString()),
+                    //       position: tapPosition));
+                    // });
                   },
                   onCameraMove: (position) {
                     // controller.address_latitude =
                     //     (position.target.latitude.toString());
                     // controller.address_longitude =
                     //     (position.target.longitude.toString());
-                    // setState(() {
-                    //   myMarker = new Set();
-                    //   var newposition = LatLng(position.target.latitude,
-                    //       position.target.longitude);
-                    //   myMarker.add(Marker(
-                    //       markerId: MarkerId(newposition.toString()),
-                    //       position: newposition));
-                    // });
+                    setState(() {
+                      selectedPosition = LatLng(
+                          position.target.latitude, position.target.longitude);
+                      myMarker = new Set();
+                      var newposition = LatLng(
+                          position.target.latitude, position.target.longitude);
+                      myMarker.add(Marker(
+                          markerId: MarkerId(newposition.toString()),
+                          position: newposition,
+                          icon: widget.type == 0 ? pickupicon : deliveryicon));
+                    });
                     // Get.find<PropertyController>()
                     //     .setCurrentPosition(position);
                   },

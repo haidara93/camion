@@ -1544,11 +1544,13 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                       'تم اضافة تعليمات الشحن بنجاح..'),
                               duration: const Duration(seconds: 3),
                             ));
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const ControlView(),
-                                ));
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ControlView(),
+                              ),
+                              (route) => false,
+                            );
                           }
                           if (state is InstructionCreateFailureState) {
                             print(state.errorMessage);

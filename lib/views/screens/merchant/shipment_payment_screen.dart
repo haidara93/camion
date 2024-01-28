@@ -277,55 +277,53 @@ class _ShipmentPaymentScreenState extends State<ShipmentPaymentScreen> {
                                   SizedBox(
                                     height: 7.h,
                                   ),
-                                  Visibility(
-                                    visible:
-                                        widget.shipment.shipmentpayment != null,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(
-                                          width: double.infinity,
-                                        ),
-                                        Divider(
-                                          height: 7.h,
-                                        ),
-                                        Text(
-                                          '${AppLocalizations.of(context)!.translate('total_amount')}: ${(widget.shipment.shipmentpayment!.amount! + widget.shipment.shipmentpayment!.fees! + widget.shipment.shipmentpayment!.extraFees!)}',
-                                          style: TextStyle(
-                                            // color: AppColor.lightBlue,
-                                            fontSize: 17.sp,
-                                          ),
-                                        ),
-                                        Divider(
-                                          height: 7.h,
-                                        ),
-                                        Text(
-                                          '${AppLocalizations.of(context)!.translate('payment_date')}: ${setLoadDate(widget.shipment.shipmentpayment!.created_date!)}',
-                                          style: TextStyle(
-                                            // color: AppColor.lightBlue,
-                                            fontSize: 17.sp,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 7.h,
-                                        ),
-                                        Divider(
-                                          height: 7.h,
-                                        ),
-                                        Text(
-                                          '${AppLocalizations.of(context)!.translate('payment_method')}: VISA Card',
-                                          style: TextStyle(
-                                            // color: AppColor.lightBlue,
-                                            fontSize: 17.sp,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 7.h,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  widget.shipment.shipmentpayment != null
+                                      ? Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(
+                                              width: double.infinity,
+                                            ),
+                                            Divider(
+                                              height: 7.h,
+                                            ),
+                                            Text(
+                                              '${AppLocalizations.of(context)!.translate('total_amount')}: ${(widget.shipment.shipmentpayment!.amount! + widget.shipment.shipmentpayment!.fees! + widget.shipment.shipmentpayment!.extraFees!)}',
+                                              style: TextStyle(
+                                                // color: AppColor.lightBlue,
+                                                fontSize: 17.sp,
+                                              ),
+                                            ),
+                                            Divider(
+                                              height: 7.h,
+                                            ),
+                                            Text(
+                                              '${AppLocalizations.of(context)!.translate('payment_date')}: ${setLoadDate(widget.shipment.shipmentpayment!.created_date!)}',
+                                              style: TextStyle(
+                                                // color: AppColor.lightBlue,
+                                                fontSize: 17.sp,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 7.h,
+                                            ),
+                                            Divider(
+                                              height: 7.h,
+                                            ),
+                                            Text(
+                                              '${AppLocalizations.of(context)!.translate('payment_method')}: VISA Card',
+                                              style: TextStyle(
+                                                // color: AppColor.lightBlue,
+                                                fontSize: 17.sp,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 7.h,
+                                            ),
+                                          ],
+                                        )
+                                      : SizedBox.shrink(),
                                 ],
                               ),
                             ),

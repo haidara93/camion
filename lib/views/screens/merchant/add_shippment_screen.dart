@@ -87,6 +87,18 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
   final GlobalKey<FormState> _addShipmentformKey = GlobalKey<FormState>();
   AddShippmentProvider? addShippmentProvider;
   String _mapStyle = "";
+
+  late BitmapDescriptor pickupicon;
+  late BitmapDescriptor deliveryicon;
+
+  createMarkerIcons() async {
+    pickupicon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(), "assets/icons/location1.png");
+    deliveryicon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(), "assets/icons/location2.png");
+    setState(() {});
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -94,8 +106,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       addShippmentProvider =
           Provider.of<AddShippmentProvider>(context, listen: false);
+      createMarkerIcons();
     });
-
     TextEditingController commodityName_controller = TextEditingController();
     TextEditingController commodityWeight_controller = TextEditingController();
     // TextEditingController commodityQuantity_controller =
@@ -930,22 +942,11 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                         absorbing: true,
                                         child: Padding(
                                           padding: const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(45),
-                                              border: Border.all(
-                                                color: Colors.grey[400]!,
-                                                width: 2,
-                                              ),
-                                            ),
-                                            padding: const EdgeInsets.all(1.0),
-                                            child: Icon(
-                                              Icons.add_circle_outline,
-                                              color: AppColor.deepYellow,
-                                              size: 25,
-                                            ),
+                                          child: SizedBox(
+                                            height: 32.h,
+                                            width: 32.w,
+                                            child: SvgPicture.asset(
+                                                "assets/icons/add.svg"),
                                           ),
                                         ),
                                       ),
@@ -1104,17 +1105,24 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                                       return child;
                                                                     }
 
-                                                                    return SizedBox(
-                                                                      height:
-                                                                          50.h,
+                                                                    return Shimmer
+                                                                        .fromColors(
+                                                                      baseColor:
+                                                                          (Colors
+                                                                              .grey[300])!,
+                                                                      highlightColor:
+                                                                          (Colors
+                                                                              .grey[100])!,
+                                                                      enabled:
+                                                                          true,
                                                                       child:
-                                                                          Center(
-                                                                        child:
-                                                                            CircularProgressIndicator(
-                                                                          value: loadingProgress.expectedTotalBytes != null
-                                                                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                                                              : null,
-                                                                        ),
+                                                                          Container(
+                                                                        height:
+                                                                            50.h,
+                                                                        width:
+                                                                            175.w,
+                                                                        color: Colors
+                                                                            .white,
                                                                       ),
                                                                     );
                                                                   },
@@ -1202,7 +1210,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                                         width:
                                                                             70.w,
                                                                         height:
-                                                                            55.h,
+                                                                            38.h,
                                                                         child:
                                                                             TextField(
                                                                           controller:
@@ -1225,6 +1233,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                                           inputFormatters: [
                                                                             DecimalFormatter(),
                                                                           ],
+
                                                                           decoration:
                                                                               const InputDecoration(
                                                                             labelText:
@@ -2009,6 +2018,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                           position: LatLng(
                                               shippmentProvider.pickup_lat,
                                               shippmentProvider.pickup_lang),
+                                          icon: pickupicon,
                                         )
                                       : const Marker(
                                           markerId: MarkerId("pickup"),
@@ -2019,6 +2029,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                           position: LatLng(
                                               shippmentProvider.delivery_lat,
                                               shippmentProvider.delivery_lang),
+                                          icon: deliveryicon,
                                         )
                                       : const Marker(
                                           markerId: MarkerId("delivery"),
@@ -2182,12 +2193,14 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                               ));
                               BlocProvider.of<TrucksListBloc>(context)
                                   .add(TrucksListLoadEvent(state.shipment));
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const SelectTruckScreen(),
-                                  ));
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const SelectTruckScreen(),
+                                ),
+                                (route) => false,
+                              );
                             }
                             if (state is ShippmentCreateFailureState) {
                               print(state.errorMessage);

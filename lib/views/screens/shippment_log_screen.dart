@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timelines/timelines.dart';
 
@@ -30,6 +31,28 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
   void dispose() {
     super.dispose();
     _tabController.dispose();
+  }
+
+  String setLoadDate(DateTime date) {
+    List months = [
+      'jan',
+      'feb',
+      'mar',
+      'april',
+      'may',
+      'jun',
+      'july',
+      'aug',
+      'sep',
+      'oct',
+      'nov',
+      'dec'
+    ];
+    var mon = date.month;
+    var month = months[mon - 1];
+
+    var result = '${date.year}-$month-${date.day}';
+    return result;
   }
 
   String getOfferStatus(String offer) {
@@ -157,10 +180,31 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                         padding:
                                             EdgeInsets.symmetric(vertical: 5.h),
                                         child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 11),
+                                              child: Text(
+                                                '${AppLocalizations.of(context)!.translate('shipment_number')}: SA-${state.shipments[index].id!}',
+                                                style: TextStyle(
+                                                    // color: AppColor.lightBlue,
+                                                    fontSize: 18.sp,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ),
                                             ListTile(
                                               contentPadding: EdgeInsets.zero,
-                                              onTap: () {},
+                                              onTap: () async {
+                                                SharedPreferences prefs =
+                                                    await SharedPreferences
+                                                        .getInstance();
+                                              },
                                               leading: Container(
                                                 height: 75.h,
                                                 width: 75.w,
@@ -190,19 +234,6 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
-                                                      Text(
-                                                        '${AppLocalizations.of(context)!.translate('shipment_number')}: SA-${state.shipments[index].id!}',
-                                                        style: TextStyle(
-                                                            // color: AppColor.lightBlue,
-                                                            fontSize: 18.sp,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 7.h,
-                                                      ),
-
                                                       SizedBox(
                                                         height: 70.h,
                                                         child: Row(
@@ -215,7 +246,10 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                                                   .horizontal,
                                                               oppositeContents:
                                                                   Text(
-                                                                '${state.shipments[index].pickupDate!.year.toString()}-${state.shipments[index].pickupDate!.month.toString()}-${state.shipments[index].pickupDate!.day.toString()}',
+                                                                setLoadDate(state
+                                                                    .shipments[
+                                                                        index]
+                                                                    .pickupDate!),
                                                               ),
                                                               contents: Text(
                                                                 state
@@ -267,7 +301,10 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                                                   .horizontal,
                                                               oppositeContents:
                                                                   Text(
-                                                                '${state.shipments[index].pickupDate!.year.toString()}-${state.shipments[index].pickupDate!.month.toString()}-${state.shipments[index].pickupDate!.day.toString()}',
+                                                                setLoadDate(state
+                                                                    .shipments[
+                                                                        index]
+                                                                    .pickupDate!),
                                                               ),
                                                               contents: Text(
                                                                 state

@@ -6,6 +6,7 @@ import 'package:camion/views/widgets/calculator_loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shimmer/shimmer.dart';
 
 class MainScreen extends StatefulWidget {
   MainScreen({Key? key}) : super(key: key);
@@ -111,19 +112,14 @@ class _MainScreenState extends State<MainScreen> {
                                         return child;
                                       }
 
-                                      return SizedBox(
-                                        height: 225.h,
-                                        child: Center(
-                                          child: CircularProgressIndicator(
-                                            value: loadingProgress
-                                                        .expectedTotalBytes !=
-                                                    null
-                                                ? loadingProgress
-                                                        .cumulativeBytesLoaded /
-                                                    loadingProgress
-                                                        .expectedTotalBytes!
-                                                : null,
-                                          ),
+                                      return Shimmer.fromColors(
+                                        baseColor: (Colors.grey[300])!,
+                                        highlightColor: (Colors.grey[100])!,
+                                        enabled: true,
+                                        child: Container(
+                                          height: 225.h,
+                                          width: double.infinity,
+                                          color: Colors.white,
                                         ),
                                       );
                                     },

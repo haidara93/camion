@@ -4,9 +4,11 @@ import 'dart:math';
 
 // import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:camion/business_logic/bloc/notification_bloc.dart';
+import 'package:camion/business_logic/bloc/shipments/shipment_details_bloc.dart';
 // import 'package:camion/business_logic/bloc/offer_details_bloc.dart';
 import 'package:camion/data/providers/notification_provider.dart';
 import 'package:camion/firebase_options.dart';
+import 'package:camion/views/screens/merchant/shipment_task_details_from_notification.dart';
 // import 'package:camion/views/screens/broker/order_details_screen.dart';
 // import 'package:camion/views/screens/trader/log_screens/offer_details_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -134,17 +136,17 @@ class NotificationServices {
     print(message.notification!.title);
     print("message.notification!.body");
     print(message.notification!.body);
-    // if (message.data['notefication_type'] == "A") {
-    //   BlocProvider.of<OfferDetailsBloc>(context)
-    //       .add(OfferDetailsLoadEvent(int.parse(message.data['offerId'])));
-    //   Navigator.push(
-    //       context,
-    //       MaterialPageRoute(
-    //         builder: (context) => OfferDetailsScreen(
-    //           type: "trader",
-    //         ),
-    //       ));
-    // } else if (message.data['notefication_type'] == "O") {
+    if (message.data['notefication_type'] == "A") {
+      BlocProvider.of<ShipmentDetailsBloc>(context)
+          .add(ShipmentDetailsLoadEvent(int.parse(message.data['shipmentId'])));
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ShipmentTaskDetailsFromNotificationScreen(),
+        ),
+      );
+    }
+    // else if (message.data['notefication_type'] == "O") {
     //   BlocProvider.of<OfferDetailsBloc>(context)
     //       .add(OfferDetailsLoadEvent(int.parse(message.data['offerId'])));
     //   Navigator.push(
@@ -152,7 +154,8 @@ class NotificationServices {
     //       MaterialPageRoute(
     //         builder: (context) => OrderDetailsScreen(),
     //       ));
-    // } else if (message.data['notefication_type'] == "T") {
+    // }
+    // else if (message.data['notefication_type'] == "T") {
     //   BlocProvider.of<OfferDetailsBloc>(context)
     //       .add(OfferDetailsLoadEvent(int.parse(message.data['offerId'])));
     //   Navigator.push(
@@ -177,7 +180,7 @@ class NotificationServices {
   static Future<void> markNotificationasRead(int id) async {
     var prefs = await SharedPreferences.getInstance();
     var jwt = prefs.getString("token");
-    var url = 'https://across-mena.com/clearance/notifecations/$id/';
+    var url = 'https://matjari.app/camion/notifecations/$id/';
     var response = await http.patch(Uri.parse(url),
         headers: {
           HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',

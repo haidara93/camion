@@ -1,8 +1,10 @@
 import 'package:camion/business_logic/bloc/notification_bloc.dart';
+import 'package:camion/business_logic/bloc/shipments/shipment_details_bloc.dart';
 // import 'package:camion/business_logic/bloc/offer_details_bloc.dart';
 import 'package:camion/data/providers/notification_provider.dart';
 import 'package:camion/data/services/fcm_service.dart';
 import 'package:camion/helpers/color_constants.dart';
+import 'package:camion/views/screens/merchant/shipment_task_details_from_notification.dart';
 // import 'package:camion/views/screens/broker/order_details_screen.dart';
 // import 'package:camion/views/screens/trader/log_screens/offer_details_screen.dart';
 import 'package:camion/views/widgets/custom_app_bar.dart';
@@ -90,7 +92,32 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 ),
                                 child: ListTile(
                                   contentPadding: EdgeInsets.zero,
-                                  onTap: () {},
+                                  onTap: () {
+                                    BlocProvider.of<ShipmentDetailsBloc>(
+                                            context)
+                                        .add(ShipmentDetailsLoadEvent(
+                                            notificationProvider
+                                                .notifications[index]
+                                                .shipment!));
+
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ShipmentTaskDetailsFromNotificationScreen(),
+                                        ));
+                                    if (!notificationProvider
+                                        .notifications[index].isread!) {
+                                      NotificationServices
+                                          .markNotificationasRead(
+                                              notificationProvider
+                                                  .notifications[index].id!);
+                                      notificationProvider
+                                          .markNotificationAsRead(
+                                              notificationProvider
+                                                  .notifications[index].id!);
+                                    }
+                                  },
                                   leading: Container(
                                     height: 75.h,
                                     width: 75.w,

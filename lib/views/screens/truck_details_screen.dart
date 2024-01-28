@@ -281,12 +281,14 @@ class _TruckDetailsScreenState extends State<TruckDetailsScreen> {
                                     // BlocProvider.of<TrucksListBloc>(context).add(
                                     //     TrucksListLoadEvent(
                                     //         state.shipment.truckType!));
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const ControlView(),
-                                        ));
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ControlView(),
+                                      ),
+                                      (route) => false,
+                                    );
                                   }
                                 },
                                 builder: (context, state) {
