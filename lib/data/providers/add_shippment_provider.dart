@@ -92,6 +92,9 @@ class AddShippmentProvider extends ChangeNotifier {
   DistanceReport? _distancereport = null;
   DistanceReport? get distancereport => _distancereport;
 
+  bool _isThereARoute = true;
+  bool get isThereARoute => _isThereARoute;
+
   void onMapCreated(GoogleMapController controller, String _mapStyle) {
     _mapController = controller;
     _mapController.setMapStyle(_mapStyle);
@@ -195,26 +198,47 @@ class AddShippmentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  setIsThereRout(bool value) {
+    _isThereARoute = value;
+    notifyListeners();
+  }
+
   void getPolyPoints() async {
     PolylinePoints polylinePoints = PolylinePoints();
 
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+    await polylinePoints
+        .getRouteBetweenCoordinates(
       "AIzaSyADOoc8dgS4K4_qk9Hyp441jWtDSumfU7w",
       PointLatLng(_pickup_lat, _pickup_lang),
       PointLatLng(_delivery_lat, _delivery_lang),
-    );
-    _polylineCoordinates = [];
-    if (result.points.isNotEmpty) {
-      result.points.forEach((element) {
-        _polylineCoordinates.add(
-          LatLng(
-            element.latitude,
-            element.longitude,
-          ),
-        );
-      });
-    }
+    )
+        .then((result) {
+      _polylineCoordinates = [];
+      _isThereARoute = true;
+      print(result.status);
+      print("result.points.length");
+      print(result.points.length);
+      if (result.points.isNotEmpty) {
+        result.points.forEach((element) {
+          _polylineCoordinates.add(
+            LatLng(
+              element.latitude,
+              element.longitude,
+            ),
+          );
+        });
+      } else {
+        _isThereARoute = false;
+      }
+    }, onError: printError());
+
     notifyListeners();
+  }
+
+  printError() {
+    _isThereARoute = false;
+    notifyListeners();
+    print("error");
   }
 
   setPickUpPlace(Place place) {

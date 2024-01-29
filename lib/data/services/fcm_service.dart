@@ -62,6 +62,7 @@ class NotificationServices {
       RemoteMessage message) async {
     // you need to initialize firebase first
     await Firebase.initializeApp(
+      name: "Camion",
       options: DefaultFirebaseOptions.currentPlatform,
     );
     if (notificationProvider != null) {
@@ -76,9 +77,9 @@ class NotificationServices {
       alert: true,
       announcement: true,
       badge: true,
-      carPlay: true,
-      criticalAlert: true,
-      provisional: true,
+      // carPlay: true,
+      // criticalAlert: true,
+      // provisional: true,
       sound: true,
     );
 
@@ -140,14 +141,14 @@ class NotificationServices {
     print("message.notification!.body");
     print(message.notification!.body);
     if (message.data['notefication_type'] == "A") {
-      BlocProvider.of<ShipmentDetailsBloc>(context)
-          .add(ShipmentDetailsLoadEvent(int.parse(message.data['shipmentId'])));
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ShipmentTaskDetailsFromNotificationScreen(),
-        ),
-      );
+      // BlocProvider.of<ShipmentDetailsBloc>(context)
+      //     .add(ShipmentDetailsLoadEvent(int.parse(message.data['shipmentId'])));
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => ShipmentTaskDetailsFromNotificationScreen(),
+      //   ),
+      // );
       BlocProvider.of<ShipmentDetailsBloc>(context)
           .add(ShipmentDetailsLoadEvent(int.parse(message.data['shipmentId'])));
 

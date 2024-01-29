@@ -111,13 +111,15 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                               children: [
                                                 GestureDetector(
                                                   onTap: () {
+                                                    print(
+                                                        'driver${state.shipments[index].driver!.user!.id!}');
                                                     Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
                                                           builder: (context) =>
                                                               ActiveShipmentDetailsScreen(
                                                             user_id:
-                                                                'driver${state.shipments[index].driver!.id!}',
+                                                                'driver${state.shipments[index].driver!.user!.id!}',
                                                             shipment:
                                                                 state.shipments[
                                                                     index],

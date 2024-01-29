@@ -32,6 +32,7 @@ import 'package:camion/data/repositories/truck_repository.dart';
 import 'package:camion/firebase_options.dart';
 import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/control_view.dart';
+import 'package:camion/views/widgets/splash_screen.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -47,6 +48,7 @@ import 'package:easy_splash_screen/easy_splash_screen.dart';
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // you need to initialize firebase first
   await Firebase.initializeApp(
+    name: "Camion",
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
@@ -55,11 +57,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Permission.notification.isDenied.then((value) {
-    if (value) {
-      Permission.notification.request();
-    }
-  });
+  // await Permission.notification.isDenied.then((value) {
+  //   if (value) {
+  //     Permission.notification.request();
+  //   }
+  // });
   final LocaleCubit localeCubit = LocaleCubit();
   await localeCubit.initializeFromPreferences();
 
@@ -68,6 +70,7 @@ void main() async {
   Stripe.merchantIdentifier = "AcrossMena";
   await Stripe.instance.applySettings();
   await Firebase.initializeApp(
+    name: "Camion",
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
@@ -294,17 +297,7 @@ class MyApp extends StatelessWidget {
                           dividerColor: Colors.grey[400],
                           scaffoldBackgroundColor: Colors.white,
                         ),
-                        home: EasySplashScreen(
-                            logoWidth: 290.w,
-                            logo: Image.asset(
-                                'assets/images/Camion_official_logo.png'),
-                            backgroundColor: Colors.white,
-                            backgroundImage: const AssetImage(
-                                'assets/images/camion_backgroung_image.png'),
-                            showLoader: false,
-                            loaderColor: const Color.fromRGBO(255, 152, 0, 1),
-                            durationInSeconds: 5,
-                            navigator: const ControlView()),
+                        home: SplashScreen(),
                         builder: (context, child) {
                           return MediaQuery(
                             data: MediaQuery.of(context)
