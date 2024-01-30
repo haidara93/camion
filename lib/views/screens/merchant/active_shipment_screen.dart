@@ -259,6 +259,8 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                                   //     .setMapStyle(
                                                                   //         _mapStyle);
                                                                 },
+                                                                myLocationButtonEnabled:
+                                                                    false,
                                                                 zoomGesturesEnabled:
                                                                     false,
                                                                 scrollGesturesEnabled:

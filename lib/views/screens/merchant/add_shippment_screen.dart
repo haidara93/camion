@@ -38,6 +38,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:intl/intl.dart' as intel;
 
 class AddShippmentScreen extends StatefulWidget {
   AddShippmentScreen({Key? key}) : super(key: key);
@@ -98,6 +99,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
         const ImageConfiguration(), "assets/icons/location2.png");
     setState(() {});
   }
+
+  var f = intel.NumberFormat("#,###", "en_US");
 
   @override
   void initState() {
@@ -673,7 +676,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                             ),
                                                           ),
                                                         )
-                                                      : SizedBox.shrink(),
+                                                      : const SizedBox.shrink(),
                                                   (_count > 1) && (index != 0)
                                                       ? Positioned(
                                                           right: localeState
@@ -1208,15 +1211,15 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                   SizedBox(
                                     height: 20.h,
                                   ),
-                                  Text(
-                                    AppLocalizations.of(context)!
-                                        .translate('pickup_address'),
-                                    style: TextStyle(
-                                      // color: AppColor.lightBlue,
-                                      fontSize: 19.sp,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                  // Text(
+                                  //   AppLocalizations.of(context)!
+                                  //       .translate('pickup_address'),
+                                  //   style: TextStyle(
+                                  //     // color: AppColor.lightBlue,
+                                  //     fontSize: 19.sp,
+                                  //     fontWeight: FontWeight.bold,
+                                  //   ),
+                                  // ),
                                   const SizedBox(
                                     height: 5,
                                   ),
@@ -1257,11 +1260,24 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                       style: const TextStyle(fontSize: 18),
                                       decoration: InputDecoration(
                                         labelText: AppLocalizations.of(context)!
-                                            .translate('enter_pickup_address'),
+                                            .translate('pickup_address'),
                                         contentPadding:
                                             const EdgeInsets.symmetric(
-                                          horizontal: 9.0,
+                                          horizontal: 3.0,
                                           vertical: 11.0,
+                                        ),
+                                        prefixIcon: const Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: SizedBox(
+                                            height: 20,
+                                            width: 15,
+                                            child: Image(
+                                                height: 20,
+                                                width: 15,
+                                                image: AssetImage(
+                                                    "assets/icons/location1.png"),
+                                                fit: BoxFit.contain),
+                                          ),
                                         ),
                                         suffixIcon: GestureDetector(
                                           onTap: () {
@@ -1270,7 +1286,10 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     ShippmentPickUpMapScreen(
-                                                        type: 0),
+                                                        type: 0,
+                                                        location: shippmentProvider
+                                                                .pickup_latlng ??
+                                                            null),
                                               ),
                                             );
                                             // Get.to(SearchFilterView());
@@ -1426,21 +1445,20 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                     height: 12,
                                   ),
                                   Visibility(
-                                    visible: shippmentProvider
-                                        .pickup_controller!.text.isNotEmpty,
+                                    visible: true,
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .translate('delivery_address'),
-                                          style: TextStyle(
-                                            // color: AppColor.lightBlue,
-                                            fontSize: 19.sp,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                                        // Text(
+                                        //   AppLocalizations.of(context)!
+                                        //       .translate('delivery_address'),
+                                        //   style: TextStyle(
+                                        //     // color: AppColor.lightBlue,
+                                        //     fontSize: 19.sp,
+                                        //     fontWeight: FontWeight.bold,
+                                        //   ),
+                                        // ),
                                         const SizedBox(
                                           height: 5,
                                         ),
@@ -1486,14 +1504,27 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                             style:
                                                 const TextStyle(fontSize: 18),
                                             decoration: InputDecoration(
-                                              labelText: AppLocalizations.of(
-                                                      context)!
-                                                  .translate(
-                                                      'enter_delivery_address'),
+                                              labelText:
+                                                  AppLocalizations.of(context)!
+                                                      .translate(
+                                                          'delivery_address'),
                                               contentPadding:
                                                   const EdgeInsets.symmetric(
                                                 horizontal: 9.0,
                                                 vertical: 11.0,
+                                              ),
+                                              prefixIcon: const Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: SizedBox(
+                                                  height: 20,
+                                                  width: 15,
+                                                  child: Image(
+                                                      height: 20,
+                                                      width: 15,
+                                                      image: AssetImage(
+                                                          "assets/icons/location2.png"),
+                                                      fit: BoxFit.contain),
+                                                ),
                                               ),
                                               suffixIcon: GestureDetector(
                                                 onTap: () {
@@ -1502,7 +1533,11 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                     MaterialPageRoute(
                                                       builder: (context) =>
                                                           ShippmentPickUpMapScreen(
-                                                              type: 1),
+                                                              type: 1,
+                                                              location:
+                                                                  shippmentProvider
+                                                                          .delivery_latlng ??
+                                                                      null),
                                                     ),
                                                   );
                                                   // Get.to(SearchFilterView());
@@ -1780,6 +1815,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                 shippmentProvider.onMapCreated(
                                     controller, _mapStyle);
                               },
+                              myLocationButtonEnabled: false,
                               zoomGesturesEnabled: false,
                               scrollGesturesEnabled: false,
                               tiltGesturesEnabled: false,
@@ -2288,7 +2324,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         SizedBox(
                           height: 30,
@@ -2300,23 +2336,25 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                           width: 5,
                         ),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * .35,
+                          width: MediaQuery.of(context).size.width * .55,
                           child: Text(
-                            "${AppLocalizations.of(context)!.translate('total_co2')}: ${addShippmentProvider!.co2report!.et}",
+                            "${AppLocalizations.of(context)!.translate('total_co2')}: ${f.format(addShippmentProvider!.co2report!.et!.toInt())} kg",
                             style: const TextStyle(
                               color: Colors.white,
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * .35,
-                          child: Text(
-                            "${AppLocalizations.of(context)!.translate('energy_consumption')}: ${addShippmentProvider!.co2report!.gt}",
-                            style: const TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+                        // SizedBox(
+                        //   width: MediaQuery.of(context).size.width * .35,
+                        //   child: Text(
+                        //     "${AppLocalizations.of(context)!.translate('energy_consumption')}: ${addShippmentProvider!.co2report!.gt}",
+                        //     style: const TextStyle(
+                        //       color: Colors.white,
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -2431,13 +2469,12 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
       Uri.parse(
           "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=AIzaSyADOoc8dgS4K4_qk9Hyp441jWtDSumfU7w"),
     );
-    print(response.statusCode);
     if (response.statusCode == 200) {
       var result = jsonDecode(response.body);
       addShippmentProvider!.setPickupName(
-          result["results"][0]["address_components"][1]["long_name"]);
+          '${result["results"][0]["address_components"][1]["long_name"]},${result["results"][0]["address_components"][3]["long_name"]},${result["results"][0]["address_components"][4]["long_name"]}');
       addShippmentProvider!.pickup_controller.text =
-          result["results"][0]["address_components"][1]["long_name"];
+          '${result["results"][0]["address_components"][1]["long_name"]},${result["results"][0]["address_components"][3]["long_name"]},${result["results"][0]["address_components"][4]["long_name"]}';
     }
     setState(() {
       pickupLoading = false;
@@ -2472,9 +2509,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
     if (response.statusCode == 200) {
       var result = jsonDecode(response.body);
       addShippmentProvider!.setDeliveryName(
-          result["results"][0]["address_components"][1]["long_name"]);
+          '${result["results"][0]["address_components"][1]["long_name"]},${result["results"][0]["address_components"][3]["long_name"]},${result["results"][0]["address_components"][4]["long_name"]}');
       addShippmentProvider!.delivery_controller.text =
-          result["results"][0]["address_components"][1]["long_name"];
+          '${result["results"][0]["address_components"][1]["long_name"]},${result["results"][0]["address_components"][3]["long_name"]},${result["results"][0]["address_components"][4]["long_name"]}';
     }
     setState(() {
       deliveryLoading = false;

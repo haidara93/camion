@@ -347,6 +347,18 @@ class _ShipmentTaskScreenState extends State<ShipmentTaskScreen>
                                                                     index]) >
                                                                 0
                                                             ? Positioned(
+                                                                right: localeState
+                                                                            .value
+                                                                            .languageCode ==
+                                                                        'en'
+                                                                    ? 0
+                                                                    : null,
+                                                                left: localeState
+                                                                            .value
+                                                                            .languageCode ==
+                                                                        'en'
+                                                                    ? null
+                                                                    : 0,
                                                                 child:
                                                                     Container(
                                                                   height: 25,

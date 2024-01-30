@@ -11,7 +11,9 @@ import 'package:provider/provider.dart';
 
 class ShippmentPickUpMapScreen extends StatefulWidget {
   int type;
-  ShippmentPickUpMapScreen({Key? key, required this.type}) : super(key: key);
+  LatLng? location;
+  ShippmentPickUpMapScreen({Key? key, required this.type, this.location})
+      : super(key: key);
 
   @override
   State<ShippmentPickUpMapScreen> createState() =>
@@ -19,7 +21,7 @@ class ShippmentPickUpMapScreen extends StatefulWidget {
 }
 
 class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
-  static const _initialCameraPosition = CameraPosition(
+  static CameraPosition _initialCameraPosition = CameraPosition(
     target: LatLng(35.363149, 35.932120),
     zoom: 13,
   );
@@ -47,13 +49,22 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
     setState(() {});
   }
 
+  initlocation() async {
+    if (widget.location != null) {
+      await mapController.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(target: widget.location!, zoom: 14.47)));
+    }
+  }
+
   @override
   void initState() {
+    print(widget.location);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       addShippmentProvider =
           Provider.of<AddShippmentProvider>(context, listen: false);
       addShippmentProvider!.initMapbounds();
       createMarkerIcons();
+      initlocation();
     });
     super.initState();
   }

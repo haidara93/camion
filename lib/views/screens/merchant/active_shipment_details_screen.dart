@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:camion/Localization/app_localizations.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
@@ -21,6 +22,7 @@ import 'package:location/location.dart' as loc;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:provider/provider.dart';
 import 'package:timelines/timelines.dart';
+import 'package:intl/intl.dart' as intel;
 
 class ActiveShipmentDetailsScreen extends StatefulWidget {
   final String user_id;
@@ -48,6 +50,7 @@ class _ActiveShipmentDetailsScreenState
   PanelState panelState = PanelState.hidden;
   final panelTransation = const Duration(milliseconds: 500);
   Co2Report _report = Co2Report();
+  var f = intel.NumberFormat("#,###", "en_US");
 
   late final AnimationController _animationController = AnimationController(
     duration: const Duration(seconds: 2),
@@ -116,6 +119,7 @@ class _ActiveShipmentDetailsScreenState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       createMarkerIcons();
+      setState(() {});
     });
     rootBundle.loadString('assets/style/map_style.json').then((string) {
       _mapStyle = string;
@@ -213,21 +217,8 @@ class _ActiveShipmentDetailsScreenState
                 _printed =
                     true; // Set the flag to true to prevent starting multiple timers
                 timer = Timer.periodic(Duration(seconds: 10), (timer) {
-                  if (snapshot.data!.docs.singleWhere((element) =>
+                  if (!snapshot.data!.docs.singleWhere((element) =>
                       element.id == widget.user_id)['reach_pickup']) {
-                    gettruckpolylineCoordinates(
-                      LatLng(
-                        widget.shipment.deliveryCityLat!,
-                        widget.shipment.deliveryCityLang!,
-                      ),
-                      LatLng(
-                        snapshot.data!.docs.singleWhere((element) =>
-                            element.id == widget.user_id)['latitude'],
-                        snapshot.data!.docs.singleWhere((element) =>
-                            element.id == widget.user_id)['longitude'],
-                      ),
-                    );
-                  } else {
                     gettruckpolylineCoordinates(
                       LatLng(
                         widget.shipment.pickupCityLat!,
@@ -245,7 +236,7 @@ class _ActiveShipmentDetailsScreenState
                   print("asd");
                 });
 
-                // mymap(snapshot);
+                mymap(snapshot);
               }
               if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
@@ -407,6 +398,48 @@ class _ActiveShipmentDetailsScreenState
     );
   }
 
+  getpolylineCoordinates(Shipment shipment) async {
+    print("asd");
+    List<Marker> markers = [];
+    markers.add(
+      Marker(
+        markerId: MarkerId("pickup"),
+        position: LatLng(shipment.pickupCityLat!, shipment.pickupCityLang!),
+      ),
+    );
+    markers.add(
+      Marker(
+        markerId: MarkerId("delivery"),
+        position: LatLng(shipment.deliveryCityLat!, shipment.deliveryCityLang!),
+      ),
+    );
+    calculateCo2Report();
+    print("asd2");
+
+    getBounds(markers, _controller);
+    setState(() {});
+  }
+
+  void getBounds(List<Marker> markers, GoogleMapController mapcontroller) {
+    var lngs = markers.map<double>((m) => m.position.longitude).toList();
+    var lats = markers.map<double>((m) => m.position.latitude).toList();
+
+    double topMost = lngs.reduce(max);
+    double leftMost = lats.reduce(min);
+    double rightMost = lats.reduce(max);
+    double bottomMost = lngs.reduce(min);
+
+    LatLngBounds _bounds = LatLngBounds(
+      northeast: LatLng(rightMost, topMost),
+      southwest: LatLng(leftMost, bottomMost),
+    );
+    var cameraUpdate = CameraUpdate.newLatLngBounds(_bounds, 50.0);
+    mapcontroller.animateCamera(cameraUpdate);
+    print("asd3");
+
+    setState(() {});
+  }
+
   Widget _buildPanelOption(BuildContext context) {
     if (panelState == PanelState.hidden) {
       return _buildPanelWidget(context);
@@ -558,12 +591,11 @@ class _ActiveShipmentDetailsScreenState
                     child: CircleAvatar(
                       radius: 30.h,
                       backgroundColor: Colors.white,
-                      child: Center(
-                        child: Text(
-                          "${widget.shipment.driver!.user!.firstName![0]} ${widget.shipment.driver!.user!.lastName![0]}",
-                          style: TextStyle(
-                            fontSize: 28.sp,
-                          ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(180),
+                        child: SvgPicture.asset(
+                          "assets/images/person_orange.svg",
+                          fit: BoxFit.fill,
                         ),
                       ),
                     ),
@@ -719,12 +751,11 @@ class _ActiveShipmentDetailsScreenState
                       child: CircleAvatar(
                         radius: 30.h,
                         backgroundColor: Colors.white,
-                        child: Center(
-                          child: Text(
-                            "${widget.shipment.driver!.user!.firstName![0]} ${widget.shipment.driver!.user!.lastName![0]}",
-                            style: TextStyle(
-                              fontSize: 28.sp,
-                            ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(180),
+                          child: SvgPicture.asset(
+                            "assets/images/person_orange.svg",
+                            fit: BoxFit.fill,
                           ),
                         ),
                       ),
@@ -797,15 +828,7 @@ class _ActiveShipmentDetailsScreenState
   }
 
   Future<void> mymap(AsyncSnapshot<QuerySnapshot> snapshot) async {
-    await _controller
-        .animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-            target: LatLng(
-              snapshot.data!.docs.singleWhere(
-                  (element) => element.id == widget.user_id)['latitude'],
-              snapshot.data!.docs.singleWhere(
-                  (element) => element.id == widget.user_id)['longitude'],
-            ),
-            zoom: 14.47)));
+    getpolylineCoordinates(widget.shipment);
   }
 
   final ScrollController _scrollController = ScrollController();
@@ -943,7 +966,7 @@ class _ActiveShipmentDetailsScreenState
             SizedBox(
               width: MediaQuery.of(context).size.width * .7,
               child: Text(
-                "${AppLocalizations.of(context)!.translate('total_co2')}: ${_report!.et}",
+                "${AppLocalizations.of(context)!.translate('total_co2')}: ${f.format(_report!.et!.toInt())} kg",
                 style: const TextStyle(
                   // color: Colors.white,
                   fontSize: 17,

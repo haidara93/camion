@@ -212,30 +212,39 @@ class AddShippmentProvider extends ChangeNotifier {
       PointLatLng(_pickup_lat, _pickup_lang),
       PointLatLng(_delivery_lat, _delivery_lang),
     )
-        .then((result) {
-      _polylineCoordinates = [];
-      _isThereARoute = true;
-      notifyListeners();
+        .then(
+      (result) {
+        _polylineCoordinates = [];
+        _isThereARoute = true;
+        notifyListeners();
 
-      if (result.points.isNotEmpty) {
-        result.points.forEach((element) {
-          _polylineCoordinates.add(
-            LatLng(
-              element.latitude,
-              element.longitude,
-            ),
-          );
-        });
-      }
-    }, onError: printError());
+        print("result.points.length");
+        print(result.points.length);
+        if (result.points.isNotEmpty) {
+          _isThereARoute = true;
+          notifyListeners();
+          result.points.forEach((element) {
+            _polylineCoordinates.add(
+              LatLng(
+                element.latitude,
+                element.longitude,
+              ),
+            );
+          });
+        }
+      },
+    ).onError((error, stackTrace) {
+      _isThereARoute = false;
+      notifyListeners();
+    });
 
     notifyListeners();
   }
 
   printError() {
-    _isThereARoute = false;
-    notifyListeners();
-    print("error");
+    // _isThereARoute = false;
+    // notifyListeners();
+    // print("error");
   }
 
   setPickUpPlace(Place place) {

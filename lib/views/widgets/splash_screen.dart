@@ -35,12 +35,8 @@ class _SplashScreenState extends State<SplashScreen> {
         alignment: Alignment.center,
         children: [
           SvgPicture.asset(
-            "assets/images/camion_splash_background.svg",
-            fit: BoxFit.fitHeight,
-          ),
-          SvgPicture.asset(
-            "assets/images/camion_official_logo.svg",
-            fit: BoxFit.fitHeight,
+            "assets/images/splash.svg",
+            fit: BoxFit.fill,
           ),
         ],
       ),

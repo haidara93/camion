@@ -23,6 +23,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timelines/timelines.dart';
+import 'package:intl/intl.dart' as intel;
 
 class ActiveShipmentDetailsFromNotificationScreen extends StatefulWidget {
   final String user_id;
@@ -46,6 +47,7 @@ class _ActiveShipmentDetailsFromNotificationScreenState
   PanelState panelState = PanelState.hidden;
   final panelTransation = const Duration(milliseconds: 500);
   Co2Report _report = Co2Report();
+  var f = intel.NumberFormat("#,###", "en_US");
 
   late final AnimationController _animationController = AnimationController(
     duration: const Duration(seconds: 2),
@@ -298,21 +300,8 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                         print(snapshot.data!.docs.singleWhere((element) =>
                             element.id == widget.user_id)['reach_pickup']);
 
-                        if (snapshot.data!.docs.singleWhere((element) =>
+                        if (!snapshot.data!.docs.singleWhere((element) =>
                             element.id == widget.user_id)['reach_pickup']) {
-                          gettruckpolylineCoordinates(
-                            LatLng(
-                              shipmentstate.shipment.deliveryCityLat!,
-                              shipmentstate.shipment.deliveryCityLang!,
-                            ),
-                            LatLng(
-                              snapshot.data!.docs.singleWhere((element) =>
-                                  element.id == widget.user_id)['latitude'],
-                              snapshot.data!.docs.singleWhere((element) =>
-                                  element.id == widget.user_id)['longitude'],
-                            ),
-                          );
-                        } else {
                           gettruckpolylineCoordinates(
                             LatLng(
                               shipmentstate.shipment.pickupCityLat!,
@@ -404,43 +393,6 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                                   color: Colors.green,
                                   width: 7,
                                 ),
-                                // Polyline(
-                                //   polylineId: const PolylineId("truckroute"),
-                                //   points: shipmentProvider.truckpolylineCoordinates,
-                                //   color: Colors.green.withOpacity(.6),
-                                //   width: 8,
-                                // ),
-                                // snapshot.data!.docs.singleWhere((element) =>
-                                //         element.id ==
-                                //         widget.user_id)['reach_pickup']??false
-                                //     ? getpolylineCoordinates(
-                                // LatLng(
-                                //   snapshot.data!.docs.singleWhere(
-                                //       (element) =>
-                                //           element.id ==
-                                //           widget.user_id)['latitude'],
-                                //   snapshot.data!.docs.singleWhere(
-                                //       (element) =>
-                                //           element.id ==
-                                //           widget.user_id)['longitude'],
-                                // ),
-                                // LatLng(widget.shipment.deliveryCityLat!,
-                                //     widget.shipment.deliveryCityLang!),
-                                //       )
-                                //     : getpolylineCoordinates(
-                                //         LatLng(
-                                //           snapshot.data!.docs.singleWhere(
-                                //               (element) =>
-                                //                   element.id ==
-                                //                   widget.user_id)['latitude'],
-                                //           snapshot.data!.docs.singleWhere(
-                                //               (element) =>
-                                //                   element.id ==
-                                //                   widget.user_id)['longitude'],
-                                //         ),
-                                //         LatLng(widget.shipment.pickupCityLat!,
-                                //             widget.shipment.pickupCityLang!),
-                                //       )
                               },
                             ),
                             AnimatedPositioned(
@@ -677,11 +629,14 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                     child: CircleAvatar(
                       radius: 30.h,
                       backgroundColor: Colors.white,
-                      child: Center(
-                        child: Text(
-                          "${shipment.driver!.user!.firstName![0]} ${shipment.driver!.user!.lastName![0]}",
-                          style: TextStyle(
-                            fontSize: 28.sp,
+                      child: CircleAvatar(
+                        radius: 30.h,
+                        backgroundColor: Colors.white,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(180),
+                          child: SvgPicture.asset(
+                            "assets/images/person_orange.svg",
+                            fit: BoxFit.fill,
                           ),
                         ),
                       ),
@@ -716,22 +671,30 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                 onTap: () {
                   changeToHidden();
                 },
-                child: Container(
-                  height: 45.h,
-                  width: 45.w,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey[300]!,
-                      width: 1,
+                child: AbsorbPointer(
+                  absorbing: true,
+                  child: Container(
+                    height: 45.h,
+                    width: 45.w,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey[300]!,
+                        width: 1,
+                      ),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(45),
                     ),
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(45),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.arrow_drop_down_circle_outlined,
-                      color: Colors.grey[600],
-                      size: 40,
+                    child: Center(
+                      child: SizedBox(
+                        height: 25.h,
+                        width: 25.w,
+                        child: SvgPicture.asset(
+                          "assets/icons/arrow_down.svg",
+                          fit: BoxFit.contain,
+                          height: 25.h,
+                          width: 25.w,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -830,12 +793,11 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                       child: CircleAvatar(
                         radius: 30.h,
                         backgroundColor: Colors.white,
-                        child: Center(
-                          child: Text(
-                            "${shipment.driver!.user!.firstName![0]} ${shipment.driver!.user!.lastName![0]}",
-                            style: TextStyle(
-                              fontSize: 28.sp,
-                            ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(180),
+                          child: SvgPicture.asset(
+                            "assets/images/person_orange.svg",
+                            fit: BoxFit.fill,
                           ),
                         ),
                       ),
@@ -865,29 +827,28 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                 top: -20,
                 right: MediaQuery.of(context).size.width * .45,
                 child: GestureDetector(
-                  onTap: () {
-                    changeToOpen();
-                  },
-                  child: Container(
-                    height: 45.h,
-                    width: 45.w,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey[300]!,
-                        width: 1,
+                    onTap: () {
+                      changeToOpen();
+                    },
+                    child: AbsorbPointer(
+                      absorbing: true,
+                      child: Container(
+                        height: 45.h,
+                        width: 45.w,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey[300]!,
+                            width: 1,
+                          ),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(45),
+                        ),
+                        child: Center(
+                          child: SvgPicture.asset("assets/icons/arrow_up.svg",
+                              fit: BoxFit.fill),
+                        ),
                       ),
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(45),
-                    ),
-                    child: Center(
-                      child: Icon(
-                        Icons.arrow_circle_up_outlined,
-                        color: Colors.grey[600],
-                        size: 40,
-                      ),
-                    ),
-                  ),
-                ),
+                    )),
               );
             },
           ),
@@ -1031,7 +992,7 @@ class _ActiveShipmentDetailsFromNotificationScreenState
             SizedBox(
               width: MediaQuery.of(context).size.width * .7,
               child: Text(
-                "${AppLocalizations.of(context)!.translate('total_co2')}: ${_report!.et}",
+                "${AppLocalizations.of(context)!.translate('total_co2')}: ${f.format(_report!.et!.toInt())} kg",
                 style: const TextStyle(
                   // color: Colors.white,
                   fontSize: 17,
