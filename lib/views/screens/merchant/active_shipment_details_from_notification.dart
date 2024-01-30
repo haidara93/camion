@@ -8,6 +8,7 @@ import 'package:camion/data/providers/active_shipment_provider.dart';
 import 'package:camion/data/services/co2_service.dart';
 import 'package:camion/helpers/color_constants.dart';
 import 'dart:math';
+import 'dart:async';
 
 import 'package:camion/views/widgets/custom_app_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -159,6 +160,7 @@ class _ActiveShipmentDetailsFromNotificationScreenState
   }
 
   List<LatLng> _polyline = [];
+  List<LatLng> _truckpolyline = [];
   getpolylineCoordinates(Shipment shipment) async {
     _polyline = [];
     PolylinePoints polylinePoints = PolylinePoints();
@@ -198,6 +200,29 @@ class _ActiveShipmentDetailsFromNotificationScreenState
     getBounds(markers, _controller);
   }
 
+  gettruckpolylineCoordinates(LatLng driver, LatLng distination) async {
+    _truckpolyline = [];
+    PolylinePoints polylinePoints = PolylinePoints();
+    print("werwer");
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      "AIzaSyADOoc8dgS4K4_qk9Hyp441jWtDSumfU7w",
+      PointLatLng(driver.latitude!, driver.longitude!),
+      PointLatLng(distination.latitude!, distination.longitude!),
+    );
+    _truckpolyline = [];
+    if (result.points.isNotEmpty) {
+      result.points.forEach((element) {
+        _truckpolyline.add(
+          LatLng(
+            element.latitude,
+            element.longitude,
+          ),
+        );
+      });
+    }
+    setState(() {});
+  }
+
   void getBounds(List<Marker> markers, GoogleMapController mapcontroller) {
     var lngs = markers.map<double>((m) => m.position.longitude).toList();
     var lats = markers.map<double>((m) => m.position.latitude).toList();
@@ -216,7 +241,30 @@ class _ActiveShipmentDetailsFromNotificationScreenState
     setState(() {});
   }
 
-  var count = 25;
+  String setLoadDate(DateTime date) {
+    List months = [
+      'jan',
+      'feb',
+      'mar',
+      'april',
+      'may',
+      'jun',
+      'july',
+      'aug',
+      'sep',
+      'oct',
+      'nov',
+      'dec'
+    ];
+    var mon = date.month;
+    var month = months[mon - 1];
+
+    var result = '${date.day}-$month-${date.year}';
+    return result;
+  }
+
+  bool _printed = false;
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -241,39 +289,53 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                       .collection('location')
                       .snapshots(),
                   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (_added) {
-                      mymap(snapshot);
+                    if (_added && !_printed) {
+                      print("asd");
+
+                      _printed =
+                          true; // Set the flag to true to prevent starting multiple timers
+                      Timer.periodic(Duration(seconds: 10), (timer) {
+                        print(snapshot.data!.docs.singleWhere((element) =>
+                            element.id == widget.user_id)['reach_pickup']);
+
+                        if (snapshot.data!.docs.singleWhere((element) =>
+                            element.id == widget.user_id)['reach_pickup']) {
+                          gettruckpolylineCoordinates(
+                            LatLng(
+                              shipmentstate.shipment.deliveryCityLat!,
+                              shipmentstate.shipment.deliveryCityLang!,
+                            ),
+                            LatLng(
+                              snapshot.data!.docs.singleWhere((element) =>
+                                  element.id == widget.user_id)['latitude'],
+                              snapshot.data!.docs.singleWhere((element) =>
+                                  element.id == widget.user_id)['longitude'],
+                            ),
+                          );
+                        } else {
+                          gettruckpolylineCoordinates(
+                            LatLng(
+                              shipmentstate.shipment.pickupCityLat!,
+                              shipmentstate.shipment.pickupCityLang!,
+                            ),
+                            LatLng(
+                              snapshot.data!.docs.singleWhere((element) =>
+                                  element.id == widget.user_id)['latitude'],
+                              snapshot.data!.docs.singleWhere((element) =>
+                                  element.id == widget.user_id)['longitude'],
+                            ),
+                          );
+                        }
+
+                        print("asd");
+                      });
+
+                      // mymap(snapshot);
                     }
                     if (!snapshot.hasData) {
                       return const Center(child: CircularProgressIndicator());
                     }
-                    // if (count < 0) {
-                    //   if (snapshot.data!.docs.singleWhere((element) =>
-                    //           element.id == widget.user_id)['reach_pickup'] ??
-                    //       false) {
-                    //     shipmentProvider.getTruckPolylineCoordinates(
-                    //         LatLng(
-                    //           snapshot.data!.docs.singleWhere((element) =>
-                    //               element.id == widget.user_id)['latitude'],
-                    //           snapshot.data!.docs.singleWhere((element) =>
-                    //               element.id == widget.user_id)['longitude'],
-                    //         ),
-                    //         LatLng(widget.shipment.deliveryCityLat!,
-                    //             widget.shipment.deliveryCityLang!));
-                    //   } else {
-                    //     shipmentProvider.getTruckPolylineCoordinates(
-                    //         LatLng(
-                    //           snapshot.data!.docs.singleWhere((element) =>
-                    //               element.id == widget.user_id)['latitude'],
-                    //           snapshot.data!.docs.singleWhere((element) =>
-                    //               element.id == widget.user_id)['longitude'],
-                    //         ),
-                    //         LatLng(widget.shipment.pickupCityLat!,
-                    //             widget.shipment.pickupCityLang!));
-                    //   }
-                    // } else {
-                    //   count--;
-                    // }
+
                     return AnimatedBuilder(
                       animation: _animationController,
                       builder: (context, child) {
@@ -334,6 +396,12 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                                   polylineId: const PolylineId("route"),
                                   points: _polyline,
                                   color: AppColor.deepYellow,
+                                  width: 7,
+                                ),
+                                Polyline(
+                                  polylineId: const PolylineId("truckroute"),
+                                  points: _truckpolyline,
+                                  color: Colors.green,
                                   width: 7,
                                 ),
                                 // Polyline(
@@ -500,7 +568,7 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "${AppLocalizations.of(context)!.translate('truck_type')}: ${shipment.truckType!.name!}",
+                            "${AppLocalizations.of(context)!.translate('truck_type')}:\n ${shipment.truckType!.name!}",
                             style: TextStyle(
                               fontSize: 19.sp,
                               fontWeight: FontWeight.bold,
@@ -515,7 +583,7 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                         ],
                       ),
                       Text(
-                        "#${shipment.id!}",
+                        "${AppLocalizations.of(context)!.translate('shipment_number')} \n#${shipment.id!}",
                         style: TextStyle(
                           fontSize: 19.sp,
                           fontWeight: FontWeight.bold,
@@ -534,11 +602,11 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                     TimelineTile(
                       direction: Axis.horizontal,
                       oppositeContents: Text(
-                        '${shipment.pickupDate!.year.toString()}-${shipment.pickupDate!.month.toString()}-${shipment.pickupDate!.day.toString()}',
+                        setLoadDate(shipment.pickupDate!),
                         style: const TextStyle(),
                       ),
                       contents: Text(
-                        shipment.pickupCityLocation!,
+                        'Pickup ${shipment.pickupCityLocation!}',
                         style: const TextStyle(),
                       ),
                       node: SizedBox(
@@ -563,11 +631,10 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                     TimelineTile(
                       direction: Axis.horizontal,
                       oppositeContents: Text(
-                        '${shipment.pickupDate!.year.toString()}-${shipment.pickupDate!.month.toString()}-${shipment.pickupDate!.day.toString()}',
-                        style: const TextStyle(),
+                        setLoadDate(shipment.pickupDate!),
                       ),
                       contents: Text(
-                        shipment.deliveryCityLocation!,
+                        'Delivery ${shipment.deliveryCityLocation!}',
                         style: const TextStyle(),
                       ),
                       node: SizedBox(
@@ -612,13 +679,20 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                       backgroundColor: Colors.white,
                       child: Center(
                         child: Text(
-                          "AY",
+                          "${shipment.driver!.user!.firstName![0]} ${shipment.driver!.user!.lastName![0]}",
                           style: TextStyle(
                             fontSize: 28.sp,
                           ),
                         ),
                       ),
                     ),
+                  ),
+                ),
+                const Text(
+                  "Driver Name",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    // color: AppColor.deepYellow,
                   ),
                 ),
                 Text(
@@ -758,13 +832,20 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                         backgroundColor: Colors.white,
                         child: Center(
                           child: Text(
-                            "AY",
+                            "${shipment.driver!.user!.firstName![0]} ${shipment.driver!.user!.lastName![0]}",
                             style: TextStyle(
                               fontSize: 28.sp,
                             ),
                           ),
                         ),
                       ),
+                    ),
+                  ),
+                  const Text(
+                    "Driver Name",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      // color: AppColor.deepYellow,
                     ),
                   ),
                   Text(
@@ -862,7 +943,7 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                 width: 5,
               ),
               Text(
-                AppLocalizations.of(context)!.translate('items_info'),
+                AppLocalizations.of(context)!.translate('commodity_info'),
                 style: TextStyle(
                   fontSize: 17.sp,
                   fontWeight: FontWeight.bold,
@@ -940,31 +1021,32 @@ class _ActiveShipmentDetailsFromNotificationScreenState
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              height: 30,
-              width: 30,
+              height: 35,
+              width: 35,
               child: SvgPicture.asset("assets/icons/co2fingerprint.svg"),
             ),
             const SizedBox(
               width: 5,
             ),
             SizedBox(
-              width: MediaQuery.of(context).size.width * .35,
+              width: MediaQuery.of(context).size.width * .7,
               child: Text(
                 "${AppLocalizations.of(context)!.translate('total_co2')}: ${_report!.et}",
-                // style: const TextStyle(
-                //   color: Colors.white,
-                // ),
+                style: const TextStyle(
+                  // color: Colors.white,
+                  fontSize: 17,
+                ),
               ),
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * .35,
-              child: Text(
-                "${AppLocalizations.of(context)!.translate('energy_consumption')}: ${_report!.gt}",
-                // style: const TextStyle(
-                //   color: Colors.white,
-                // ),
-              ),
-            ),
+            // SizedBox(
+            //   width: MediaQuery.of(context).size.width * .35,
+            //   child: Text(
+            //     "${AppLocalizations.of(context)!.translate('energy_consumption')}: ${_report!.gt}",
+            //     // style: const TextStyle(
+            //     //   color: Colors.white,
+            //     // ),
+            //   ),
+            // ),
           ],
         ),
       ),

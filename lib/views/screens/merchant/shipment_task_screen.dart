@@ -30,6 +30,28 @@ class _ShipmentTaskScreenState extends State<ShipmentTaskScreen>
     super.dispose();
   }
 
+  String setLoadDate(DateTime date) {
+    List months = [
+      'jan',
+      'feb',
+      'mar',
+      'april',
+      'may',
+      'jun',
+      'july',
+      'aug',
+      'sep',
+      'oct',
+      'nov',
+      'dec'
+    ];
+    var mon = date.month;
+    var month = months[mon - 1];
+
+    var result = '${date.day}-$month-${date.year}';
+    return result;
+  }
+
   String getOfferStatus(String offer) {
     switch (offer) {
       case "P":
@@ -174,7 +196,10 @@ class _ShipmentTaskScreenState extends State<ShipmentTaskScreen>
                                                                 Axis.horizontal,
                                                             oppositeContents:
                                                                 Text(
-                                                              '${state.shipments[index].pickupDate!.year.toString()}-${state.shipments[index].pickupDate!.month.toString()}-${state.shipments[index].pickupDate!.day.toString()}',
+                                                              setLoadDate(state
+                                                                  .shipments[
+                                                                      index]
+                                                                  .pickupDate!),
                                                             ),
                                                             contents: Text(
                                                               state
@@ -226,7 +251,10 @@ class _ShipmentTaskScreenState extends State<ShipmentTaskScreen>
                                                                 Axis.horizontal,
                                                             oppositeContents:
                                                                 Text(
-                                                              '${state.shipments[index].pickupDate!.year.toString()}-${state.shipments[index].pickupDate!.month.toString()}-${state.shipments[index].pickupDate!.day.toString()}',
+                                                              setLoadDate(state
+                                                                  .shipments[
+                                                                      index]
+                                                                  .pickupDate!),
                                                             ),
                                                             contents: Text(
                                                               state
@@ -252,7 +280,7 @@ class _ShipmentTaskScreenState extends State<ShipmentTaskScreen>
                                                                 // endConnector: SolidLineConnector(),
                                                               ),
                                                             ),
-                                                          )
+                                                          ),
                                                         ],
                                                       ),
                                                     ),
@@ -282,8 +310,8 @@ class _ShipmentTaskScreenState extends State<ShipmentTaskScreen>
                                                   ],
                                                 ),
                                                 Container(
-                                                  height: 55.h,
-                                                  width: 55.w,
+                                                  height: 65.h,
+                                                  width: 75.w,
                                                   decoration: BoxDecoration(
                                                       // color: AppColor.lightGoldenYellow,
                                                       borderRadius:
@@ -293,12 +321,26 @@ class _ShipmentTaskScreenState extends State<ShipmentTaskScreen>
                                                     child: Stack(
                                                       clipBehavior: Clip.none,
                                                       children: [
-                                                        Icon(
-                                                          Icons
-                                                              .notifications_none_outlined,
-                                                          color: AppColor
-                                                              .deepYellow,
-                                                          size: 45,
+                                                        Card(
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          5)),
+                                                          elevation: 2,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(8.0),
+                                                            child: Center(
+                                                              child: Text(
+                                                                AppLocalizations.of(
+                                                                        context)!
+                                                                    .translate(
+                                                                        'tasks'),
+                                                              ),
+                                                            ),
+                                                          ),
                                                         ),
                                                         getunfinishedTasks(state
                                                                         .shipments[

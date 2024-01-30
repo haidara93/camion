@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:camion/Localization/app_localizations.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/constants/enums.dart';
@@ -38,6 +40,7 @@ class ActiveShipmentDetailsScreen extends StatefulWidget {
 
 class _ActiveShipmentDetailsScreenState
     extends State<ActiveShipmentDetailsScreen> with TickerProviderStateMixin {
+  late Timer timer;
   final loc.Location location = loc.Location();
   late GoogleMapController _controller;
   bool _added = false;
@@ -123,6 +126,7 @@ class _ActiveShipmentDetailsScreenState
   @override
   void dispose() {
     _animationController.dispose();
+    timer.cancel();
     super.dispose();
   }
 
@@ -162,6 +166,31 @@ class _ActiveShipmentDetailsScreenState
     }
   }
 
+  List<LatLng> _truckpolyline = [];
+  bool _printed = false;
+
+  String setLoadDate(DateTime date) {
+    List months = [
+      'jan',
+      'feb',
+      'mar',
+      'april',
+      'may',
+      'jun',
+      'july',
+      'aug',
+      'sep',
+      'oct',
+      'nov',
+      'dec'
+    ];
+    var mon = date.month;
+    var month = months[mon - 1];
+
+    var result = '${date.day}-$month-${date.year}';
+    return result;
+  }
+
   var count = 25;
   @override
   Widget build(BuildContext context) {
@@ -178,8 +207,45 @@ class _ActiveShipmentDetailsScreenState
             stream:
                 FirebaseFirestore.instance.collection('location').snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (_added) {
-                mymap(snapshot);
+              if (_added && !_printed) {
+                print("asd");
+
+                _printed =
+                    true; // Set the flag to true to prevent starting multiple timers
+                timer = Timer.periodic(Duration(seconds: 10), (timer) {
+                  if (snapshot.data!.docs.singleWhere((element) =>
+                      element.id == widget.user_id)['reach_pickup']) {
+                    gettruckpolylineCoordinates(
+                      LatLng(
+                        widget.shipment.deliveryCityLat!,
+                        widget.shipment.deliveryCityLang!,
+                      ),
+                      LatLng(
+                        snapshot.data!.docs.singleWhere((element) =>
+                            element.id == widget.user_id)['latitude'],
+                        snapshot.data!.docs.singleWhere((element) =>
+                            element.id == widget.user_id)['longitude'],
+                      ),
+                    );
+                  } else {
+                    gettruckpolylineCoordinates(
+                      LatLng(
+                        widget.shipment.pickupCityLat!,
+                        widget.shipment.pickupCityLang!,
+                      ),
+                      LatLng(
+                        snapshot.data!.docs.singleWhere((element) =>
+                            element.id == widget.user_id)['latitude'],
+                        snapshot.data!.docs.singleWhere((element) =>
+                            element.id == widget.user_id)['longitude'],
+                      ),
+                    );
+                  }
+
+                  print("asd");
+                });
+
+                // mymap(snapshot);
               }
               if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
@@ -269,6 +335,12 @@ class _ActiveShipmentDetailsScreenState
                                         .polylineCoordinates[widget.index]
                                     : [],
                             color: AppColor.deepYellow,
+                            width: 7,
+                          ),
+                          Polyline(
+                            polylineId: const PolylineId("truckroute"),
+                            points: _truckpolyline,
+                            color: Colors.green,
                             width: 7,
                           ),
                           // Polyline(
@@ -378,7 +450,7 @@ class _ActiveShipmentDetailsScreenState
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "${AppLocalizations.of(context)!.translate('truck_type')}: ${widget.shipment.truckType!.name!}",
+                            "${AppLocalizations.of(context)!.translate('truck_type')}: \n${widget.shipment.truckType!.name!}",
                             style: TextStyle(
                               fontSize: 19.sp,
                               fontWeight: FontWeight.bold,
@@ -393,7 +465,7 @@ class _ActiveShipmentDetailsScreenState
                         ],
                       ),
                       Text(
-                        "#${widget.shipment.id!}",
+                        "${AppLocalizations.of(context)!.translate('shipment_number')} \n#${widget.shipment.id!}",
                         style: TextStyle(
                           fontSize: 19.sp,
                           fontWeight: FontWeight.bold,
@@ -412,11 +484,10 @@ class _ActiveShipmentDetailsScreenState
                     TimelineTile(
                       direction: Axis.horizontal,
                       oppositeContents: Text(
-                        '${widget.shipment.pickupDate!.year.toString()}-${widget.shipment.pickupDate!.month.toString()}-${widget.shipment.pickupDate!.day.toString()}',
-                        style: const TextStyle(),
+                        setLoadDate(widget.shipment.pickupDate!),
                       ),
                       contents: Text(
-                        widget.shipment.pickupCityLocation!,
+                        'Pickup: ${widget.shipment.pickupCityLocation!}',
                         style: const TextStyle(),
                       ),
                       node: SizedBox(
@@ -441,11 +512,10 @@ class _ActiveShipmentDetailsScreenState
                     TimelineTile(
                       direction: Axis.horizontal,
                       oppositeContents: Text(
-                        '${widget.shipment.pickupDate!.year.toString()}-${widget.shipment.pickupDate!.month.toString()}-${widget.shipment.pickupDate!.day.toString()}',
-                        style: const TextStyle(),
+                        setLoadDate(widget.shipment.pickupDate!),
                       ),
                       contents: Text(
-                        widget.shipment.deliveryCityLocation!,
+                        'Delivery:${widget.shipment.deliveryCityLocation!}',
                         style: const TextStyle(),
                       ),
                       node: SizedBox(
@@ -490,13 +560,20 @@ class _ActiveShipmentDetailsScreenState
                       backgroundColor: Colors.white,
                       child: Center(
                         child: Text(
-                          "AY",
+                          "${widget.shipment.driver!.user!.firstName![0]} ${widget.shipment.driver!.user!.lastName![0]}",
                           style: TextStyle(
                             fontSize: 28.sp,
                           ),
                         ),
                       ),
                     ),
+                  ),
+                ),
+                const Text(
+                  "Driver Name",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    // color: AppColor.deepYellow,
                   ),
                 ),
                 Text(
@@ -520,22 +597,30 @@ class _ActiveShipmentDetailsScreenState
                 onTap: () {
                   changeToHidden();
                 },
-                child: Container(
-                  height: 45.h,
-                  width: 45.w,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey[300]!,
-                      width: 1,
+                child: AbsorbPointer(
+                  absorbing: true,
+                  child: Container(
+                    height: 45.h,
+                    width: 45.w,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey[300]!,
+                        width: 1,
+                      ),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(45),
                     ),
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(45),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.arrow_drop_down_circle_outlined,
-                      color: Colors.grey[600],
-                      size: 40,
+                    child: Center(
+                      child: SizedBox(
+                        height: 25.h,
+                        width: 25.w,
+                        child: SvgPicture.asset(
+                          "assets/icons/arrow_down.svg",
+                          fit: BoxFit.contain,
+                          height: 25.h,
+                          width: 25.w,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -636,13 +721,20 @@ class _ActiveShipmentDetailsScreenState
                         backgroundColor: Colors.white,
                         child: Center(
                           child: Text(
-                            "AY",
+                            "${widget.shipment.driver!.user!.firstName![0]} ${widget.shipment.driver!.user!.lastName![0]}",
                             style: TextStyle(
                               fontSize: 28.sp,
                             ),
                           ),
                         ),
                       ),
+                    ),
+                  ),
+                  const Text(
+                    "Driver Name",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      // color: AppColor.deepYellow,
                     ),
                   ),
                   Text(
@@ -665,22 +757,22 @@ class _ActiveShipmentDetailsScreenState
                   onTap: () {
                     changeToOpen();
                   },
-                  child: Container(
-                    height: 45.h,
-                    width: 45.w,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey[300]!,
-                        width: 1,
+                  child: AbsorbPointer(
+                    absorbing: true,
+                    child: Container(
+                      height: 45.h,
+                      width: 45.w,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey[300]!,
+                          width: 1,
+                        ),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(45),
                       ),
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(45),
-                    ),
-                    child: Center(
-                      child: Icon(
-                        Icons.arrow_circle_up_outlined,
-                        color: Colors.grey[600],
-                        size: 40,
+                      child: Center(
+                        child: SvgPicture.asset("assets/icons/arrow_up.svg",
+                            fit: BoxFit.fill),
                       ),
                     ),
                   ),
@@ -718,6 +810,29 @@ class _ActiveShipmentDetailsScreenState
 
   final ScrollController _scrollController = ScrollController();
 
+  gettruckpolylineCoordinates(LatLng driver, LatLng distination) async {
+    _truckpolyline = [];
+    PolylinePoints polylinePoints = PolylinePoints();
+    print("werwer");
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      "AIzaSyADOoc8dgS4K4_qk9Hyp441jWtDSumfU7w",
+      PointLatLng(driver.latitude!, driver.longitude!),
+      PointLatLng(distination.latitude!, distination.longitude!),
+    );
+    _truckpolyline = [];
+    if (result.points.isNotEmpty) {
+      result.points.forEach((element) {
+        _truckpolyline.add(
+          LatLng(
+            element.latitude,
+            element.longitude,
+          ),
+        );
+      });
+    }
+    setState(() {});
+  }
+
   _buildCommodityWidget(List<ShipmentItems>? shipmentItems) {
     return SizedBox(
       height: 135.h,
@@ -740,7 +855,7 @@ class _ActiveShipmentDetailsScreenState
                 width: 5,
               ),
               Text(
-                AppLocalizations.of(context)!.translate('items_info'),
+                AppLocalizations.of(context)!.translate('commodity_info'),
                 style: TextStyle(
                   fontSize: 17.sp,
                   fontWeight: FontWeight.bold,
@@ -818,29 +933,21 @@ class _ActiveShipmentDetailsScreenState
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              height: 30,
-              width: 30,
+              height: 35,
+              width: 35,
               child: SvgPicture.asset("assets/icons/co2fingerprint.svg"),
             ),
             const SizedBox(
               width: 5,
             ),
             SizedBox(
-              width: MediaQuery.of(context).size.width * .35,
+              width: MediaQuery.of(context).size.width * .7,
               child: Text(
                 "${AppLocalizations.of(context)!.translate('total_co2')}: ${_report!.et}",
-                // style: const TextStyle(
-                //   color: Colors.white,
-                // ),
-              ),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * .35,
-              child: Text(
-                "${AppLocalizations.of(context)!.translate('energy_consumption')}: ${_report!.gt}",
-                // style: const TextStyle(
-                //   color: Colors.white,
-                // ),
+                style: const TextStyle(
+                  // color: Colors.white,
+                  fontSize: 17,
+                ),
               ),
             ),
           ],

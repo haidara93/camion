@@ -37,6 +37,28 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
     setState(() {});
   }
 
+  String setLoadDate(DateTime date) {
+    List months = [
+      'jan',
+      'feb',
+      'mar',
+      'april',
+      'may',
+      'jun',
+      'july',
+      'aug',
+      'sep',
+      'oct',
+      'nov',
+      'dec'
+    ];
+    var mon = date.month;
+    var month = months[mon - 1];
+
+    var result = '${date.day}-$month-${date.year}';
+    return result;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -237,6 +259,14 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                                   //     .setMapStyle(
                                                                   //         _mapStyle);
                                                                 },
+                                                                zoomGesturesEnabled:
+                                                                    false,
+                                                                scrollGesturesEnabled:
+                                                                    false,
+                                                                tiltGesturesEnabled:
+                                                                    false,
+                                                                rotateGesturesEnabled:
+                                                                    false,
                                                                 zoomControlsEnabled:
                                                                     false,
                                                                 initialCameraPosition:
@@ -311,7 +341,10 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                                     .horizontal,
                                                                 oppositeContents:
                                                                     Text(
-                                                                  '${state.shipments[index].pickupDate!.year.toString()}-${state.shipments[index].pickupDate!.month.toString()}-${state.shipments[index].pickupDate!.day.toString()}',
+                                                                  setLoadDate(state
+                                                                      .shipments[
+                                                                          index]
+                                                                      .pickupDate!),
                                                                 ),
                                                                 contents: Text(
                                                                   state
@@ -363,7 +396,10 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                                     .horizontal,
                                                                 oppositeContents:
                                                                     Text(
-                                                                  '${state.shipments[index].pickupDate!.year.toString()}-${state.shipments[index].pickupDate!.month.toString()}-${state.shipments[index].pickupDate!.day.toString()}',
+                                                                  setLoadDate(state
+                                                                      .shipments[
+                                                                          index]
+                                                                      .pickupDate!),
                                                                 ),
                                                                 contents: Text(
                                                                   state

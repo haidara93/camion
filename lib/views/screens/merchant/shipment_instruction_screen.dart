@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 
 import 'package:camion/Localization/app_localizations.dart';
@@ -39,6 +41,28 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
   final FocusNode _orderTypenode = FocusNode();
   var key1 = GlobalKey();
   String selectedRadioTile = "";
+
+  String setLoadDate(DateTime date) {
+    List months = [
+      'jan',
+      'feb',
+      'mar',
+      'april',
+      'may',
+      'jun',
+      'july',
+      'aug',
+      'sep',
+      'oct',
+      'nov',
+      'dec'
+    ];
+    var mon = date.month;
+    var month = months[mon - 1];
+
+    var result = '${date.day}-$month-${date.year}';
+    return result;
+  }
 
   TextEditingController charger_name_controller = TextEditingController();
   TextEditingController charger_address_controller = TextEditingController();
@@ -172,7 +196,7 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                               TimelineTile(
                                 direction: Axis.horizontal,
                                 oppositeContents: Text(
-                                  '${widget.shipment.pickupDate!.year.toString()}-${widget.shipment.pickupDate!.month.toString()}-${widget.shipment.pickupDate!.day.toString()}',
+                                  setLoadDate(widget.shipment.pickupDate!),
                                 ),
                                 contents: Text(
                                   widget.shipment.pickupCityLocation!,
@@ -202,7 +226,7 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                               TimelineTile(
                                 direction: Axis.horizontal,
                                 oppositeContents: Text(
-                                  '${widget.shipment.pickupDate!.year.toString()}-${widget.shipment.pickupDate!.month.toString()}-${widget.shipment.pickupDate!.day.toString()}',
+                                  setLoadDate(widget.shipment.pickupDate!),
                                 ),
                                 contents: Text(
                                   widget.shipment.deliveryCityLocation!,

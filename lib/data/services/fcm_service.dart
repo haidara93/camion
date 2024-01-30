@@ -135,11 +135,6 @@ class NotificationServices {
   }
 
   void handleMessage(BuildContext context, RemoteMessage message) {
-    print(message.data['offerId']);
-    print("message.notification!.title");
-    print(message.notification!.title);
-    print("message.notification!.body");
-    print(message.notification!.body);
     if (message.data['notefication_type'] == "A") {
       // BlocProvider.of<ShipmentDetailsBloc>(context)
       //     .add(ShipmentDetailsLoadEvent(int.parse(message.data['shipmentId'])));

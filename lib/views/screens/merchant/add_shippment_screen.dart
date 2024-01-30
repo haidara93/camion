@@ -118,153 +118,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
     // commodityQuantity_controllers.add(commodityQuantity_controller);
     // commodityPackageTypes.add(null);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _children = List.from(_children)
-        ..add(
-          Card(
-            color: Colors.white,
-            margin: const EdgeInsets.all(5),
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 7.5),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    AppLocalizations.of(context)!.translate('shippment_load'),
-                    style: TextStyle(
-                      // color: AppColor.lightBlue,
-                      fontSize: 19.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 17,
-                  ),
-                  TextFormField(
-                    controller: commodityName_controller,
-                    onTap: () {
-                      BlocProvider.of<BottomNavBarCubit>(context).emitHide();
-                      commodityName_controller.selection = TextSelection(
-                          baseOffset: 0,
-                          extentOffset:
-                              commodityName_controller.value.text.length);
-                    },
-                    scrollPadding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom + 50),
-                    textInputAction: TextInputAction.done,
-                    style: const TextStyle(fontSize: 18),
-                    decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)!
-                          .translate('commodity_name'),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 11.0, horizontal: 9.0),
-                    ),
-                    onTapOutside: (event) {
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-                    },
-                    onEditingComplete: () {
-                      if (evaluateCo2()) {
-                        calculateCo2Report();
-                      }
-                    },
-                    onChanged: (value) {
-                      if (evaluateCo2()) {
-                        calculateCo2Report();
-                      }
-                    },
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return AppLocalizations.of(context)!
-                            .translate('insert_value_validate');
-                      }
-                      return null;
-                    },
-                    onSaved: (newValue) {
-                      commodityName_controller.text = newValue!;
-                    },
-                    onFieldSubmitted: (value) {
-                      if (evaluateCo2()) {
-                        calculateCo2Report();
-                      }
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-                    },
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  TextFormField(
-                    controller: commodityWeight_controller,
-                    onTap: () {
-                      BlocProvider.of<BottomNavBarCubit>(context).emitHide();
-                      commodityWeight_controller.selection = TextSelection(
-                          baseOffset: 0,
-                          extentOffset:
-                              commodityWeight_controller.value.text.length);
-                    },
-                    scrollPadding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom + 50),
-                    textInputAction: TextInputAction.done,
-                    keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true, signed: true),
-                    inputFormatters: [
-                      DecimalFormatter(),
-                    ],
-                    style: const TextStyle(fontSize: 18),
-                    decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)!
-                          .translate('commodity_weight'),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 11.0, horizontal: 9.0),
-                    ),
-                    onTapOutside: (event) {
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-                    },
-                    onEditingComplete: () {
-                      if (evaluateCo2()) {
-                        calculateCo2Report();
-                      }
-                    },
-                    onChanged: (value) {
-                      if (evaluateCo2()) {
-                        calculateCo2Report();
-                      }
-                    },
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return AppLocalizations.of(context)!
-                            .translate('insert_value_validate');
-                      }
-                      return null;
-                    },
-                    onSaved: (newValue) {
-                      commodityWeight_controller.text = newValue!;
-                    },
-                    onFieldSubmitted: (value) {
-                      if (evaluateCo2()) {
-                        calculateCo2Report();
-                      }
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-                    },
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      setState(() => ++_count);
+      setState(() => _count++);
     });
+
     rootBundle.loadString('assets/style/map_style.json').then((string) {
       _mapStyle = string;
     });
@@ -279,144 +135,6 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
     commodityName_controllers.add(commodityName_controller);
     commodityWeight_controllers.add(commodityWeight_controller);
 
-    // _children = List.from(_children)
-    //   ..add(
-    //     Card(
-    //       color: Colors.white,
-    //       margin: const EdgeInsets.all(5),
-    //       child: Padding(
-    //         padding:
-    //             const EdgeInsets.symmetric(horizontal: 10.0, vertical: 7.5),
-    //         child: Column(
-    //           children: [
-    //             const SizedBox(
-    //               height: 12,
-    //             ),
-    //             TextFormField(
-    //               controller: commodityName_controller,
-    //               onTap: () {
-    //                 BlocProvider.of<BottomNavBarCubit>(context).emitHide();
-    //                 commodityName_controller.selection = TextSelection(
-    //                     baseOffset: 0,
-    //                     extentOffset:
-    //                         commodityName_controller.value.text.length);
-    //               },
-    //               // focusNode: _nodeWeight,
-    //               // enabled: !valueEnabled,
-    //               scrollPadding: EdgeInsets.only(
-    //                   bottom: MediaQuery.of(context).viewInsets.bottom + 50),
-    //               textInputAction: TextInputAction.done,
-    //               // keyboardType:
-    //               //     const TextInputType.numberWithOptions(
-    //               //         decimal: true, signed: true),
-    //               // inputFormatters: [
-    //               //   DecimalFormatter(),
-    //               // ],
-    //               style: const TextStyle(fontSize: 18),
-    //               decoration: InputDecoration(
-    //                 labelText: AppLocalizations.of(context)!
-    //                     .translate('commodity_name'),
-    //                 contentPadding: const EdgeInsets.symmetric(
-    //                     vertical: 11.0, horizontal: 9.0),
-    //               ),
-    //               onTapOutside: (event) {},
-    //               onEditingComplete: () {
-    //                 if (evaluateCo2()) {
-    //                   calculateCo2Report();
-    //                 }
-    //                 // evaluatePrice();
-    //               },
-    //               onChanged: (value) {
-    //                 if (evaluateCo2()) {
-    //                   calculateCo2Report();
-    //                 }
-    //               },
-    //               autovalidateMode: AutovalidateMode.onUserInteraction,
-    //               validator: (value) {
-    //                 if (value!.isEmpty) {
-    //                   return AppLocalizations.of(context)!
-    //                       .translate('insert_value_validate');
-    //                 }
-    //                 return null;
-    //               },
-    //               onSaved: (newValue) {
-    //                 commodityName_controller.text = newValue!;
-    //               },
-    //               onFieldSubmitted: (value) {
-    //                 if (evaluateCo2()) {
-    //                   calculateCo2Report();
-    //                 }
-    //                 FocusManager.instance.primaryFocus?.unfocus();
-    //                 BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-    //               },
-    //             ),
-    //             const SizedBox(
-    //               height: 12,
-    //             ),
-    //             TextFormField(
-    //               controller: commodityWeight_controller,
-    //               onTap: () {
-    //                 BlocProvider.of<BottomNavBarCubit>(context).emitHide();
-    //                 commodityWeight_controller.selection = TextSelection(
-    //                     baseOffset: 0,
-    //                     extentOffset:
-    //                         commodityWeight_controller.value.text.length);
-    //               },
-    //               // focusNode: _nodeWeight,
-    //               // enabled: !valueEnabled,
-    //               scrollPadding: EdgeInsets.only(
-    //                   bottom: MediaQuery.of(context).viewInsets.bottom + 50),
-    //               textInputAction: TextInputAction.done,
-    //               keyboardType: const TextInputType.numberWithOptions(
-    //                   decimal: true, signed: true),
-    //               inputFormatters: [
-    //                 DecimalFormatter(),
-    //               ],
-    //               style: const TextStyle(fontSize: 18),
-    //               decoration: InputDecoration(
-    //                 labelText: AppLocalizations.of(context)!
-    //                     .translate('commodity_weight'),
-    //                 contentPadding: const EdgeInsets.symmetric(
-    //                     vertical: 11.0, horizontal: 9.0),
-    //               ),
-    //               onTapOutside: (event) {},
-    //               onEditingComplete: () {
-    //                 if (evaluateCo2()) {
-    //                   calculateCo2Report();
-    //                 }
-    //               },
-    //               onChanged: (value) {
-    //                 if (evaluateCo2()) {
-    //                   calculateCo2Report();
-    //                 }
-    //               },
-    //               autovalidateMode: AutovalidateMode.onUserInteraction,
-    //               validator: (value) {
-    //                 if (value!.isEmpty) {
-    //                   return AppLocalizations.of(context)!
-    //                       .translate('insert_value_validate');
-    //                 }
-    //                 return null;
-    //               },
-    //               onSaved: (newValue) {
-    //                 commodityWeight_controller.text = newValue!;
-    //               },
-    //               onFieldSubmitted: (value) {
-    //                 if (evaluateCo2()) {
-    //                   calculateCo2Report();
-    //                 }
-    //                 FocusManager.instance.primaryFocus?.unfocus();
-    //                 BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-    //               },
-    //             ),
-    //             const SizedBox(
-    //               height: 12,
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //   );
     setState(() => _count++);
     print(_count);
   }
@@ -558,6 +276,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
     }
   }
 
+  final FocusNode _nodeCommodityName = FocusNode();
+  final FocusNode _nodeCommodityWeight = FocusNode();
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LocaleCubit, LocaleState>(
@@ -617,223 +337,263 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                           const SizedBox(
                                                             height: 30,
                                                           ),
-                                                          TextFormField(
-                                                            controller:
+                                                          Focus(
+                                                            focusNode:
+                                                                _nodeCommodityName,
+                                                            onFocusChange:
+                                                                (bool focus) {
+                                                              if (!focus) {
+                                                                FocusManager
+                                                                    .instance
+                                                                    .primaryFocus
+                                                                    ?.unfocus();
+                                                                BlocProvider.of<
+                                                                            BottomNavBarCubit>(
+                                                                        context)
+                                                                    .emitShow();
+                                                              } else {
+                                                                BlocProvider.of<
+                                                                            BottomNavBarCubit>(
+                                                                        context)
+                                                                    .emitHide();
+                                                              }
+                                                            },
+                                                            child:
+                                                                TextFormField(
+                                                              controller:
+                                                                  commodityName_controllers[
+                                                                      index],
+                                                              onTap: () {
+                                                                BlocProvider.of<
+                                                                            BottomNavBarCubit>(
+                                                                        context)
+                                                                    .emitHide();
                                                                 commodityName_controllers[
-                                                                    index],
-                                                            onTap: () {
-                                                              BlocProvider.of<
-                                                                          BottomNavBarCubit>(
-                                                                      context)
-                                                                  .emitHide();
-                                                              commodityName_controllers[
-                                                                          index]
-                                                                      .selection =
-                                                                  TextSelection(
-                                                                      baseOffset:
-                                                                          0,
-                                                                      extentOffset: commodityName_controllers[
-                                                                              index]
-                                                                          .value
-                                                                          .text
-                                                                          .length);
-                                                            },
-                                                            // focusNode: _nodeWeight,
-                                                            // enabled: !valueEnabled,
-                                                            scrollPadding: EdgeInsets.only(
-                                                                bottom: MediaQuery.of(
-                                                                            context)
-                                                                        .viewInsets
-                                                                        .bottom +
-                                                                    50),
-                                                            textInputAction:
-                                                                TextInputAction
-                                                                    .done,
-                                                            // keyboardType:
-                                                            //     const TextInputType.numberWithOptions(
-                                                            //         decimal: true, signed: true),
-                                                            // inputFormatters: [
-                                                            //   DecimalFormatter(),
-                                                            // ],
-                                                            style:
-                                                                const TextStyle(
-                                                                    fontSize:
-                                                                        18),
-                                                            decoration:
-                                                                InputDecoration(
-                                                              labelText: AppLocalizations
-                                                                      .of(
-                                                                          context)!
-                                                                  .translate(
-                                                                      'commodity_name'),
-                                                              contentPadding:
-                                                                  const EdgeInsets
-                                                                      .symmetric(
-                                                                      vertical:
-                                                                          11.0,
-                                                                      horizontal:
-                                                                          9.0),
-                                                            ),
-                                                            onTapOutside:
-                                                                (event) {},
-                                                            onEditingComplete:
-                                                                () {
-                                                              if (evaluateCo2()) {
-                                                                calculateCo2Report();
-                                                              }
-                                                              // evaluatePrice();
-                                                            },
-                                                            onChanged: (value) {
-                                                              if (evaluateCo2()) {
-                                                                calculateCo2Report();
-                                                              }
-                                                            },
-                                                            autovalidateMode:
-                                                                AutovalidateMode
-                                                                    .onUserInteraction,
-                                                            validator: (value) {
-                                                              if (value!
-                                                                  .isEmpty) {
-                                                                return AppLocalizations.of(
+                                                                            index]
+                                                                        .selection =
+                                                                    TextSelection(
+                                                                        baseOffset:
+                                                                            0,
+                                                                        extentOffset: commodityName_controllers[index]
+                                                                            .value
+                                                                            .text
+                                                                            .length);
+                                                              },
+                                                              // focusNode: _nodeWeight,
+                                                              // enabled: !valueEnabled,
+                                                              scrollPadding: EdgeInsets.only(
+                                                                  bottom: MediaQuery.of(
+                                                                              context)
+                                                                          .viewInsets
+                                                                          .bottom +
+                                                                      50),
+                                                              textInputAction:
+                                                                  TextInputAction
+                                                                      .done,
+                                                              // keyboardType:
+                                                              //     const TextInputType.numberWithOptions(
+                                                              //         decimal: true, signed: true),
+                                                              // inputFormatters: [
+                                                              //   DecimalFormatter(),
+                                                              // ],
+                                                              style:
+                                                                  const TextStyle(
+                                                                      fontSize:
+                                                                          18),
+                                                              decoration:
+                                                                  InputDecoration(
+                                                                labelText: AppLocalizations.of(
                                                                         context)!
                                                                     .translate(
-                                                                        'insert_value_validate');
-                                                              }
-                                                              return null;
-                                                            },
-                                                            onSaved:
-                                                                (newValue) {
-                                                              commodityName_controllers[
-                                                                          index]
-                                                                      .text =
-                                                                  newValue!;
-                                                            },
-                                                            onFieldSubmitted:
-                                                                (value) {
-                                                              if (evaluateCo2()) {
-                                                                calculateCo2Report();
-                                                              }
-                                                              FocusManager
-                                                                  .instance
-                                                                  .primaryFocus
-                                                                  ?.unfocus();
-                                                              BlocProvider.of<
-                                                                          BottomNavBarCubit>(
-                                                                      context)
-                                                                  .emitShow();
-                                                            },
+                                                                        'commodity_name'),
+                                                                contentPadding:
+                                                                    const EdgeInsets
+                                                                        .symmetric(
+                                                                        vertical:
+                                                                            11.0,
+                                                                        horizontal:
+                                                                            9.0),
+                                                              ),
+
+                                                              onEditingComplete:
+                                                                  () {
+                                                                if (evaluateCo2()) {
+                                                                  calculateCo2Report();
+                                                                }
+                                                                // evaluatePrice();
+                                                              },
+                                                              onChanged:
+                                                                  (value) {
+                                                                if (evaluateCo2()) {
+                                                                  calculateCo2Report();
+                                                                }
+                                                              },
+                                                              autovalidateMode:
+                                                                  AutovalidateMode
+                                                                      .onUserInteraction,
+                                                              validator:
+                                                                  (value) {
+                                                                if (value!
+                                                                    .isEmpty) {
+                                                                  return AppLocalizations.of(
+                                                                          context)!
+                                                                      .translate(
+                                                                          'insert_value_validate');
+                                                                }
+                                                                return null;
+                                                              },
+                                                              onSaved:
+                                                                  (newValue) {
+                                                                commodityName_controllers[
+                                                                            index]
+                                                                        .text =
+                                                                    newValue!;
+                                                              },
+                                                              onFieldSubmitted:
+                                                                  (value) {
+                                                                if (evaluateCo2()) {
+                                                                  calculateCo2Report();
+                                                                }
+                                                                FocusManager
+                                                                    .instance
+                                                                    .primaryFocus
+                                                                    ?.unfocus();
+                                                                BlocProvider.of<
+                                                                            BottomNavBarCubit>(
+                                                                        context)
+                                                                    .emitShow();
+                                                              },
+                                                            ),
                                                           ),
                                                           const SizedBox(
                                                             height: 12,
                                                           ),
-                                                          TextFormField(
-                                                            controller:
+                                                          Focus(
+                                                            focusNode:
+                                                                _nodeCommodityWeight,
+                                                            onFocusChange:
+                                                                (bool focus) {
+                                                              if (!focus) {
+                                                                FocusManager
+                                                                    .instance
+                                                                    .primaryFocus
+                                                                    ?.unfocus();
+                                                                BlocProvider.of<
+                                                                            BottomNavBarCubit>(
+                                                                        context)
+                                                                    .emitShow();
+                                                              }
+                                                            },
+                                                            child:
+                                                                TextFormField(
+                                                              controller:
+                                                                  commodityWeight_controllers[
+                                                                      index],
+                                                              onTap: () {
+                                                                BlocProvider.of<
+                                                                            BottomNavBarCubit>(
+                                                                        context)
+                                                                    .emitHide();
                                                                 commodityWeight_controllers[
-                                                                    index],
-                                                            onTap: () {
-                                                              BlocProvider.of<
-                                                                          BottomNavBarCubit>(
-                                                                      context)
-                                                                  .emitHide();
-                                                              commodityWeight_controllers[
-                                                                          index]
-                                                                      .selection =
-                                                                  TextSelection(
-                                                                      baseOffset:
-                                                                          0,
-                                                                      extentOffset: commodityWeight_controllers[
-                                                                              index]
-                                                                          .value
-                                                                          .text
-                                                                          .length);
-                                                            },
-                                                            // focusNode: _nodeWeight,
-                                                            // enabled: !valueEnabled,
-                                                            scrollPadding: EdgeInsets.only(
-                                                                bottom: MediaQuery.of(
-                                                                            context)
-                                                                        .viewInsets
-                                                                        .bottom +
-                                                                    50),
-                                                            textInputAction:
-                                                                TextInputAction
-                                                                    .done,
-                                                            keyboardType:
-                                                                const TextInputType
-                                                                    .numberWithOptions(
-                                                                    decimal:
-                                                                        true,
-                                                                    signed:
-                                                                        true),
-                                                            inputFormatters: [
-                                                              DecimalFormatter(),
-                                                            ],
-                                                            style:
-                                                                const TextStyle(
-                                                                    fontSize:
-                                                                        18),
-                                                            decoration:
-                                                                InputDecoration(
-                                                              labelText: AppLocalizations
-                                                                      .of(
-                                                                          context)!
-                                                                  .translate(
-                                                                      'commodity_weight'),
-                                                              contentPadding:
-                                                                  const EdgeInsets
-                                                                      .symmetric(
-                                                                      vertical:
-                                                                          11.0,
-                                                                      horizontal:
-                                                                          9.0),
-                                                            ),
-                                                            onTapOutside:
-                                                                (event) {},
-                                                            onEditingComplete:
-                                                                () {
-                                                              if (evaluateCo2()) {
-                                                                calculateCo2Report();
-                                                              }
-                                                            },
-                                                            onChanged: (value) {
-                                                              if (evaluateCo2()) {
-                                                                calculateCo2Report();
-                                                              }
-                                                            },
-                                                            autovalidateMode:
-                                                                AutovalidateMode
-                                                                    .onUserInteraction,
-                                                            validator: (value) {
-                                                              if (value!
-                                                                  .isEmpty) {
-                                                                return AppLocalizations.of(
+                                                                            index]
+                                                                        .selection =
+                                                                    TextSelection(
+                                                                        baseOffset:
+                                                                            0,
+                                                                        extentOffset: commodityWeight_controllers[index]
+                                                                            .value
+                                                                            .text
+                                                                            .length);
+                                                              },
+                                                              // focusNode: _nodeWeight,
+                                                              // enabled: !valueEnabled,
+                                                              scrollPadding: EdgeInsets.only(
+                                                                  bottom: MediaQuery.of(
+                                                                              context)
+                                                                          .viewInsets
+                                                                          .bottom +
+                                                                      50),
+                                                              textInputAction:
+                                                                  TextInputAction
+                                                                      .done,
+                                                              keyboardType:
+                                                                  const TextInputType
+                                                                      .numberWithOptions(
+                                                                      decimal:
+                                                                          true,
+                                                                      signed:
+                                                                          true),
+                                                              inputFormatters: [
+                                                                DecimalFormatter(),
+                                                              ],
+                                                              style:
+                                                                  const TextStyle(
+                                                                      fontSize:
+                                                                          18),
+                                                              decoration:
+                                                                  InputDecoration(
+                                                                labelText: AppLocalizations.of(
                                                                         context)!
                                                                     .translate(
-                                                                        'insert_value_validate');
-                                                              }
-                                                              return null;
-                                                            },
-                                                            onSaved:
-                                                                (newValue) {
-                                                              commodityWeight_controllers[
-                                                                          index]
-                                                                      .text =
-                                                                  newValue!;
-                                                            },
-                                                            onFieldSubmitted:
-                                                                (value) {
-                                                              if (evaluateCo2()) {
-                                                                calculateCo2Report();
-                                                              }
-                                                              FocusManager
-                                                                  .instance
-                                                                  .primaryFocus
-                                                                  ?.unfocus();
-                                                              BlocProvider.of<
-                                                                          BottomNavBarCubit>(
-                                                                      context)
-                                                                  .emitShow();
-                                                            },
+                                                                        'commodity_weight'),
+                                                                contentPadding:
+                                                                    const EdgeInsets
+                                                                        .symmetric(
+                                                                        vertical:
+                                                                            11.0,
+                                                                        horizontal:
+                                                                            9.0),
+                                                              ),
+                                                              onTapOutside:
+                                                                  (event) {},
+                                                              onEditingComplete:
+                                                                  () {
+                                                                if (evaluateCo2()) {
+                                                                  calculateCo2Report();
+                                                                }
+                                                              },
+                                                              onChanged:
+                                                                  (value) {
+                                                                if (evaluateCo2()) {
+                                                                  calculateCo2Report();
+                                                                }
+                                                              },
+                                                              autovalidateMode:
+                                                                  AutovalidateMode
+                                                                      .onUserInteraction,
+                                                              validator:
+                                                                  (value) {
+                                                                if (value!
+                                                                    .isEmpty) {
+                                                                  return AppLocalizations.of(
+                                                                          context)!
+                                                                      .translate(
+                                                                          'insert_value_validate');
+                                                                }
+                                                                return null;
+                                                              },
+                                                              onSaved:
+                                                                  (newValue) {
+                                                                commodityWeight_controllers[
+                                                                            index]
+                                                                        .text =
+                                                                    newValue!;
+                                                              },
+                                                              onFieldSubmitted:
+                                                                  (value) {
+                                                                if (evaluateCo2()) {
+                                                                  calculateCo2Report();
+                                                                }
+                                                                FocusManager
+                                                                    .instance
+                                                                    .primaryFocus
+                                                                    ?.unfocus();
+                                                                BlocProvider.of<
+                                                                            BottomNavBarCubit>(
+                                                                        context)
+                                                                    .emitShow();
+                                                              },
+                                                            ),
                                                           ),
                                                           const SizedBox(
                                                             height: 12,
@@ -842,64 +602,78 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                       ),
                                                     ),
                                                   ),
-                                                  Positioned(
-                                                    left: localeState.value
-                                                                .languageCode ==
-                                                            'en'
-                                                        ? 5
-                                                        : null,
-                                                    right: localeState.value
-                                                                .languageCode ==
-                                                            'en'
-                                                        ? null
-                                                        : 5,
-                                                    top: 5,
-                                                    child: Container(
-                                                      height: 30,
-                                                      width: 35,
-                                                      decoration: BoxDecoration(
-                                                        color:
-                                                            AppColor.deepYellow,
-                                                        borderRadius:
-                                                            BorderRadius.only(
-                                                          topLeft: localeState
+                                                  (_count > 1)
+                                                      ? Positioned(
+                                                          left: localeState
                                                                       .value
                                                                       .languageCode ==
                                                                   'en'
-                                                              ? const Radius
-                                                                  .circular(15)
-                                                              : const Radius
-                                                                  .circular(5),
-                                                          topRight: localeState
+                                                              ? 5
+                                                              : null,
+                                                          right: localeState
                                                                       .value
                                                                       .languageCode ==
                                                                   'en'
-                                                              ? const Radius
-                                                                  .circular(5)
-                                                              : const Radius
-                                                                  .circular(15),
-                                                          bottomLeft:
-                                                              const Radius
-                                                                  .circular(5),
-                                                          bottomRight:
-                                                              const Radius
-                                                                  .circular(5),
-                                                        ),
-                                                      ),
-                                                      child: Center(
-                                                        child: Text(
-                                                          (index + 1)
-                                                              .toString(),
-                                                          style:
-                                                              const TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                              ? null
+                                                              : 5,
+                                                          top: 5,
+                                                          child: Container(
+                                                            height: 30,
+                                                            width: 35,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: AppColor
+                                                                  .deepYellow,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .only(
+                                                                topLeft: localeState
+                                                                            .value
+                                                                            .languageCode ==
+                                                                        'en'
+                                                                    ? const Radius
+                                                                        .circular(
+                                                                        12)
+                                                                    : const Radius
+                                                                        .circular(
+                                                                        5),
+                                                                topRight: localeState
+                                                                            .value
+                                                                            .languageCode ==
+                                                                        'en'
+                                                                    ? const Radius
+                                                                        .circular(
+                                                                        5)
+                                                                    : const Radius
+                                                                        .circular(
+                                                                        15),
+                                                                bottomLeft:
+                                                                    const Radius
+                                                                        .circular(
+                                                                        5),
+                                                                bottomRight:
+                                                                    const Radius
+                                                                        .circular(
+                                                                        5),
+                                                              ),
+                                                            ),
+                                                            child: Center(
+                                                              child: Text(
+                                                                (index + 1)
+                                                                    .toString(),
+                                                                style:
+                                                                    const TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
+                                                        )
+                                                      : SizedBox.shrink(),
                                                   (_count > 1) && (index != 0)
                                                       ? Positioned(
                                                           right: localeState
@@ -1505,11 +1279,6 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                             margin: const EdgeInsets.all(7),
                                             width: 55.0,
                                             height: 15.0,
-                                            // decoration: new BoxDecoration(
-                                            //   borderRadius: BorderRadius.circular(10),
-                                            //   border: Border.all(
-                                            //       color: Colors.black87, width: 1),
-                                            // ),
                                             child: Icon(
                                               Icons.map,
                                               color: AppColor.deepYellow,
@@ -1557,10 +1326,6 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                       );
                                     },
                                     suggestionsCallback: (pattern) async {
-                                      // if (pattern.isNotEmpty) {
-                                      //   BlocProvider.of<StopScrollCubit>(context)
-                                      //       .emitDisable();
-                                      // }
                                       return pattern.isEmpty
                                           ? []
                                           : await PlaceService.getAutocomplete(
@@ -2008,65 +1773,70 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                         ),
                         SizedBox(
                           height: 300.h,
-                          child: GoogleMap(
-                            onMapCreated: (controller) {
-                              shippmentProvider.onMapCreated(
-                                  controller, _mapStyle);
-                            },
-                            initialCameraPosition: CameraPosition(
-                              target: shippmentProvider.center,
-                              zoom: shippmentProvider.zoom,
+                          child: AbsorbPointer(
+                            absorbing: false,
+                            child: GoogleMap(
+                              onMapCreated: (controller) {
+                                shippmentProvider.onMapCreated(
+                                    controller, _mapStyle);
+                              },
+                              zoomGesturesEnabled: false,
+                              scrollGesturesEnabled: false,
+                              tiltGesturesEnabled: false,
+                              rotateGesturesEnabled: false,
+                              // zoomControlsEnabled: false,
+                              initialCameraPosition: CameraPosition(
+                                target: shippmentProvider.center,
+                                zoom: shippmentProvider.zoom,
+                              ),
+                              gestureRecognizers: {},
+                              markers: (shippmentProvider.pickup_latlng !=
+                                          null ||
+                                      shippmentProvider.delivery_latlng != null)
+                                  ? {
+                                      shippmentProvider.pickup_latlng != null
+                                          ? Marker(
+                                              markerId:
+                                                  const MarkerId("pickup"),
+                                              position: LatLng(
+                                                  shippmentProvider.pickup_lat,
+                                                  shippmentProvider
+                                                      .pickup_lang),
+                                              icon: pickupicon,
+                                            )
+                                          : const Marker(
+                                              markerId: MarkerId("pickup"),
+                                            ),
+                                      shippmentProvider.delivery_latlng != null
+                                          ? Marker(
+                                              markerId:
+                                                  const MarkerId("delivery"),
+                                              position: LatLng(
+                                                  shippmentProvider
+                                                      .delivery_lat,
+                                                  shippmentProvider
+                                                      .delivery_lang),
+                                              icon: deliveryicon,
+                                            )
+                                          : const Marker(
+                                              markerId: MarkerId("delivery"),
+                                            ),
+                                    }
+                                  : {},
+                              polylines: shippmentProvider
+                                      .polylineCoordinates.isNotEmpty
+                                  ? {
+                                      Polyline(
+                                        polylineId: const PolylineId("route"),
+                                        points: shippmentProvider
+                                            .polylineCoordinates,
+                                        color: AppColor.deepYellow,
+                                        width: 5,
+                                      ),
+                                    }
+                                  : {},
+                              mapType: shippmentProvider.mapType,
                             ),
-                            // gestureRecognizers:
-                            //     shippmentProvider.pickup_latlng != null
-                            //         ? {
-                            //             Factory<OneSequenceGestureRecognizer>(
-                            //               () => EagerGestureRecognizer(),
-                            //             ),
-                            //           }
-                            //         : {},
-                            markers: (shippmentProvider.pickup_latlng != null ||
-                                    shippmentProvider.delivery_latlng != null)
-                                ? {
-                                    shippmentProvider.pickup_latlng != null
-                                        ? Marker(
-                                            markerId: const MarkerId("pickup"),
-                                            position: LatLng(
-                                                shippmentProvider.pickup_lat,
-                                                shippmentProvider.pickup_lang),
-                                            icon: pickupicon,
-                                          )
-                                        : const Marker(
-                                            markerId: MarkerId("pickup"),
-                                          ),
-                                    shippmentProvider.delivery_latlng != null
-                                        ? Marker(
-                                            markerId:
-                                                const MarkerId("delivery"),
-                                            position: LatLng(
-                                                shippmentProvider.delivery_lat,
-                                                shippmentProvider
-                                                    .delivery_lang),
-                                            icon: deliveryicon,
-                                          )
-                                        : const Marker(
-                                            markerId: MarkerId("delivery"),
-                                          ),
-                                  }
-                                : {},
-                            polylines: shippmentProvider
-                                    .polylineCoordinates.isNotEmpty
-                                ? {
-                                    Polyline(
-                                      polylineId: const PolylineId("route"),
-                                      points:
-                                          shippmentProvider.polylineCoordinates,
-                                      color: AppColor.deepYellow,
-                                      width: 5,
-                                    ),
-                                  }
-                                : {},
-                            mapType: shippmentProvider.mapType,
                           ),
                         ),
                         Visibility(
@@ -2207,12 +1977,12 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                             listener: (context, state) {
                               print(state);
                               if (state is ShippmentCreateSuccessState) {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
-                                  content: Text(AppLocalizations.of(context)!
-                                      .translate('shipment_created_success')),
-                                  duration: const Duration(seconds: 3),
-                                ));
+                                // ScaffoldMessenger.of(context)
+                                //     .showSnackBar(SnackBar(
+                                //   content: Text(AppLocalizations.of(context)!
+                                //       .translate('shipment_created_success')),
+                                //   duration: const Duration(seconds: 3),
+                                // ));
                                 BlocProvider.of<TrucksListBloc>(context)
                                     .add(TrucksListLoadEvent(state.shipment));
                                 Navigator.pushAndRemoveUntil(

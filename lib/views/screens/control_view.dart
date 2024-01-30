@@ -31,28 +31,16 @@ class ControlView extends StatelessWidget {
               child: Text("no internet connection"),
             );
           } else if (state is InternetConnected) {
-            BlocProvider.of<BottomNavBarCubit>(context).emitShow();
+            // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
             BlocProvider.of<NotificationBloc>(context)
                 .add(NotificationLoadEvent());
             return BlocBuilder<AuthBloc, AuthState>(
               builder: (context, state) {
                 if (state is AuthDriverSuccessState) {
-                  BlocProvider.of<TruckTypeBloc>(context)
-                      .add(TruckTypeLoadEvent());
-                  BlocProvider.of<PackageTypeBloc>(context)
-                      .add(PackageTypeLoadEvent());
                   return DriverHomeScreen();
                 } else if (state is AuthOwnerSuccessState) {
-                  BlocProvider.of<TruckTypeBloc>(context)
-                      .add(TruckTypeLoadEvent());
-                  BlocProvider.of<PackageTypeBloc>(context)
-                      .add(PackageTypeLoadEvent());
                   return OwnerHomeScreen();
                 } else if (state is AuthMerchentSuccessState) {
-                  BlocProvider.of<TruckTypeBloc>(context)
-                      .add(TruckTypeLoadEvent());
-                  BlocProvider.of<PackageTypeBloc>(context)
-                      .add(PackageTypeLoadEvent());
                   BlocProvider.of<ActiveShipmentListBloc>(context)
                       .add(ActiveShipmentListLoadEvent());
                   return HomeScreen();

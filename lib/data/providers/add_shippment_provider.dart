@@ -215,9 +215,8 @@ class AddShippmentProvider extends ChangeNotifier {
         .then((result) {
       _polylineCoordinates = [];
       _isThereARoute = true;
-      print(result.status);
-      print("result.points.length");
-      print(result.points.length);
+      notifyListeners();
+
       if (result.points.isNotEmpty) {
         result.points.forEach((element) {
           _polylineCoordinates.add(
@@ -227,8 +226,6 @@ class AddShippmentProvider extends ChangeNotifier {
             ),
           );
         });
-      } else {
-        _isThereARoute = false;
       }
     }, onError: printError());
 

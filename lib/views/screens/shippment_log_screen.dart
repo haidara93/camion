@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timelines/timelines.dart';
+import 'package:intl/intl.dart' as intel;
 
 class ShippmentLogScreen extends StatefulWidget {
   ShippmentLogScreen({Key? key}) : super(key: key);
@@ -21,6 +22,9 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int tabIndex = 0;
+
+  var f = intel.NumberFormat("#,###", "en_US");
+
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
@@ -51,7 +55,7 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
     var mon = date.month;
     var month = months[mon - 1];
 
-    var result = '${date.year}-$month-${date.day}';
+    var result = '${date.day}-$month-${date.year}';
     return result;
   }
 
@@ -348,7 +352,7 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                                         height: 7.h,
                                                       ),
                                                       Text(
-                                                        '${AppLocalizations.of(context)!.translate('commodity_weight')}: ${state.shipments[index].shipmentItems![0].commodityWeight!}',
+                                                        '${AppLocalizations.of(context)!.translate('commodity_weight')}: ${f.format(state.shipments[index].shipmentItems![0].commodityWeight!)} kg',
                                                         style: TextStyle(
                                                           // color: AppColor.lightBlue,
                                                           fontSize: 17.sp,
