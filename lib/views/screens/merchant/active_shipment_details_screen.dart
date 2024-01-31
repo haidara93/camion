@@ -105,12 +105,20 @@ class _ActiveShipmentDetailsScreenState
 
   late BitmapDescriptor pickupicon;
   late BitmapDescriptor deliveryicon;
+  late BitmapDescriptor parkicon;
+  late BitmapDescriptor truckicon;
+  late LatLng truckLocation;
+  late bool truckLocationassign;
 
   createMarkerIcons() async {
     pickupicon = await BitmapDescriptor.fromAssetImage(
         const ImageConfiguration(), "assets/icons/location1.png");
     deliveryicon = await BitmapDescriptor.fromAssetImage(
         const ImageConfiguration(), "assets/icons/location2.png");
+    parkicon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(), "assets/icons/locationP.png");
+    truckicon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(), "assets/icons/truck.png");
     setState(() {});
   }
 
@@ -213,25 +221,35 @@ class _ActiveShipmentDetailsScreenState
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (_added && !_printed) {
                 print("asd");
-
+                // if (!truckLocationassign) {
+                //   setState(() {
+                //     truckLocation = LatLng(
+                //       snapshot.data!.docs.singleWhere((element) =>
+                //           element.id == widget.user_id)['latitude'],
+                //       snapshot.data!.docs.singleWhere((element) =>
+                //           element.id == widget.user_id)['longitude'],
+                //     );
+                //     truckLocationassign = true;
+                //   });
+                // }
                 _printed =
                     true; // Set the flag to true to prevent starting multiple timers
                 timer = Timer.periodic(Duration(seconds: 10), (timer) {
-                  if (!snapshot.data!.docs.singleWhere((element) =>
-                      element.id == widget.user_id)['reach_pickup']) {
-                    gettruckpolylineCoordinates(
-                      LatLng(
-                        widget.shipment.pickupCityLat!,
-                        widget.shipment.pickupCityLang!,
-                      ),
-                      LatLng(
-                        snapshot.data!.docs.singleWhere((element) =>
-                            element.id == widget.user_id)['latitude'],
-                        snapshot.data!.docs.singleWhere((element) =>
-                            element.id == widget.user_id)['longitude'],
-                      ),
-                    );
-                  }
+                  // if (!snapshot.data!.docs.singleWhere((element) =>
+                  //     element.id == widget.user_id)['reach_pickup']) {
+                  //   gettruckpolylineCoordinates(
+                  //     LatLng(
+                  //       widget.shipment.pickupCityLat!,
+                  //       widget.shipment.pickupCityLang!,
+                  //     ),
+                  //     LatLng(
+                  //       snapshot.data!.docs.singleWhere((element) =>
+                  //           element.id == widget.user_id)['latitude'],
+                  //       snapshot.data!.docs.singleWhere((element) =>
+                  //           element.id == widget.user_id)['longitude'],
+                  //     ),
+                  //   );
+                  // }
 
                   print("asd");
                 });
@@ -277,6 +295,11 @@ class _ActiveShipmentDetailsScreenState
                         mapType: MapType.normal,
                         zoomControlsEnabled: false,
                         markers: {
+                          // Marker(
+                          //   position: truckLocation,
+                          //   markerId: const MarkerId('parking'),
+                          //   icon: parkicon,
+                          // ),
                           Marker(
                             position: LatLng(
                               snapshot.data!.docs.singleWhere((element) =>
@@ -284,9 +307,8 @@ class _ActiveShipmentDetailsScreenState
                               snapshot.data!.docs.singleWhere((element) =>
                                   element.id == widget.user_id)['longitude'],
                             ),
-                            markerId: const MarkerId('id'),
-                            icon: BitmapDescriptor.defaultMarkerWithHue(
-                                BitmapDescriptor.hueMagenta),
+                            markerId: const MarkerId('truck'),
+                            icon: truckicon,
                           ),
                           Marker(
                             markerId: const MarkerId("pickup"),
@@ -328,12 +350,12 @@ class _ActiveShipmentDetailsScreenState
                             color: AppColor.deepYellow,
                             width: 7,
                           ),
-                          Polyline(
-                            polylineId: const PolylineId("truckroute"),
-                            points: _truckpolyline,
-                            color: Colors.green,
-                            width: 7,
-                          ),
+                          // Polyline(
+                          //   polylineId: const PolylineId("truckroute"),
+                          //   points: _truckpolyline,
+                          //   color: Colors.green,
+                          //   width: 7,
+                          // ),
                           // Polyline(
                           //   polylineId: const PolylineId("truckroute"),
                           //   points: shipmentProvider.truckpolylineCoordinates,
@@ -519,9 +541,13 @@ class _ActiveShipmentDetailsScreenState
                       oppositeContents: Text(
                         setLoadDate(widget.shipment.pickupDate!),
                       ),
-                      contents: Text(
-                        'Pickup: ${widget.shipment.pickupCityLocation!}',
-                        style: const TextStyle(),
+                      contents: SizedBox(
+                        width: MediaQuery.of(context).size.width * .18,
+                        child: Text(
+                          'Pickup: ${widget.shipment.pickupCityLocation!}',
+                          style: const TextStyle(),
+                          maxLines: 2,
+                        ),
                       ),
                       node: SizedBox(
                         width: MediaQuery.of(context).size.width * .3,
@@ -547,9 +573,13 @@ class _ActiveShipmentDetailsScreenState
                       oppositeContents: Text(
                         setLoadDate(widget.shipment.pickupDate!),
                       ),
-                      contents: Text(
-                        'Delivery:${widget.shipment.deliveryCityLocation!}',
-                        style: const TextStyle(),
+                      contents: SizedBox(
+                        width: MediaQuery.of(context).size.width * .18,
+                        child: Text(
+                          'Delivery:${widget.shipment.deliveryCityLocation!}',
+                          style: const TextStyle(),
+                          maxLines: 2,
+                        ),
                       ),
                       node: SizedBox(
                         width: MediaQuery.of(context).size.width * .3,

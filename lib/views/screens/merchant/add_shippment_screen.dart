@@ -59,6 +59,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
 
   List<TextEditingController> commodityName_controllers = [];
   List<TextEditingController> commodityWeight_controllers = [];
+  int truckType = 0;
   // List<TextEditingController> commodityQuantity_controllers = [];
   // List<PackageType?> commodityPackageTypes = [];
   List<TruckType?> truckTypes = [];
@@ -67,7 +68,6 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
   //the controllers list
   int _count = 0;
 
-  int truckType = 0;
   int previousIndex = 0;
   final ScrollController _scrollController = ScrollController();
 
@@ -1263,22 +1263,22 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                             .translate('pickup_address'),
                                         contentPadding:
                                             const EdgeInsets.symmetric(
-                                          horizontal: 3.0,
+                                          horizontal: 9.0,
                                           vertical: 11.0,
                                         ),
-                                        prefixIcon: const Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: SizedBox(
-                                            height: 20,
-                                            width: 15,
-                                            child: Image(
-                                                height: 20,
-                                                width: 15,
-                                                image: AssetImage(
-                                                    "assets/icons/location1.png"),
-                                                fit: BoxFit.contain),
-                                          ),
-                                        ),
+                                        // prefixIcon: const Padding(
+                                        //   padding: EdgeInsets.all(8.0),
+                                        //   child: SizedBox(
+                                        //     height: 20,
+                                        //     width: 15,
+                                        //     child: Image(
+                                        //         height: 20,
+                                        //         width: 15,
+                                        //         image: AssetImage(
+                                        //             "assets/icons/location1.png"),
+                                        //         fit: BoxFit.contain),
+                                        //   ),
+                                        // ),
                                         suffixIcon: GestureDetector(
                                           onTap: () {
                                             Navigator.push(
@@ -1513,19 +1513,19 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                 horizontal: 9.0,
                                                 vertical: 11.0,
                                               ),
-                                              prefixIcon: const Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: SizedBox(
-                                                  height: 20,
-                                                  width: 15,
-                                                  child: Image(
-                                                      height: 20,
-                                                      width: 15,
-                                                      image: AssetImage(
-                                                          "assets/icons/location2.png"),
-                                                      fit: BoxFit.contain),
-                                                ),
-                                              ),
+                                              // prefixIcon: const Padding(
+                                              //   padding: EdgeInsets.all(8.0),
+                                              //   child: SizedBox(
+                                              //     height: 20,
+                                              //     width: 15,
+                                              //     child: Image(
+                                              //         height: 20,
+                                              //         width: 15,
+                                              //         image: AssetImage(
+                                              //             "assets/icons/location2.png"),
+                                              //         fit: BoxFit.contain),
+                                              //   ),
+                                              // ),
                                               suffixIcon: GestureDetector(
                                                 onTap: () {
                                                   Navigator.push(
@@ -2019,16 +2019,6 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                 //       .translate('shipment_created_success')),
                                 //   duration: const Duration(seconds: 3),
                                 // ));
-                                BlocProvider.of<TrucksListBloc>(context)
-                                    .add(TrucksListLoadEvent(state.shipment));
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const SelectTruckScreen(),
-                                  ),
-                                  (route) => false,
-                                );
                               }
                               if (state is ShippmentCreateFailureState) {
                                 print(state.errorMessage);
@@ -2073,69 +2063,25 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                             setState(() {
                                               dateError = false;
                                             });
-                                            Shipment shipment = Shipment();
-                                            shipment.truckType =
-                                                TruckType(id: truckType);
-                                            shipment.pickupCityLocation =
-                                                shippmentProvider
-                                                    .pickup_location_name;
-                                            shipment.pickupCityLat =
-                                                shippmentProvider.pickup_lat;
-                                            shipment.pickupCityLang =
-                                                shippmentProvider.pickup_lang;
-                                            shipment.deliveryCityLocation =
-                                                shippmentProvider
-                                                    .delivery_location_name;
-                                            shipment.deliveryCityLat =
-                                                shippmentProvider.delivery_lat;
-                                            shipment.deliveryCityLang =
-                                                shippmentProvider.delivery_lang;
 
-                                            var totalWeight = 0;
-                                            List<ShipmentItems> items = [];
-                                            for (var i = 0;
-                                                i <
-                                                    commodityWeight_controllers
-                                                        .length;
-                                                i++) {
-                                              ShipmentItems item =
-                                                  ShipmentItems(
-                                                commodityName:
-                                                    commodityName_controllers[i]
-                                                        .text,
-                                                commodityWeight: double.parse(
-                                                        commodityWeight_controllers[
-                                                                i]
-                                                            .text
-                                                            .replaceAll(
-                                                                ",", ""))
-                                                    .toInt(),
-                                              );
-                                              items.add(item);
-                                              totalWeight += double.parse(
-                                                      commodityWeight_controllers[
-                                                              i]
-                                                          .text
-                                                          .replaceAll(",", ""))
-                                                  .toInt();
-                                            }
-                                            shipment.totalWeight = totalWeight;
-                                            shipment.shipmentItems = items;
-                                            // shipment.pickupDate = DateTime.now();
-                                            shipment.pickupDate = DateTime(
-                                              shippmentProvider.loadDate!.year,
-                                              shippmentProvider.loadDate!.month,
-                                              shippmentProvider.loadDate!.day,
-                                              shippmentProvider.loadTime!.hour,
-                                              shippmentProvider.loadTime!.day,
-                                            );
-                                            print("sdf");
-                                            BlocProvider.of<
-                                                        ShippmentCreateBloc>(
+                                            BlocProvider.of<TrucksListBloc>(
                                                     context)
-                                                .add(
-                                                    ShippmentCreateButtonPressed(
-                                                        shipment));
+                                                .add(TrucksListLoadEvent(
+                                                    truckType));
+                                            Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SelectTruckScreen(
+                                                  commodityName_controllers:
+                                                      commodityName_controllers,
+                                                  commodityWeight_controllers:
+                                                      commodityWeight_controllers,
+                                                  truckType: truckType,
+                                                ),
+                                              ),
+                                              (route) => false,
+                                            );
                                           } else {
                                             setState(() {
                                               dateError = true;
@@ -2472,9 +2418,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
     if (response.statusCode == 200) {
       var result = jsonDecode(response.body);
       addShippmentProvider!.setPickupName(
-          '${result["results"][0]["address_components"][1]["long_name"]},${result["results"][0]["address_components"][3]["long_name"]},${result["results"][0]["address_components"][4]["long_name"]}');
+          '${result["results"][0]["address_components"][1]["long_name"]},${result["results"][0]["address_components"][3]["long_name"]}');
       addShippmentProvider!.pickup_controller.text =
-          '${result["results"][0]["address_components"][1]["long_name"]},${result["results"][0]["address_components"][3]["long_name"]},${result["results"][0]["address_components"][4]["long_name"]}';
+          '${result["results"][0]["address_components"][1]["long_name"]},${result["results"][0]["address_components"][3]["long_name"]}';
     }
     setState(() {
       pickupLoading = false;

@@ -14,7 +14,8 @@ class ShippmentCreateBloc
     on<ShippmentCreateButtonPressed>((event, emit) async {
       emit(ShippmentLoadingProgressState());
       try {
-        var result = await shippmentRerository.createShipment(event.shipment);
+        var result = await shippmentRerository.createShipment(
+            event.shipment, event.driver);
 
         emit(ShippmentCreateSuccessState(result!));
       } catch (e) {

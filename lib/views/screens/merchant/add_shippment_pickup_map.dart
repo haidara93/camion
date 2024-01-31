@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:camion/views/widgets/custom_botton.dart';
 
 class ShippmentPickUpMapScreen extends StatefulWidget {
   int type;
@@ -30,6 +31,7 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    initlocation();
   }
 
   bool pickupLoading = false;
@@ -64,7 +66,7 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
           Provider.of<AddShippmentProvider>(context, listen: false);
       addShippmentProvider!.initMapbounds();
       createMarkerIcons();
-      initlocation();
+      // initlocation();
     });
     super.initState();
   }
@@ -192,7 +194,7 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
                               child: LoadingIndicator(),
                             ),
                           )
-                        : InkWell(
+                        : CustomButton(
                             onTap: () {
                               setState(() {
                                 pickupLoading = true;
@@ -218,12 +220,9 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
                                     selectedPosition!);
                               }
                             },
-                            child: Container(
+                            title: Container(
                               height: 50.h,
                               width: 150.w,
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(30)),
                               child: const Center(
                                 child: Text(
                                   "confirm",

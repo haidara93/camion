@@ -189,7 +189,12 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                           height: 10,
                         ),
                         SizedBox(
-                          height: 70.h,
+                          height: (widget.shipment.pickupCityLocation!.length >
+                                      11 ||
+                                  widget.shipment.deliveryCityLocation!.length >
+                                      11)
+                              ? 100
+                              : 70.h,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -198,8 +203,12 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                 oppositeContents: Text(
                                   setLoadDate(widget.shipment.pickupDate!),
                                 ),
-                                contents: Text(
-                                  widget.shipment.pickupCityLocation!,
+                                contents: SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * .18,
+                                  child: Text(
+                                    widget.shipment.pickupCityLocation!,
+                                  ),
                                 ),
                                 node: SizedBox(
                                   width:
@@ -228,8 +237,12 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                 oppositeContents: Text(
                                   setLoadDate(widget.shipment.pickupDate!),
                                 ),
-                                contents: Text(
-                                  widget.shipment.deliveryCityLocation!,
+                                contents: SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * .18,
+                                  child: Text(
+                                    widget.shipment.deliveryCityLocation!,
+                                  ),
                                 ),
                                 node: SizedBox(
                                   width: MediaQuery.of(context).size.width * .2,

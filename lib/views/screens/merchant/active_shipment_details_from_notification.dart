@@ -547,7 +547,10 @@ class _ActiveShipmentDetailsFromNotificationScreenState
               ),
               const Divider(),
               SizedBox(
-                height: 100.h,
+                height: (shipment.pickupCityLocation!.length > 11 ||
+                        shipment.deliveryCityLocation!.length > 11)
+                    ? 100
+                    : 70.h,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -557,9 +560,12 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                         setLoadDate(shipment.pickupDate!),
                         style: const TextStyle(),
                       ),
-                      contents: Text(
-                        'Pickup ${shipment.pickupCityLocation!}',
-                        style: const TextStyle(),
+                      contents: SizedBox(
+                        width: MediaQuery.of(context).size.width * .18,
+                        child: Text(
+                          'Pickup ${shipment.pickupCityLocation!}',
+                          style: const TextStyle(),
+                        ),
                       ),
                       node: SizedBox(
                         width: MediaQuery.of(context).size.width * .3,
@@ -585,9 +591,12 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                       oppositeContents: Text(
                         setLoadDate(shipment.pickupDate!),
                       ),
-                      contents: Text(
-                        'Delivery ${shipment.deliveryCityLocation!}',
-                        style: const TextStyle(),
+                      contents: SizedBox(
+                        width: MediaQuery.of(context).size.width * .18,
+                        child: Text(
+                          'Delivery ${shipment.deliveryCityLocation!}',
+                          style: const TextStyle(),
+                        ),
                       ),
                       node: SizedBox(
                         width: MediaQuery.of(context).size.width * .3,

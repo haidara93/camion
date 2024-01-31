@@ -2,9 +2,13 @@ import 'dart:convert';
 
 import 'package:camion/Localization/app_localizations.dart';
 import 'package:camion/business_logic/bloc/order_truck_bloc.dart';
+import 'package:camion/business_logic/bloc/shipments/shippment_create_bloc.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
+import 'package:camion/data/models/shipment_model.dart';
 import 'package:camion/data/models/stripe_model.dart';
 import 'package:camion/data/models/truck_model.dart';
+import 'package:camion/data/models/truck_type_model.dart';
+import 'package:camion/data/providers/add_shippment_provider.dart';
 import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/helpers/http_helper.dart';
 import 'package:camion/views/screens/control_view.dart';
@@ -14,10 +18,20 @@ import 'package:camion/views/widgets/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 class TruckDetailsScreen extends StatefulWidget {
   final Truck truck;
-  TruckDetailsScreen({Key? key, required this.truck}) : super(key: key);
+  final List<TextEditingController>? commodityName_controllers;
+  final List<TextEditingController>? commodityWeight_controllers;
+  final int? truckType;
+  TruckDetailsScreen(
+      {Key? key,
+      required this.truck,
+      required this.commodityName_controllers,
+      this.commodityWeight_controllers,
+      this.truckType})
+      : super(key: key);
 
   @override
   State<TruckDetailsScreen> createState() => _TruckDetailsScreenState();
@@ -258,24 +272,26 @@ class _TruckDetailsScreenState extends State<TruckDetailsScreen> {
                             ],
                           ),
                         ),
-                        const Spacer(),
+                        const SizedBox(
+                          height: 50,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(
                               width: MediaQuery.of(context).size.width * .7,
-                              child:
-                                  BlocConsumer<OrderTruckBloc, OrderTruckState>(
+                              child: BlocConsumer<ShippmentCreateBloc,
+                                  ShippmentCreateState>(
                                 listener: (context, state) {
-                                  if (state is OrderTruckSuccessState) {
+                                  if (state is ShippmentCreateSuccessState) {
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(SnackBar(
                                       content: localeState.value.languageCode ==
                                               'en'
                                           ? const Text(
-                                              'truck was assigned to the shipment successfully.')
+                                              'Shipment was created successfully. waiting for driver to approve')
                                           : const Text(
-                                              'تم اسناد الشاحنة بنجاح.'),
+                                              'تم انشاء الشاحنة بنجاح بانتظار موافقة السائق.'),
                                       duration: const Duration(seconds: 3),
                                     ));
                                     // BlocProvider.of<TrucksListBloc>(context).add(
@@ -292,26 +308,94 @@ class _TruckDetailsScreenState extends State<TruckDetailsScreen> {
                                   }
                                 },
                                 builder: (context, state) {
-                                  if (state is OrderTruckLoadingProgressState) {
+                                  if (state is ShippmentLoadingProgressState) {
                                     return CustomButton(
                                       title: const LoadingIndicator(),
                                       onTap: () {},
                                     );
                                   } else {
-                                    return CustomButton(
-                                      title: Text(
-                                        AppLocalizations.of(context)!
-                                            .translate('order_truck'),
-                                        style: TextStyle(
-                                          fontSize: 20.sp,
+                                    return Consumer<AddShippmentProvider>(
+                                        builder: (context, shippmentProvider,
+                                            child) {
+                                      return CustomButton(
+                                        title: Text(
+                                          AppLocalizations.of(context)!
+                                              .translate('order_truck'),
+                                          style: TextStyle(
+                                            fontSize: 20.sp,
+                                          ),
                                         ),
-                                      ),
-                                      onTap: () {
-                                        BlocProvider.of<OrderTruckBloc>(context)
-                                            .add(OrderTruckButtonPressed(
-                                                widget.truck.truckuser!.id!));
-                                      },
-                                    );
+                                        onTap: () {
+                                          Shipment shipment = Shipment();
+
+                                          shipment.truckType =
+                                              TruckType(id: widget.truckType);
+                                          shipment.pickupCityLocation =
+                                              shippmentProvider
+                                                  .pickup_location_name;
+                                          shipment.pickupCityLat =
+                                              shippmentProvider.pickup_lat;
+                                          shipment.pickupCityLang =
+                                              shippmentProvider.pickup_lang;
+                                          shipment.deliveryCityLocation =
+                                              shippmentProvider
+                                                  .delivery_location_name;
+                                          shipment.deliveryCityLat =
+                                              shippmentProvider.delivery_lat;
+                                          shipment.deliveryCityLang =
+                                              shippmentProvider.delivery_lang;
+
+                                          var totalWeight = 0;
+                                          List<ShipmentItems> items = [];
+                                          for (var i = 0;
+                                              i <
+                                                  widget
+                                                      .commodityWeight_controllers!
+                                                      .length;
+                                              i++) {
+                                            ShipmentItems item = ShipmentItems(
+                                              commodityName: widget
+                                                  .commodityName_controllers![i]
+                                                  .text,
+                                              commodityWeight: double.parse(widget
+                                                      .commodityWeight_controllers![
+                                                          i]
+                                                      .text
+                                                      .replaceAll(",", ""))
+                                                  .toInt(),
+                                            );
+                                            items.add(item);
+                                            totalWeight += double.parse(widget
+                                                    .commodityWeight_controllers![
+                                                        i]
+                                                    .text
+                                                    .replaceAll(",", ""))
+                                                .toInt();
+                                          }
+                                          shipment.totalWeight = totalWeight;
+                                          shipment.shipmentItems = items;
+                                          // shipment.pickupDate = DateTime.now();
+                                          shipment.pickupDate = DateTime(
+                                            shippmentProvider.loadDate!.year,
+                                            shippmentProvider.loadDate!.month,
+                                            shippmentProvider.loadDate!.day,
+                                            shippmentProvider.loadTime!.hour,
+                                            shippmentProvider.loadTime!.day,
+                                          );
+                                          print("sdf");
+                                          BlocProvider.of<ShippmentCreateBloc>(
+                                                  context)
+                                              .add(ShippmentCreateButtonPressed(
+                                                  shipment,
+                                                  widget
+                                                      .truck.truckuser!.user!));
+                                          // BlocProvider.of<OrderTruckBloc>(
+                                          //         context)
+                                          //     .add(OrderTruckButtonPressed(
+                                          //         widget.truck.truckuser!.id!));
+                                        },
+                                      );
+                                    });
                                   }
                                 },
                               ),

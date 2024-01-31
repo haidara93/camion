@@ -70,7 +70,7 @@ class ShippmentRerository {
     return packageTypes;
   }
 
-  Future<int?> createShipment(Shipment shipment) async {
+  Future<int?> createShipment(Shipment shipment, int driver) async {
     prefs = await SharedPreferences.getInstance();
     var token = prefs.getString("token");
     var request = http.MultipartRequest('POST', Uri.parse(SHIPPMENTS_ENDPOINT));
@@ -89,6 +89,7 @@ class ShippmentRerository {
     UserModel userModel = UserModel.fromJson(jsonDecode(dataString!));
 
     request.fields['merchant'] = userModel.merchant!.toString();
+    request.fields['driver'] = driver.toString();
     request.fields['total_weight'] = shipment.totalWeight.toString();
     request.fields['truck_type'] = shipment.truckType!.id!.toString();
     request.fields['pickup_city_location'] =

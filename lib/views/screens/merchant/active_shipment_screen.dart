@@ -332,7 +332,20 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                           ),
                                                         ),
                                                         SizedBox(
-                                                          height: 70.h,
+                                                          height: (state
+                                                                          .shipments[
+                                                                              index]
+                                                                          .pickupCityLocation!
+                                                                          .length >
+                                                                      11 ||
+                                                                  state
+                                                                          .shipments[
+                                                                              index]
+                                                                          .deliveryCityLocation!
+                                                                          .length >
+                                                                      11)
+                                                              ? 100
+                                                              : 70.h,
                                                           child: Row(
                                                             mainAxisAlignment:
                                                                 MainAxisAlignment
@@ -348,11 +361,20 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                                           index]
                                                                       .pickupDate!),
                                                                 ),
-                                                                contents: Text(
-                                                                  state
-                                                                      .shipments[
-                                                                          index]
-                                                                      .pickupCityLocation!,
+                                                                contents:
+                                                                    SizedBox(
+                                                                  width: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      .18,
+                                                                  child: Text(
+                                                                    state
+                                                                        .shipments[
+                                                                            index]
+                                                                        .pickupCityLocation!,
+                                                                    maxLines: 2,
+                                                                  ),
                                                                 ),
                                                                 node: SizedBox(
                                                                   width: MediaQuery.of(
@@ -403,11 +425,20 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                                           index]
                                                                       .pickupDate!),
                                                                 ),
-                                                                contents: Text(
-                                                                  state
-                                                                      .shipments[
-                                                                          index]
-                                                                      .deliveryCityLocation!,
+                                                                contents:
+                                                                    SizedBox(
+                                                                  width: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      .18,
+                                                                  child: Text(
+                                                                    state
+                                                                        .shipments[
+                                                                            index]
+                                                                        .deliveryCityLocation!,
+                                                                    maxLines: 2,
+                                                                  ),
                                                                 ),
                                                                 node: SizedBox(
                                                                   width: MediaQuery.of(

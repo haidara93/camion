@@ -97,12 +97,18 @@ class Truck {
 class Truckuser {
   int? id;
   bool? isTruckowner;
+  int? user;
 
-  Truckuser({this.id, this.isTruckowner});
+  Truckuser({
+    this.id,
+    this.isTruckowner,
+    this.user,
+  });
 
   Truckuser.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     isTruckowner = json['is_truckowner'];
+    user = json['user'];
   }
 
   Map<String, dynamic> toJson() {

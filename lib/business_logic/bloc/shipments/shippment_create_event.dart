@@ -9,6 +9,6 @@ sealed class ShippmentCreateEvent extends Equatable {
 
 class ShippmentCreateButtonPressed extends ShippmentCreateEvent {
   final Shipment shipment;
-
-  ShippmentCreateButtonPressed(this.shipment);
+  final int driver;
+  ShippmentCreateButtonPressed(this.shipment, this.driver);
 }
