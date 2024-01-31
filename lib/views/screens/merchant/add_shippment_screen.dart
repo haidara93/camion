@@ -2102,7 +2102,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                       context)
                                                   .add(TrucksListLoadEvent(
                                                       truckType));
-                                              Navigator.pushAndRemoveUntil(
+                                              Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
@@ -2114,7 +2114,6 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                     truckType: truckType,
                                                   ),
                                                 ),
-                                                (route) => false,
                                               );
                                             } else {
                                               setState(() {
@@ -2267,7 +2266,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                           width: 5,
                         ),
                         SizedBox(
-                          // width: MediaQuery.of(context).size.width * .3,
+                          // width: MediaQuery.of(context).size.width * .4,
                           child: Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 5.0),
@@ -2275,6 +2274,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                               "${addShippmentProvider!.co2report!.duration}",
                               style: const TextStyle(
                                 color: Colors.white,
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
@@ -2291,11 +2292,13 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                           width: 5,
                         ),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * .2,
+                          width: MediaQuery.of(context).size.width * .3,
                           child: Text(
                             "${addShippmentProvider!.co2report!.distance}",
                             style: const TextStyle(
                               color: Colors.white,
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
@@ -2320,7 +2323,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                           width: 5,
                         ),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * .55,
+                          width: MediaQuery.of(context).size.width * .75,
                           child: Text(
                             "${AppLocalizations.of(context)!.translate('total_co2')}: ${f.format(addShippmentProvider!.co2report!.et!.toInt())} kg",
                             style: const TextStyle(
@@ -2330,15 +2333,6 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                             ),
                           ),
                         ),
-                        // SizedBox(
-                        //   width: MediaQuery.of(context).size.width * .35,
-                        //   child: Text(
-                        //     "${AppLocalizations.of(context)!.translate('energy_consumption')}: ${addShippmentProvider!.co2report!.gt}",
-                        //     style: const TextStyle(
-                        //       color: Colors.white,
-                        //     ),
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),

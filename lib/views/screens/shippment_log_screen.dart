@@ -204,11 +204,7 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                             ),
                                             ListTile(
                                               contentPadding: EdgeInsets.zero,
-                                              onTap: () async {
-                                                SharedPreferences prefs =
-                                                    await SharedPreferences
-                                                        .getInstance();
-                                              },
+                                              enabled: false,
                                               leading: Container(
                                                 height: 75.h,
                                                 width: 75.w,

@@ -99,12 +99,15 @@ class _ActiveShipmentDetailsFromNotificationScreenState
 
   late BitmapDescriptor pickupicon;
   late BitmapDescriptor deliveryicon;
+  late BitmapDescriptor truckicon;
 
   createMarkerIcons() async {
     pickupicon = await BitmapDescriptor.fromAssetImage(
         const ImageConfiguration(), "assets/icons/location1.png");
     deliveryicon = await BitmapDescriptor.fromAssetImage(
         const ImageConfiguration(), "assets/icons/location2.png");
+    truckicon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(), "assets/icons/truck.png");
     setState(() {});
   }
 
@@ -343,9 +346,8 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                                         element.id ==
                                         widget.user_id)['longitude'],
                                   ),
-                                  markerId: const MarkerId('id'),
-                                  icon: BitmapDescriptor.defaultMarkerWithHue(
-                                      BitmapDescriptor.hueMagenta),
+                                  markerId: const MarkerId('truck'),
+                                  icon: truckicon,
                                 ),
                                 Marker(
                                   markerId: const MarkerId("pickup"),
@@ -492,7 +494,7 @@ class _ActiveShipmentDetailsFromNotificationScreenState
       clipBehavior: Clip.none,
       children: [
         Container(
-          height: 420.h,
+          height: 430.h,
           width: MediaQuery.of(context).size.width,
           decoration: const BoxDecoration(
             color: Colors.white,
@@ -853,8 +855,16 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                           borderRadius: BorderRadius.circular(45),
                         ),
                         child: Center(
-                          child: SvgPicture.asset("assets/icons/arrow_up.svg",
-                              fit: BoxFit.fill),
+                          child: SizedBox(
+                            height: 25.h,
+                            width: 25.w,
+                            child: SvgPicture.asset(
+                              "assets/icons/arrow_up.svg",
+                              fit: BoxFit.contain,
+                              height: 25.h,
+                              width: 25.w,
+                            ),
+                          ),
                         ),
                       ),
                     )),
@@ -938,36 +948,59 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                   scrollDirection: Axis.horizontal,
                   itemCount: shipment.shipmentItems!.length,
                   itemBuilder: (context, index) {
-                    return Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(
-                              height: 5,
+                    return Stack(
+                      children: [
+                        Card(
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  "${AppLocalizations.of(context)!.translate('commodity_name')}: ${shipment.shipmentItems![index].commodityName!}",
+                                  style: TextStyle(
+                                    fontSize: 17.sp,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  "${AppLocalizations.of(context)!.translate('commodity_weight')}: ${shipment.shipmentItems![index].commodityWeight!}",
+                                  style: TextStyle(
+                                    fontSize: 17.sp,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              "${AppLocalizations.of(context)!.translate('commodity_name')}: ${shipment.shipmentItems![index].commodityName!}",
-                              style: TextStyle(
-                                fontSize: 17.sp,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              "${AppLocalizations.of(context)!.translate('commodity_weight')}: ${shipment.shipmentItems![index].commodityWeight!}",
-                              style: TextStyle(
-                                fontSize: 17.sp,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                        (shipment.shipmentItems!.length > 1)
+                            ? Positioned(
+                                right: 0,
+                                child: Container(
+                                  height: 25,
+                                  width: 25,
+                                  decoration: BoxDecoration(
+                                    color: AppColor.deepYellow,
+                                    borderRadius: BorderRadius.circular(45),
+                                  ),
+                                  child: Center(
+                                    child: Text((index + 1).toString(),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        )),
+                                  ),
+                                ),
+                              )
+                            : SizedBox.shrink(),
+                      ],
                     );
                   },
                 ),
@@ -1005,18 +1038,10 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                 style: const TextStyle(
                   // color: Colors.white,
                   fontSize: 17,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            // SizedBox(
-            //   width: MediaQuery.of(context).size.width * .35,
-            //   child: Text(
-            //     "${AppLocalizations.of(context)!.translate('energy_consumption')}: ${_report!.gt}",
-            //     // style: const TextStyle(
-            //     //   color: Colors.white,
-            //     // ),
-            //   ),
-            // ),
           ],
         ),
       ),

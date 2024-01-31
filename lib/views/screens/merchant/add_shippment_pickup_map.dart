@@ -24,7 +24,7 @@ class ShippmentPickUpMapScreen extends StatefulWidget {
 class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
   static CameraPosition _initialCameraPosition = CameraPosition(
     target: LatLng(35.363149, 35.932120),
-    zoom: 13,
+    zoom: 9,
   );
   Set<Marker> myMarker = new Set();
   late GoogleMapController mapController;
