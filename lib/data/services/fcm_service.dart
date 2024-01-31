@@ -42,7 +42,12 @@ class NotificationServices {
       }
 
       if (Platform.isIOS) {
-        forgroundMessage();
+        if (notificationProvider != null) {
+          notificationProvider!.addNotReadedNotification();
+          BlocProvider.of<NotificationBloc>(context)
+              .add(NotificationLoadEvent());
+        }
+        forgroundMessage(context);
       }
 
       if (Platform.isAndroid) {
@@ -177,7 +182,7 @@ class NotificationServices {
     // }
   }
 
-  Future forgroundMessage() async {
+  Future forgroundMessage(BuildContext context) async {
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
       alert: true,

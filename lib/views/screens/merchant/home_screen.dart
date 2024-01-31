@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen>
     BlocProvider.of<PostBloc>(context).add(PostLoadEvent());
 
     notificationServices.requestNotificationPermission();
-    notificationServices.forgroundMessage();
+    notificationServices.forgroundMessage(context);
     notificationServices.firebaseInit(context);
     notificationServices.setupInteractMessage(context);
     notificationServices.isTokenRefresh();
@@ -258,7 +258,7 @@ class _HomeScreenState extends State<HomeScreen>
                         },
                         child: ListTile(
                           leading: SvgPicture.asset(
-                            "assets/icons/settings.svg",
+                            "assets/icons/translate_camion.svg",
                             height: 20.h,
                           ),
                           title: Text(

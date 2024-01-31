@@ -153,21 +153,38 @@ class _MainScreenState extends State<MainScreen> {
                                               MainAxisAlignment.end,
                                           children: [
                                             GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (isvisivle ==
-                                                        state
-                                                            .posts[index].id!) {
-                                                      isvisivle = 0;
-                                                    } else {
-                                                      isvisivle = state
-                                                          .posts[index].id!;
-                                                    }
-                                                  });
-                                                },
-                                                child: Text(AppLocalizations.of(
-                                                        context)!
-                                                    .translate('read_more')))
+                                              onTap: () {
+                                                setState(() {
+                                                  if (isvisivle ==
+                                                      state.posts[index].id!) {
+                                                    isvisivle = 0;
+                                                  } else {
+                                                    isvisivle =
+                                                        state.posts[index].id!;
+                                                  }
+                                                });
+                                              },
+                                              child: !(isvisivle ==
+                                                      state.posts[index].id!)
+                                                  ? Text(
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .translate(
+                                                              'read_more'),
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.blue[300]),
+                                                    )
+                                                  : Text(
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .translate(
+                                                              'read_less'),
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.blue[300]),
+                                                    ),
+                                            )
                                           ],
                                         )
                                       ],

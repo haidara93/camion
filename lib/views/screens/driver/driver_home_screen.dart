@@ -105,7 +105,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
     BlocProvider.of<PostBloc>(context).add(PostLoadEvent());
 
     notificationServices.requestNotificationPermission();
-    notificationServices.forgroundMessage();
+    notificationServices.forgroundMessage(context);
     notificationServices.firebaseInit(context);
     notificationServices.setupInteractMessage(context);
     notificationServices.isTokenRefresh();
