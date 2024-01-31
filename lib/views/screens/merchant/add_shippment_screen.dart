@@ -2000,6 +2000,33 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                       ],
                                     ),
                                   ),
+                                  Visibility(
+                                    visible:
+                                        shippmentProvider.isThereARouteError,
+                                    child: const Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text(
+                                                "there is no available route change destination.",
+                                                style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontSize: 17,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -2040,80 +2067,91 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                     ),
                                   ),
                                   onTap: () {
-                                    _addShipmentformKey.currentState?.save();
-                                    if (_addShipmentformKey.currentState!
-                                        .validate()) {
-                                      if (truckType != 0) {
-                                        setState(() {
-                                          truckError = false;
-                                        });
-                                        if (shippmentProvider.pickup_controller
-                                                .text.isNotEmpty &&
-                                            shippmentProvider
-                                                .delivery_controller
-                                                .text
-                                                .isNotEmpty) {
+                                    if (shippmentProvider.thereARoute) {
+                                      _addShipmentformKey.currentState?.save();
+                                      if (_addShipmentformKey.currentState!
+                                          .validate()) {
+                                        if (truckType != 0) {
                                           setState(() {
-                                            pathError = false;
+                                            truckError = false;
                                           });
-                                          if (shippmentProvider.date_controller
-                                                  .text.isNotEmpty &&
-                                              shippmentProvider.time_controller
-                                                  .text.isNotEmpty) {
+                                          if (shippmentProvider
+                                                  .pickup_controller
+                                                  .text
+                                                  .isNotEmpty &&
+                                              shippmentProvider
+                                                  .delivery_controller
+                                                  .text
+                                                  .isNotEmpty) {
                                             setState(() {
-                                              dateError = false;
+                                              pathError = false;
                                             });
+                                            if (shippmentProvider
+                                                    .date_controller
+                                                    .text
+                                                    .isNotEmpty &&
+                                                shippmentProvider
+                                                    .time_controller
+                                                    .text
+                                                    .isNotEmpty) {
+                                              setState(() {
+                                                dateError = false;
+                                              });
 
-                                            BlocProvider.of<TrucksListBloc>(
-                                                    context)
-                                                .add(TrucksListLoadEvent(
-                                                    truckType));
-                                            Navigator.pushAndRemoveUntil(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    SelectTruckScreen(
-                                                  commodityName_controllers:
-                                                      commodityName_controllers,
-                                                  commodityWeight_controllers:
-                                                      commodityWeight_controllers,
-                                                  truckType: truckType,
+                                              BlocProvider.of<TrucksListBloc>(
+                                                      context)
+                                                  .add(TrucksListLoadEvent(
+                                                      truckType));
+                                              Navigator.pushAndRemoveUntil(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      SelectTruckScreen(
+                                                    commodityName_controllers:
+                                                        commodityName_controllers,
+                                                    commodityWeight_controllers:
+                                                        commodityWeight_controllers,
+                                                    truckType: truckType,
+                                                  ),
                                                 ),
-                                              ),
-                                              (route) => false,
-                                            );
+                                                (route) => false,
+                                              );
+                                            } else {
+                                              setState(() {
+                                                dateError = true;
+                                              });
+                                            }
                                           } else {
                                             setState(() {
-                                              dateError = true;
+                                              pathError = true;
                                             });
                                           }
                                         } else {
                                           setState(() {
-                                            pathError = true;
+                                            truckError = true;
                                           });
+                                          Scrollable.ensureVisible(
+                                            key2.currentContext!,
+                                            duration: const Duration(
+                                              milliseconds: 500,
+                                            ),
+                                          );
                                         }
                                       } else {
-                                        setState(() {
-                                          truckError = true;
-                                        });
                                         Scrollable.ensureVisible(
-                                          key2.currentContext!,
+                                          key1.currentContext!,
                                           duration: const Duration(
                                             milliseconds: 500,
                                           ),
                                         );
                                       }
-                                    } else {
-                                      Scrollable.ensureVisible(
-                                        key1.currentContext!,
-                                        duration: const Duration(
-                                          milliseconds: 500,
-                                        ),
-                                      );
-                                    }
 
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    } else {
+                                      shippmentProvider
+                                          .setIsThereRoutError(true);
+                                    }
                                   },
                                 );
                               }

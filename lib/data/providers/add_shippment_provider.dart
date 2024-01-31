@@ -95,6 +95,12 @@ class AddShippmentProvider extends ChangeNotifier {
   bool _isThereARoute = true;
   bool get isThereARoute => _isThereARoute;
 
+  bool _isThereARouteError = false;
+  bool get isThereARouteError => _isThereARouteError;
+
+  bool _thereARoute = true;
+  bool get thereARoute => _thereARoute;
+
   void onMapCreated(GoogleMapController controller, String _mapStyle) {
     _mapController = controller;
     _mapController.setMapStyle(_mapStyle);
@@ -203,6 +209,16 @@ class AddShippmentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  setIsThereRoutError(bool value) {
+    _isThereARouteError = value;
+    notifyListeners();
+  }
+
+  setThereRout(bool value) {
+    _thereARoute = value;
+    notifyListeners();
+  }
+
   void getPolyPoints() async {
     PolylinePoints polylinePoints = PolylinePoints();
 
@@ -222,6 +238,8 @@ class AddShippmentProvider extends ChangeNotifier {
         print(result.points.length);
         if (result.points.isNotEmpty) {
           _isThereARoute = true;
+          _isThereARouteError = false;
+          _thereARoute = true;
           notifyListeners();
           result.points.forEach((element) {
             _polylineCoordinates.add(
@@ -235,6 +253,7 @@ class AddShippmentProvider extends ChangeNotifier {
       },
     ).onError((error, stackTrace) {
       _isThereARoute = false;
+      _thereARoute = false;
       notifyListeners();
     });
 
