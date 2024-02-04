@@ -9,6 +9,7 @@ import 'package:camion/business_logic/bloc/order_truck_bloc.dart';
 import 'package:camion/business_logic/bloc/package_type_bloc.dart';
 import 'package:camion/business_logic/bloc/post_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/active_shipment_list_bloc.dart';
+import 'package:camion/business_logic/bloc/shipments/shipment_complete_list_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_details_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_list_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shippment_create_bloc.dart';
@@ -185,6 +186,12 @@ class MyApp extends StatelessWidget {
                   ),
                   BlocProvider(
                     create: (context) => ShipmentListBloc(
+                        shippmentRerository:
+                            RepositoryProvider.of<ShippmentRerository>(
+                                context)),
+                  ),
+                  BlocProvider(
+                    create: (context) => ShipmentCompleteListBloc(
                         shippmentRerository:
                             RepositoryProvider.of<ShippmentRerository>(
                                 context)),

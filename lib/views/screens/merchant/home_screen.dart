@@ -100,7 +100,6 @@ class _HomeScreenState extends State<HomeScreen>
     switch (selectedValue) {
       case 0:
         {
-          BlocProvider.of<PostBloc>(context).add(PostLoadEvent());
           setState(() {
             title = AppLocalizations.of(context)!.translate('home');
             currentScreen = MainScreen();
@@ -109,8 +108,6 @@ class _HomeScreenState extends State<HomeScreen>
         }
       case 1:
         {
-          BlocProvider.of<ShipmentListBloc>(context)
-              .add(ShipmentListLoadEvent("P"));
           setState(() {
             title = AppLocalizations.of(context)!.translate('shippment_log');
             currentScreen = ShippmentLogScreen();
@@ -128,8 +125,8 @@ class _HomeScreenState extends State<HomeScreen>
         }
       case 3:
         {
-          BlocProvider.of<ShipmentListBloc>(context)
-              .add(ShipmentListLoadEvent("R"));
+          // BlocProvider.of<ShipmentListBloc>(context)
+          //     .add(ShipmentListLoadEvent("R"));
           setState(() {
             title = AppLocalizations.of(context)!.translate('tracking');
 

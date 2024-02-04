@@ -53,6 +53,10 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+  Future<void> onRefresh() async {
+    BlocProvider.of<PostBloc>(context).add(PostLoadEvent());
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LocaleCubit, LocaleState>(
@@ -64,163 +68,168 @@ class _MainScreenState extends State<MainScreen> {
           child: SafeArea(
             child: Scaffold(
               backgroundColor: AppColor.lightGrey200,
-              body: Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: BlocBuilder<PostBloc, PostState>(
-                  builder: (context, state) {
-                    if (state is PostLoadedSuccess) {
-                      return ListView.builder(
-                        itemCount: state.posts.length,
-                        itemBuilder: (context, index) {
-                          DateTime now = DateTime.now();
-                          Duration diff =
-                              now.difference(state.posts[index].date!);
-                          return Card(
-                            elevation: 1,
-                            clipBehavior: Clip.antiAlias,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10),
+              body: RefreshIndicator(
+                onRefresh: onRefresh,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: BlocBuilder<PostBloc, PostState>(
+                    builder: (context, state) {
+                      if (state is PostLoadedSuccess) {
+                        return ListView.builder(
+                          itemCount: state.posts.length,
+                          itemBuilder: (context, index) {
+                            DateTime now = DateTime.now();
+                            Duration diff =
+                                now.difference(state.posts[index].date!);
+                            return Card(
+                              elevation: 1,
+                              clipBehavior: Clip.antiAlias,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
                               ),
-                            ),
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 15),
-                            color: Colors.white,
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Image.network(
-                                    state.posts[index].image!,
-                                    height: 225.h,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Container(
-                                        height: 225.h,
-                                        width: double.infinity,
-                                        color: Colors.grey[300],
-                                        child: Center(
-                                          child: Text(AppLocalizations.of(
-                                                  context)!
-                                              .translate('image_load_error')),
-                                        ),
-                                      );
-                                    },
-                                    loadingBuilder:
-                                        (context, child, loadingProgress) {
-                                      if (loadingProgress == null) {
-                                        return child;
-                                      }
-
-                                      return Shimmer.fromColors(
-                                        baseColor: (Colors.grey[300])!,
-                                        highlightColor: (Colors.grey[100])!,
-                                        enabled: true,
-                                        child: Container(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 15, vertical: 15),
+                              color: Colors.white,
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Image.network(
+                                      state.posts[index].image!,
+                                      height: 225.h,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Container(
                                           height: 225.h,
                                           width: double.infinity,
-                                          color: Colors.white,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 7.h,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(localeState.value.languageCode ==
-                                                'en'
-                                            ? diffEnText(diff)
-                                            : diffText(diff)),
-                                        Text(state.posts[index].title!),
-                                        Text(
-                                            "${AppLocalizations.of(context)!.translate('source')}: ${state.posts[index].source!}"),
-                                        Visibility(
-                                          visible: isvisivle ==
-                                              state.posts[index].id!,
-                                          child: Text(
-                                            state.posts[index].content!,
-                                            maxLines: 1000,
+                                          color: Colors.grey[300],
+                                          child: Center(
+                                            child: Text(AppLocalizations.of(
+                                                    context)!
+                                                .translate('image_load_error')),
                                           ),
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  if (isvisivle ==
-                                                      state.posts[index].id!) {
-                                                    isvisivle = 0;
-                                                  } else {
-                                                    isvisivle =
-                                                        state.posts[index].id!;
-                                                  }
-                                                });
-                                              },
-                                              child: !(isvisivle ==
-                                                      state.posts[index].id!)
-                                                  ? Text(
-                                                      AppLocalizations.of(
-                                                              context)!
-                                                          .translate(
-                                                              'read_more'),
-                                                      style: TextStyle(
-                                                          color:
-                                                              Colors.blue[300]),
-                                                    )
-                                                  : Text(
-                                                      AppLocalizations.of(
-                                                              context)!
-                                                          .translate(
-                                                              'read_less'),
-                                                      style: TextStyle(
-                                                          color:
-                                                              Colors.blue[300]),
-                                                    ),
-                                            )
-                                          ],
-                                        )
-                                      ],
+                                        );
+                                      },
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        }
+
+                                        return Shimmer.fromColors(
+                                          baseColor: (Colors.grey[300])!,
+                                          highlightColor: (Colors.grey[100])!,
+                                          enabled: true,
+                                          child: Container(
+                                            height: 225.h,
+                                            width: double.infinity,
+                                            color: Colors.white,
+                                          ),
+                                        );
+                                      },
                                     ),
-                                  )
-                                ]),
-                          );
-                        },
-                      );
-                    } else if (state is PostLoadedFailed) {
-                      return Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            BlocProvider.of<PostBloc>(context)
-                                .add(PostLoadEvent());
+                                    SizedBox(
+                                      height: 7.h,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(localeState.value.languageCode ==
+                                                  'en'
+                                              ? diffEnText(diff)
+                                              : diffText(diff)),
+                                          Text(state.posts[index].title!),
+                                          Text(
+                                              "${AppLocalizations.of(context)!.translate('source')}: ${state.posts[index].source!}"),
+                                          Visibility(
+                                            visible: isvisivle ==
+                                                state.posts[index].id!,
+                                            child: Text(
+                                              state.posts[index].content!,
+                                              maxLines: 1000,
+                                            ),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    if (isvisivle ==
+                                                        state
+                                                            .posts[index].id!) {
+                                                      isvisivle = 0;
+                                                    } else {
+                                                      isvisivle = state
+                                                          .posts[index].id!;
+                                                    }
+                                                  });
+                                                },
+                                                child: !(isvisivle ==
+                                                        state.posts[index].id!)
+                                                    ? Text(
+                                                        AppLocalizations.of(
+                                                                context)!
+                                                            .translate(
+                                                                'read_more'),
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .blue[300]),
+                                                      )
+                                                    : Text(
+                                                        AppLocalizations.of(
+                                                                context)!
+                                                            .translate(
+                                                                'read_less'),
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .blue[300]),
+                                                      ),
+                                              )
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ]),
+                            );
                           },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                AppLocalizations.of(context)!
-                                    .translate('loading_error'),
-                                style: const TextStyle(color: Colors.red),
-                              ),
-                              const Icon(
-                                Icons.refresh,
-                                color: Colors.grey,
-                              )
-                            ],
+                        );
+                      } else if (state is PostLoadedFailed) {
+                        return Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              BlocProvider.of<PostBloc>(context)
+                                  .add(PostLoadEvent());
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  AppLocalizations.of(context)!
+                                      .translate('loading_error'),
+                                  style: const TextStyle(color: Colors.red),
+                                ),
+                                const Icon(
+                                  Icons.refresh,
+                                  color: Colors.grey,
+                                )
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    } else {
-                      return const CalculatorLoadingScreen();
-                    }
-                  },
+                        );
+                      } else {
+                        return const CalculatorLoadingScreen();
+                      }
+                    },
+                  ),
                 ),
               ),
             ),

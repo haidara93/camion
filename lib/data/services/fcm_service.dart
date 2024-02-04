@@ -40,6 +40,12 @@ class NotificationServices {
         print('count:${android!.count}');
         print('data:${message.data.toString()}');
       }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("notifications title:${notification!.title}\n" +
+            "notifications body:${notification.body}\n" +
+            'data:${message.data.toString()}'),
+        duration: const Duration(seconds: 7),
+      ));
 
       if (Platform.isIOS) {
         if (notificationProvider != null) {
