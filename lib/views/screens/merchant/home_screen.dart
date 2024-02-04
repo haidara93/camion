@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen>
     BlocProvider.of<PostBloc>(context).add(PostLoadEvent());
 
     notificationServices.requestNotificationPermission();
-    notificationServices.forgroundMessage(context);
+    // notificationServices.forgroundMessage(context);
     notificationServices.firebaseInit(context);
     notificationServices.setupInteractMessage(context);
     notificationServices.isTokenRefresh();
