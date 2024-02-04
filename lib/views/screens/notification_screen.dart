@@ -140,7 +140,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                     .length >
                                                 1)
                                             ? Image.network(
-                                                'https://matjari.app/${notificationProvider.notifications[index].image!}',
+                                                'https://matjari.app/media/${notificationProvider.notifications[index].image!}',
                                                 height: 55.h,
                                                 width: 55.w,
                                                 fit: BoxFit.fill,

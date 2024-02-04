@@ -42,12 +42,7 @@ class NotificationServices {
       }
 
       if (Platform.isIOS) {
-        if (notificationProvider != null) {
-          notificationProvider!.addNotReadedNotification();
-          BlocProvider.of<NotificationBloc>(context)
-              .add(NotificationLoadEvent());
-        }
-        forgroundMessage(context);
+        forgroundMessage(context, notificationProvider!);
       }
 
       if (Platform.isAndroid) {
@@ -182,11 +177,12 @@ class NotificationServices {
     // }
   }
 
-  Future forgroundMessage(BuildContext context) async {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text("asdasdasd"),
-      duration: const Duration(seconds: 7),
-    ));
+  Future forgroundMessage(
+      BuildContext context, NotificationProvider provider) async {
+    if (notificationProvider != null) {
+      notificationProvider!.addNotReadedNotification();
+      BlocProvider.of<NotificationBloc>(context).add(NotificationLoadEvent());
+    }
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
       alert: true,
