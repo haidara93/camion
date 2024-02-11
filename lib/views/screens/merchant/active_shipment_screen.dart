@@ -5,6 +5,7 @@ import 'package:camion/data/providers/active_shipment_provider.dart';
 import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/merchant/active_shipment_details_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,8 +25,8 @@ class ActiveShipmentScreen extends StatefulWidget {
 class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
   String _mapStyle = "";
 
-  late BitmapDescriptor pickupicon;
-  late BitmapDescriptor deliveryicon;
+  BitmapDescriptor pickupicon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor deliveryicon = BitmapDescriptor.defaultMarker;
 
   createMarkerIcons() async {
     pickupicon = await BitmapDescriptor.fromAssetImage(
@@ -73,6 +74,8 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
         .add(ActiveShipmentListLoadEvent());
   }
 
+  bool shipmentsLoaded = false;
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LocaleCubit, LocaleState>(
@@ -105,12 +108,22 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                 // for (var element in state.shipments) {
                                 //   _maps.add(value)
                                 // }
+                                print("listen");
                                 activeShipmentProvider
                                     .getpolylineCoordinates(state.shipments);
                               }
                             },
                             builder: (context, state) {
                               if (state is ActiveShipmentListLoadedSuccess) {
+                                if (!shipmentsLoaded) {
+                                  BlocProvider.of<ActiveShipmentListBloc>(
+                                          context)
+                                      .add(ActiveShipmentListRefreash());
+                                  shipmentsLoaded = true;
+                                  print("build");
+                                }
+                                // activeShipmentProvider
+                                //     .getpolylineCoordinates(state.shipments);
                                 return state.shipments.isEmpty
                                     ? ListView(
                                         physics:
@@ -484,7 +497,12 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                 ],
                                               ),
                                             ),
-                                          );
+                                          ).animate().slideX(
+                                              duration: 350.ms,
+                                              delay: 0.ms,
+                                              begin: 1,
+                                              end: 0,
+                                              curve: Curves.easeInOutSine);
                                         },
                                       );
                               } else {

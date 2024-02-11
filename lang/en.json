@@ -29,6 +29,7 @@
     "no_result_found":"no results was found",
     "choose_path_error":"please choose shipment route",
     "normal":"Normal",
+    "dark":"Dark",
     "satellite":"Satellite",
     "shipment_load_complete_error":"please complete shipment info",
     "shipment_created_success":"shipment has been created successfully",
@@ -63,6 +64,9 @@
     "truck_location":"Location",
     "empty_weight":"Empty Weight",
     "number_of_axels":"Number of Axels",
+    "long":"Long",
+    "height":"Height",
+    "width":"Width",
     "rating":"Rating",
 
     "profile":"Profile",
@@ -116,6 +120,9 @@
     "extra_fees":"Extra Fees",
     "shipment_tasks":"Shipment Tasks",
     "shipment_details":"Shipment Details",
+    "confirm":"Confirm",
+    "pick_location":"Pick Location",
+    "driver_name":"driver name",
     
     "order_truck":"Truck Order",
 

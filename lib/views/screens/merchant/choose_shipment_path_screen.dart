@@ -18,6 +18,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart' show rootBundle;
 
 class ChooseShippmentPathScreen extends StatefulWidget {
   ChooseShippmentPathScreen({Key? key}) : super(key: key);
@@ -31,7 +32,24 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
 
   bool pickupLoading = false;
   bool deliveryLoading = false;
+
+  bool pickupPosition = false;
+  bool deliveryPosition = false;
+
   AddShippmentProvider? addShippmentProvider;
+
+  late BitmapDescriptor pickupicon;
+  late BitmapDescriptor deliveryicon;
+
+  String _mapStyle = "";
+
+  createMarkerIcons() async {
+    pickupicon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(), "assets/icons/location1.png");
+    deliveryicon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(), "assets/icons/location2.png");
+    setState(() {});
+  }
 
   @override
   void initState() {
@@ -39,6 +57,10 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
       addShippmentProvider =
           Provider.of<AddShippmentProvider>(context, listen: false);
       addShippmentProvider!.initMapbounds();
+      createMarkerIcons();
+    });
+    rootBundle.loadString('assets/style/normal_style.json').then((string) {
+      _mapStyle = string;
     });
     super.initState();
   }
@@ -187,18 +209,6 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
                         SizedBox(
                           height: 20.h,
                         ),
-                        Text(
-                          AppLocalizations.of(context)!
-                              .translate('pickup_address'),
-                          style: TextStyle(
-                            // color: AppColor.lightBlue,
-                            fontSize: 19.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
                         TypeAheadField(
                           textFieldConfiguration: TextFieldConfiguration(
                             // autofocus: true,
@@ -224,6 +234,8 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
                             style: const TextStyle(fontSize: 18),
                             decoration: InputDecoration(
                               labelText: AppLocalizations.of(context)!
+                                  .translate('pickup_address'),
+                              hintText: AppLocalizations.of(context)!
                                   .translate('enter_pickup_address'),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 9.0,
@@ -235,20 +247,21 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          ShippmentPickUpMapScreen(type: 0),
+                                          ShippmentPickUpMapScreen(
+                                              type: 0,
+                                              location: addshipmentprovider
+                                                      .pickup_latlng ??
+                                                  null),
                                     ),
-                                  );
+                                  ).then((value) => FocusManager
+                                      .instance.primaryFocus
+                                      ?.unfocus());
                                   // Get.to(SearchFilterView());
                                 },
                                 child: Container(
                                   margin: const EdgeInsets.all(7),
                                   width: 55.0,
                                   height: 15.0,
-                                  // decoration: new BoxDecoration(
-                                  //   borderRadius: BorderRadius.circular(10),
-                                  //   border: Border.all(
-                                  //       color: Colors.black87, width: 1),
-                                  // ),
                                   child: Icon(
                                     Icons.map,
                                     color: AppColor.deepYellow,
@@ -336,41 +349,45 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
                         const SizedBox(
                           height: 5,
                         ),
-                        !pickupLoading
-                            ? GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    pickupLoading = true;
-                                  });
-                                  _getCurrentPositionForPickup();
-                                },
-                                child: Row(
+                        Visibility(
+                          visible: !deliveryPosition,
+                          child: !pickupLoading
+                              ? GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      pickupLoading = true;
+                                      pickupPosition = true;
+                                    });
+                                    _getCurrentPositionForPickup();
+                                  },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Icon(
+                                        Icons.location_on,
+                                        color: AppColor.deepYellow,
+                                      ),
+                                      SizedBox(
+                                        width: 5.w,
+                                      ),
+                                      Text(
+                                        AppLocalizations.of(context)!
+                                            .translate('pick_my_location'),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : const Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    Icon(
-                                      Icons.location_on,
-                                      color: AppColor.deepYellow,
-                                    ),
                                     SizedBox(
-                                      width: 5.w,
-                                    ),
-                                    Text(
-                                      AppLocalizations.of(context)!
-                                          .translate('pick_my_location'),
+                                      height: 25,
+                                      width: 25,
+                                      child: LoadingIndicator(),
                                     ),
                                   ],
                                 ),
-                              )
-                            : const Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    height: 45,
-                                    width: 45,
-                                    child: LoadingIndicator(),
-                                  ),
-                                ],
-                              ),
+                        ),
                         const SizedBox(
                           height: 12,
                         ),
@@ -380,15 +397,6 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                AppLocalizations.of(context)!
-                                    .translate('delivery_address'),
-                                style: TextStyle(
-                                  // color: AppColor.lightBlue,
-                                  fontSize: 19.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
                               const SizedBox(
                                 height: 5,
                               ),
@@ -419,6 +427,8 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
                                   style: const TextStyle(fontSize: 18),
                                   decoration: InputDecoration(
                                     labelText: AppLocalizations.of(context)!
+                                        .translate('delivery_address'),
+                                    hintText: AppLocalizations.of(context)!
                                         .translate('enter_delivery_address'),
                                     contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 9.0,
@@ -431,9 +441,14 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 ShippmentPickUpMapScreen(
-                                                    type: 1),
+                                                    type: 1,
+                                                    location: addshipmentprovider
+                                                            .delivery_latlng ??
+                                                        null),
                                           ),
-                                        );
+                                        ).then((value) => FocusManager
+                                            .instance.primaryFocus
+                                            ?.unfocus());
                                         // Get.to(SearchFilterView());
                                       },
                                       child: Container(
@@ -537,43 +552,48 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
                               const SizedBox(
                                 height: 5,
                               ),
-                              !deliveryLoading
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          deliveryLoading = true;
-                                        });
-                                        _getCurrentPositionForDelivery();
-                                      },
-                                      child: Row(
+                              Visibility(
+                                visible: !pickupPosition,
+                                child: !deliveryLoading
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            deliveryLoading = true;
+                                            deliveryPosition = true;
+                                          });
+                                          _getCurrentPositionForDelivery();
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Icon(
+                                              Icons.location_on,
+                                              color: AppColor.deepYellow,
+                                            ),
+                                            SizedBox(
+                                              width: 5.w,
+                                            ),
+                                            Text(
+                                              AppLocalizations.of(context)!
+                                                  .translate(
+                                                      'pick_my_location'),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : const Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
                                         children: [
-                                          Icon(
-                                            Icons.location_on,
-                                            color: AppColor.deepYellow,
-                                          ),
                                           SizedBox(
-                                            width: 5.w,
-                                          ),
-                                          Text(
-                                            AppLocalizations.of(context)!
-                                                .translate('pick_my_location'),
+                                            height: 25,
+                                            width: 25,
+                                            child: LoadingIndicator(),
                                           ),
                                         ],
                                       ),
-                                    )
-                                  : const Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          height: 25,
-                                          width: 25,
-                                          child: LoadingIndicator(),
-                                        ),
-                                      ],
-                                    ),
+                              ),
                               const SizedBox(
                                 height: 12,
                               ),
@@ -583,53 +603,87 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
                         SizedBox(
                           height: 25,
                         ),
-                        // Visibility(
-                        //   visible: addshipmentprovider
-                        //           .pickup_controller!.text.isNotEmpty ||
-                        //       addshipmentprovider
-                        //           .delivery_controller!.text.isNotEmpty,
-                        //   child: SizedBox(
-                        //     height: 250.h,
-                        //     child: GoogleMap(
-                        //       onMapCreated: addshipmentprovider.onMapCreated,
-                        //       initialCameraPosition: CameraPosition(
-                        //         target: addshipmentprovider.center,
-                        //         zoom: addshipmentprovider.zoom,
-                        //       ),
-                        //       markers: (addshipmentprovider.pickup_latlng !=
-                        //                   null &&
-                        //               addshipmentprovider.delivery_latlng !=
-                        //                   null)
-                        //           ? {
-                        //               Marker(
-                        //                 markerId: MarkerId("pickup"),
-                        //                 position: LatLng(
-                        //                     addshipmentprovider.pickup_lat,
-                        //                     addshipmentprovider.pickup_lang),
-                        //               ),
-                        //               Marker(
-                        //                 markerId: MarkerId("delivery"),
-                        //                 position: LatLng(
-                        //                     addshipmentprovider.delivery_lat,
-                        //                     addshipmentprovider.delivery_lang),
-                        //               ),
-                        //             }
-                        //           : {},
-                        //       polylines: addshipmentprovider
-                        //               .polylineCoordinates.isNotEmpty
-                        //           ? {
-                        //               Polyline(
-                        //                 polylineId: PolylineId("route"),
-                        //                 points: addshipmentprovider
-                        //                     .polylineCoordinates,
-                        //                 color: Colors.purple,
-                        //                 width: 6,
-                        //               ),
-                        //             }
-                        //           : {},
-                        //     ),
-                        //   ),
-                        // ),
+                        Visibility(
+                          visible: addshipmentprovider
+                                  .pickup_controller!.text.isNotEmpty ||
+                              addshipmentprovider
+                                  .delivery_controller!.text.isNotEmpty,
+                          child: SizedBox(
+                            height: 300.h,
+                            child: AbsorbPointer(
+                              absorbing: false,
+                              child: GoogleMap(
+                                onMapCreated: (controller) {
+                                  addshipmentprovider.onMapCreated(
+                                      controller, _mapStyle);
+                                  addshipmentprovider.updateMap(
+                                      addshipmentprovider.pickup_latlng!);
+                                },
+                                myLocationButtonEnabled: false,
+                                zoomGesturesEnabled: false,
+                                scrollGesturesEnabled: false,
+                                tiltGesturesEnabled: false,
+                                rotateGesturesEnabled: false,
+                                // zoomControlsEnabled: false,
+                                initialCameraPosition: CameraPosition(
+                                  target: addshipmentprovider.center,
+                                  zoom: addshipmentprovider.zoom,
+                                ),
+                                gestureRecognizers: {},
+                                markers: (addshipmentprovider.pickup_latlng !=
+                                            null ||
+                                        addshipmentprovider.delivery_latlng !=
+                                            null)
+                                    ? {
+                                        addshipmentprovider.pickup_latlng !=
+                                                null
+                                            ? Marker(
+                                                markerId:
+                                                    const MarkerId("pickup"),
+                                                position: LatLng(
+                                                    addshipmentprovider
+                                                        .pickup_lat,
+                                                    addshipmentprovider
+                                                        .pickup_lang),
+                                                icon: pickupicon,
+                                              )
+                                            : const Marker(
+                                                markerId: MarkerId("pickup"),
+                                              ),
+                                        addshipmentprovider.delivery_latlng !=
+                                                null
+                                            ? Marker(
+                                                markerId:
+                                                    const MarkerId("delivery"),
+                                                position: LatLng(
+                                                    addshipmentprovider
+                                                        .delivery_lat,
+                                                    addshipmentprovider
+                                                        .delivery_lang),
+                                                icon: deliveryicon,
+                                              )
+                                            : const Marker(
+                                                markerId: MarkerId("delivery"),
+                                              ),
+                                      }
+                                    : {},
+                                polylines: addshipmentprovider
+                                        .polylineCoordinates.isNotEmpty
+                                    ? {
+                                        Polyline(
+                                          polylineId: const PolylineId("route"),
+                                          points: addshipmentprovider
+                                              .polylineCoordinates,
+                                          color: AppColor.deepYellow,
+                                          width: 5,
+                                        ),
+                                      }
+                                    : {},
+                                mapType: addshipmentprovider.mapType,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   );

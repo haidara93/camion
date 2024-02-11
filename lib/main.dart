@@ -8,6 +8,7 @@ import 'package:camion/business_logic/bloc/notification_bloc.dart';
 import 'package:camion/business_logic/bloc/order_truck_bloc.dart';
 import 'package:camion/business_logic/bloc/package_type_bloc.dart';
 import 'package:camion/business_logic/bloc/post_bloc.dart';
+import 'package:camion/business_logic/bloc/draw_route_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/active_shipment_list_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_complete_list_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_details_bloc.dart';
@@ -32,7 +33,6 @@ import 'package:camion/data/repositories/shipmment_repository.dart';
 import 'package:camion/data/repositories/truck_repository.dart';
 import 'package:camion/firebase_options.dart';
 import 'package:camion/helpers/color_constants.dart';
-import 'package:camion/views/screens/control_view.dart';
 import 'package:camion/views/widgets/splash_screen.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -208,6 +208,7 @@ class MyApp extends StatelessWidget {
                             RepositoryProvider.of<ShippmentRerository>(
                                 context)),
                   ),
+                  BlocProvider(create: (context) => DrawRouteBloc()),
                   BlocProvider(create: (context) => BottomNavBarCubit()),
                   BlocProvider(
                       create: (context) =>

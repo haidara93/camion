@@ -12,7 +12,7 @@ class OrderTruckBloc extends Bloc<OrderTruckEvent, OrderTruckState> {
     on<OrderTruckButtonPressed>((event, emit) async {
       emit(OrderTruckLoadingProgressState());
       try {
-        var result = await shippmentRerository.assignDriver(event.driver);
+        await shippmentRerository.assignDriver(event.driver);
 
         emit(OrderTruckSuccessState());
       } catch (e) {

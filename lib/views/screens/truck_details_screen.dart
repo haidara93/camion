@@ -115,6 +115,7 @@ class _TruckDetailsScreenState extends State<TruckDetailsScreen> {
                           color: Colors.white,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Image.network(
                                 widget.truck.images![0].image!,
@@ -173,33 +174,141 @@ class _TruckDetailsScreenState extends State<TruckDetailsScreen> {
                                     SizedBox(
                                       height: 7.h,
                                     ),
-                                    Text(
-                                      '${AppLocalizations.of(context)!.translate('truck_location')}: ${widget.truck.location!}',
-                                      style: TextStyle(
-                                        // color: AppColor.lightBlue,
-                                        fontSize: 17.sp,
-                                      ),
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .4,
+                                          child: Text(
+                                            '${AppLocalizations.of(context)!.translate('truck_location')}: ${widget.truck.location!}',
+                                            style: TextStyle(
+                                              // color: AppColor.lightBlue,
+                                              fontSize: 17.sp,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 40.h,
+                                          child: VerticalDivider(
+                                            color: Colors.grey[300],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .4,
+                                          child: Text(
+                                            '${AppLocalizations.of(context)!.translate('number_of_axels')}: ${widget.truck.numberOfAxels!}',
+                                            style: TextStyle(
+                                              // color: AppColor.lightBlue,
+                                              fontSize: 17.sp,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
+                                    Divider(),
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .4,
+                                          child: Text(
+                                            '${AppLocalizations.of(context)!.translate('empty_weight')}: ${widget.truck.emptyWeight!}',
+                                            style: TextStyle(
+                                              // color: AppColor.lightBlue,
+                                              fontSize: 17.sp,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 40.h,
+                                          child: VerticalDivider(
+                                            color: Colors.grey[300],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .4,
+                                          child: Text(
+                                            '${AppLocalizations.of(context)!.translate('empty_weight')}: ${widget.truck.emptyWeight!}',
+                                            style: TextStyle(
+                                              // color: AppColor.lightBlue,
+                                              fontSize: 17.sp,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Divider(),
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .25,
+                                          child: Text(
+                                            '${AppLocalizations.of(context)!.translate('long')}: ${widget.truck.long!}',
+                                            style: TextStyle(
+                                              // color: AppColor.lightBlue,
+                                              fontSize: 17.sp,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 40.h,
+                                          child: VerticalDivider(
+                                            color: Colors.grey[300],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .25,
+                                          child: Text(
+                                            '${AppLocalizations.of(context)!.translate('height')}: ${widget.truck.height!}',
+                                            style: TextStyle(
+                                              // color: AppColor.lightBlue,
+                                              fontSize: 17.sp,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 40.h,
+                                          child: VerticalDivider(
+                                            color: Colors.grey[300],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .25,
+                                          child: Text(
+                                            '${AppLocalizations.of(context)!.translate('width')}: ${widget.truck.width!}',
+                                            style: TextStyle(
+                                              // color: AppColor.lightBlue,
+                                              fontSize: 17.sp,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Divider(),
+
                                     SizedBox(
                                       height: 7.h,
                                     ),
-                                    Text(
-                                      '${AppLocalizations.of(context)!.translate('empty_weight')}: ${widget.truck.emptyWeight!}',
-                                      style: TextStyle(
-                                        // color: AppColor.lightBlue,
-                                        fontSize: 17.sp,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 7.h,
-                                    ),
-                                    Text(
-                                      '${AppLocalizations.of(context)!.translate('number_of_axels')}: ${widget.truck.numberOfAxels!}',
-                                      style: TextStyle(
-                                        // color: AppColor.lightBlue,
-                                        fontSize: 17.sp,
-                                      ),
-                                    ),
+
                                     SizedBox(
                                       height: 7.h,
                                     ),
@@ -212,56 +321,68 @@ class _TruckDetailsScreenState extends State<TruckDetailsScreen> {
                                     SizedBox(
                                       height: 7.h,
                                     ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        widget.truck.rating! >= 1
-                                            ? Icon(
-                                                Icons.star,
-                                                color: AppColor.deepYellow,
-                                              )
-                                            : Icon(
-                                                Icons.star_border,
-                                                color: AppColor.deepYellow,
-                                              ),
-                                        widget.truck.rating! >= 2
-                                            ? Icon(
-                                                Icons.star,
-                                                color: AppColor.deepYellow,
-                                              )
-                                            : Icon(
-                                                Icons.star_border,
-                                                color: AppColor.deepYellow,
-                                              ),
-                                        widget.truck.rating! >= 3
-                                            ? Icon(
-                                                Icons.star,
-                                                color: AppColor.deepYellow,
-                                              )
-                                            : Icon(
-                                                Icons.star_border,
-                                                color: AppColor.deepYellow,
-                                              ),
-                                        widget.truck.rating! >= 4
-                                            ? Icon(
-                                                Icons.star,
-                                                color: AppColor.deepYellow,
-                                              )
-                                            : Icon(
-                                                Icons.star_border,
-                                                color: AppColor.deepYellow,
-                                              ),
-                                        widget.truck.rating! == 5
-                                            ? Icon(
-                                                Icons.star,
-                                                color: AppColor.deepYellow,
-                                              )
-                                            : Icon(
-                                                Icons.star_border,
-                                                color: AppColor.deepYellow,
-                                              ),
-                                      ],
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          .5,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          widget.truck.rating! >= 1
+                                              ? Icon(
+                                                  Icons.star,
+                                                  color: AppColor.deepYellow,
+                                                )
+                                              : Icon(
+                                                  Icons.star_border,
+                                                  color: AppColor.deepYellow,
+                                                ),
+                                          widget.truck.rating! >= 2
+                                              ? Icon(
+                                                  Icons.star,
+                                                  color: AppColor.deepYellow,
+                                                )
+                                              : Icon(
+                                                  Icons.star_border,
+                                                  color: AppColor.deepYellow,
+                                                ),
+                                          widget.truck.rating! >= 3
+                                              ? Icon(
+                                                  Icons.star,
+                                                  color: AppColor.deepYellow,
+                                                )
+                                              : Icon(
+                                                  Icons.star_border,
+                                                  color: AppColor.deepYellow,
+                                                ),
+                                          widget.truck.rating! >= 4
+                                              ? Icon(
+                                                  Icons.star,
+                                                  color: AppColor.deepYellow,
+                                                )
+                                              : Icon(
+                                                  Icons.star_border,
+                                                  color: AppColor.deepYellow,
+                                                ),
+                                          widget.truck.rating! == 5
+                                              ? Icon(
+                                                  Icons.star,
+                                                  color: AppColor.deepYellow,
+                                                )
+                                              : Icon(
+                                                  Icons.star_border,
+                                                  color: AppColor.deepYellow,
+                                                ),
+                                          Text(
+                                            '(${widget.truck.rating!.toString()})',
+                                            style: TextStyle(
+                                              color: AppColor.deepYellow,
+                                              fontSize: 19,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                     SizedBox(
                                       height: 7.h,
@@ -273,26 +394,44 @@ class _TruckDetailsScreenState extends State<TruckDetailsScreen> {
                           ),
                         ),
                         const SizedBox(
-                          height: 50,
+                          height: 10,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(
-                              width: MediaQuery.of(context).size.width * .7,
+                              width: MediaQuery.of(context).size.width * .9,
                               child: BlocConsumer<ShippmentCreateBloc,
                                   ShippmentCreateState>(
                                 listener: (context, state) {
                                   if (state is ShippmentCreateSuccessState) {
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(SnackBar(
-                                      content: localeState.value.languageCode ==
-                                              'en'
-                                          ? const Text(
-                                              'Shipment was created successfully. waiting for driver to approve')
-                                          : const Text(
-                                              'تم انشاء الشاحنة بنجاح بانتظار موافقة السائق.'),
-                                      duration: const Duration(seconds: 3),
+                                      backgroundColor: AppColor.deepGreen,
+                                      dismissDirection: DismissDirection.up,
+                                      behavior: SnackBarBehavior.floating,
+                                      margin: EdgeInsets.only(
+                                          bottom: MediaQuery.of(context)
+                                                  .size
+                                                  .height -
+                                              150,
+                                          left: 10,
+                                          right: 10),
+                                      content:
+                                          localeState.value.languageCode == 'en'
+                                              ? const Text(
+                                                  'Shipment was created successfully. waiting for driver to approve',
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                  ),
+                                                )
+                                              : const Text(
+                                                  'تم انشاء الشحنة بنجاح بانتظار موافقة السائق.',
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                  ),
+                                                ),
+                                      duration: const Duration(seconds: 4),
                                     ));
                                     // BlocProvider.of<TrucksListBloc>(context).add(
                                     //     TrucksListLoadEvent(

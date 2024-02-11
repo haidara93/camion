@@ -38,7 +38,7 @@ dependencies:
   provider:
   percent_indicator: ^4.0.1
   easy_splash_screen: ^1.0.4
-  google_maps_flutter: ^2.5.0
+  google_maps_flutter: ^2.5.3
   flutter_typeahead: ^4.6.2
   geolocator: ^10.1.0
   geocoding: ^2.1.1
@@ -49,6 +49,13 @@ dependencies:
   timelines: ^0.1.0
   lottie: ^2.7.0
   permission_handler: ^11.0.1
+  flutter_animate: ^4.2.0+1
+  freezed: ^2.4.2
+  json_annotation: ^4.8.1
+  freezed_annotation: ^2.4.1
+  sliding_up_panel: ^2.0.0+1
+  flex_color_scheme: ^7.2.0
+  device_preview: ^1.1.0
 
 dev_dependencies:
   flutter_test:

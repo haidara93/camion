@@ -29,10 +29,11 @@
     "no_result_found":"لم يتم العثور على نتائج",
     "choose_path_error":"الرجاء تحديد مسار الشحنة",
     "normal":"قياسي",
+    "dark":"داكن",
     "satellite":"قمر صناعي",
     "shipment_load_complete_error":"الرجاء اكمال معلومات الشحن",
     "shipment_created_success":"تم انشاء الشحنة بنجاح",
-    "total_co2":"اجمالي الCo2 بالكغ",
+    "total_co2":"اجمالي انبعاثات الكربون",
     "energy_consumption":"كمية الطاقة المستهلكة",
     "location_service_diabled":"خدمة تحديد الموقع متوقفة. الرجاء تفعيلالخدمة.",
 
@@ -63,6 +64,9 @@
     "truck_type":"نوع الشاحنة",
     "truck_location":"المكان",
     "empty_weight":"الوزن الفارغ",
+    "long":"الطول",
+    "height":"الارتفاع",
+    "width":"العرض",
     "number_of_axels":"عدد المحاور",
     "rating":"التقييم",
 
@@ -117,6 +121,9 @@
     "extra_fees":"رسوم اضافية",
     "shipment_tasks":"مهام الشحنة",
     "shipment_details":"تفاصيل الشحنة",
+    "confirm":"تأكيد",
+    "pick_location":"اختر الموقع",
+    "driver_name":"اسم السائق",
 
     "order_truck":"اطلب الشاحنة",
 

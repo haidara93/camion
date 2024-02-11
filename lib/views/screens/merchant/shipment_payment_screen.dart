@@ -484,10 +484,26 @@ class _ShipmentPaymentScreenState extends State<ShipmentPaymentScreen> {
                       if (state is PaymentCreateSuccessState) {
                         taskProvider.decreaseTaskNum();
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          backgroundColor: AppColor.deepGreen,
+                          dismissDirection: DismissDirection.up,
+                          behavior: SnackBarBehavior.floating,
+                          margin: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).size.height - 150,
+                              left: 10,
+                              right: 10),
                           content: localeState.value.languageCode == 'en'
                               ? const Text(
-                                  'Payment has been created successfully.')
-                              : const Text('تم الدفع بنجاح'),
+                                  'Payment has been created successfully.',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                )
+                              : const Text(
+                                  'تم الدفع بنجاح',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
                           duration: const Duration(seconds: 3),
                         ));
 

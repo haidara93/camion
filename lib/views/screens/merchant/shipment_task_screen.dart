@@ -6,6 +6,7 @@ import 'package:camion/data/models/shipment_model.dart';
 import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/merchant/shipment_task_details_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
@@ -184,271 +185,266 @@ class _ShipmentTaskScreenState extends State<ShipmentTaskScreen>
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.all(8.0),
-                                              child: Row(
+                                              child: Column(
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        '${AppLocalizations.of(context)!.translate('shipment_number')}: SA-${state.shipments[index].id!}',
-                                                        style: TextStyle(
-                                                            // color: AppColor.lightBlue,
-                                                            fontSize: 18.sp,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 7.h,
-                                                      ),
-
-                                                      SizedBox(
-                                                        height: (state
-                                                                        .shipments[
-                                                                            index]
-                                                                        .pickupCityLocation!
-                                                                        .length >
-                                                                    11 ||
-                                                                state
-                                                                        .shipments[
-                                                                            index]
-                                                                        .deliveryCityLocation!
-                                                                        .length >
-                                                                    11)
-                                                            ? 100
-                                                            : 70.h,
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
-                                                          children: [
-                                                            TimelineTile(
-                                                              direction: Axis
-                                                                  .horizontal,
-                                                              oppositeContents:
-                                                                  Text(
-                                                                setLoadDate(state
-                                                                    .shipments[
-                                                                        index]
-                                                                    .pickupDate!),
-                                                              ),
-                                                              contents:
-                                                                  SizedBox(
-                                                                width: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width *
-                                                                    .18,
-                                                                child: Text(
-                                                                  state
-                                                                      .shipments[
-                                                                          index]
-                                                                      .pickupCityLocation!,
-                                                                ),
-                                                              ),
-                                                              node: SizedBox(
-                                                                width: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width *
-                                                                    .25,
-                                                                child:
-                                                                    TimelineNode(
-                                                                  indicator: DotIndicator(
-                                                                      color: AppColor
-                                                                          .deepYellow),
-                                                                  // startConnector: SolidLineConnector(),
-                                                                  endConnector:
-                                                                      DashedLineConnector(
-                                                                          color:
-                                                                              AppColor.deepYellow),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            TimelineTile(
-                                                              direction: Axis
-                                                                  .horizontal,
-                                                              oppositeContents:
-                                                                  const SizedBox
-                                                                      .shrink(),
-                                                              contents:
-                                                                  const SizedBox
-                                                                      .shrink(),
-                                                              node: SizedBox(
-                                                                width: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width *
-                                                                    .25,
-                                                                child: DashedLineConnector(
-                                                                    color: AppColor
-                                                                        .deepYellow),
-                                                              ),
-                                                            ),
-                                                            TimelineTile(
-                                                              direction: Axis
-                                                                  .horizontal,
-                                                              oppositeContents:
-                                                                  Text(
-                                                                setLoadDate(state
-                                                                    .shipments[
-                                                                        index]
-                                                                    .pickupDate!),
-                                                              ),
-                                                              contents:
-                                                                  SizedBox(
-                                                                width: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width *
-                                                                    .18,
-                                                                child: Text(
-                                                                  state
-                                                                      .shipments[
-                                                                          index]
-                                                                      .deliveryCityLocation!,
-                                                                ),
-                                                              ),
-                                                              node: SizedBox(
-                                                                width: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width *
-                                                                    .2,
-                                                                child:
-                                                                    TimelineNode(
-                                                                  indicator: DotIndicator(
-                                                                      color: AppColor
-                                                                          .deepYellow),
-                                                                  startConnector:
-                                                                      DashedLineConnector(
-                                                                          color:
-                                                                              AppColor.deepYellow),
-                                                                  // endConnector: SolidLineConnector(),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 7.h,
-                                                      ),
-                                                      Text(
-                                                        '${AppLocalizations.of(context)!.translate('commodity_type')}: ${state.shipments[index].shipmentItems![0].commodityName!}',
-                                                        style: TextStyle(
-                                                          // color: AppColor.lightBlue,
-                                                          fontSize: 17.sp,
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 7.h,
-                                                      ),
-                                                      Text(
-                                                        '${AppLocalizations.of(context)!.translate('commodity_weight')}: ${state.shipments[index].shipmentItems![0].commodityWeight!}',
-                                                        style: TextStyle(
-                                                          // color: AppColor.lightBlue,
-                                                          fontSize: 17.sp,
-                                                        ),
-                                                      ),
-
-                                                      // // Text(
-                                                      //     'نوع البضاعة: ${state.offers[index].product!.label!}'),
-                                                    ],
+                                                  Text(
+                                                    '${AppLocalizations.of(context)!.translate('shipment_number')}: SA-${state.shipments[index].id!}',
+                                                    style: TextStyle(
+                                                        // color: AppColor.lightBlue,
+                                                        fontSize: 18.sp,
+                                                        fontWeight:
+                                                            FontWeight.bold),
                                                   ),
-                                                  Container(
-                                                    height: 65.h,
-                                                    width: 75.w,
-                                                    decoration: BoxDecoration(
-                                                        // color: AppColor.lightGoldenYellow,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5)),
-                                                    child: Center(
-                                                      child: Stack(
-                                                        clipBehavior: Clip.none,
-                                                        children: [
-                                                          Card(
-                                                            shape: RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            5)),
-                                                            elevation: 2,
-                                                            child: Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(8.0),
-                                                              child: Center(
-                                                                child: Text(
-                                                                  AppLocalizations.of(
-                                                                          context)!
-                                                                      .translate(
-                                                                          'tasks'),
-                                                                ),
-                                                              ),
+                                                  SizedBox(
+                                                    height: 7.h,
+                                                  ),
+                                                  SizedBox(
+                                                    height: (state
+                                                                    .shipments[
+                                                                        index]
+                                                                    .pickupCityLocation!
+                                                                    .length >
+                                                                11 ||
+                                                            state
+                                                                    .shipments[
+                                                                        index]
+                                                                    .deliveryCityLocation!
+                                                                    .length >
+                                                                11)
+                                                        ? 100
+                                                        : 70.h,
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        TimelineTile(
+                                                          direction:
+                                                              Axis.horizontal,
+                                                          oppositeContents:
+                                                              Text(
+                                                            setLoadDate(state
+                                                                .shipments[
+                                                                    index]
+                                                                .pickupDate!),
+                                                          ),
+                                                          contents: SizedBox(
+                                                            width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                .20,
+                                                            child: Text(
+                                                              state
+                                                                  .shipments[
+                                                                      index]
+                                                                  .pickupCityLocation!,
                                                             ),
                                                           ),
-                                                          getunfinishedTasks(state
-                                                                          .shipments[
-                                                                      index]) >
-                                                                  0
-                                                              ? Positioned(
-                                                                  right: localeState
-                                                                              .value
-                                                                              .languageCode ==
-                                                                          'en'
-                                                                      ? 0
-                                                                      : null,
-                                                                  left: localeState
-                                                                              .value
-                                                                              .languageCode ==
-                                                                          'en'
-                                                                      ? null
-                                                                      : 0,
-                                                                  child:
-                                                                      Container(
-                                                                    height: 25,
-                                                                    width: 25,
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      color: Colors
-                                                                          .red,
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              45),
-                                                                    ),
-                                                                    child:
-                                                                        Center(
-                                                                      child: Text(
-                                                                          getunfinishedTasks(state.shipments[index])
-                                                                              .toString(),
-                                                                          style:
-                                                                              TextStyle(
-                                                                            color:
-                                                                                Colors.white,
-                                                                          )),
-                                                                    ),
-                                                                  ),
-                                                                )
-                                                              : const SizedBox
+                                                          node: SizedBox(
+                                                            width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                .25,
+                                                            child: TimelineNode(
+                                                              indicator: DotIndicator(
+                                                                  color: AppColor
+                                                                      .deepYellow),
+                                                              // startConnector: SolidLineConnector(),
+                                                              endConnector:
+                                                                  DashedLineConnector(
+                                                                      color: AppColor
+                                                                          .deepYellow),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        TimelineTile(
+                                                          direction:
+                                                              Axis.horizontal,
+                                                          oppositeContents:
+                                                              const SizedBox
                                                                   .shrink(),
+                                                          contents:
+                                                              const SizedBox
+                                                                  .shrink(),
+                                                          node: SizedBox(
+                                                            width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                .25,
+                                                            child: DashedLineConnector(
+                                                                color: AppColor
+                                                                    .deepYellow),
+                                                          ),
+                                                        ),
+                                                        TimelineTile(
+                                                          direction:
+                                                              Axis.horizontal,
+                                                          oppositeContents:
+                                                              Text(
+                                                            setLoadDate(state
+                                                                .shipments[
+                                                                    index]
+                                                                .pickupDate!),
+                                                          ),
+                                                          contents: SizedBox(
+                                                            width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                .20,
+                                                            child: Text(
+                                                              state
+                                                                  .shipments[
+                                                                      index]
+                                                                  .deliveryCityLocation!,
+                                                            ),
+                                                          ),
+                                                          node: SizedBox(
+                                                            width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                .2,
+                                                            child: TimelineNode(
+                                                              indicator: DotIndicator(
+                                                                  color: AppColor
+                                                                      .deepYellow),
+                                                              startConnector:
+                                                                  DashedLineConnector(
+                                                                      color: AppColor
+                                                                          .deepYellow),
+                                                              // endConnector: SolidLineConnector(),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 7.h,
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Column(
+                                                        children: [
+                                                          Text(
+                                                            '${AppLocalizations.of(context)!.translate('commodity_type')}: ${state.shipments[index].shipmentItems![0].commodityName!}',
+                                                            style: TextStyle(
+                                                              // color: AppColor.lightBlue,
+                                                              fontSize: 17.sp,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 7.h,
+                                                          ),
+                                                          Text(
+                                                            '${AppLocalizations.of(context)!.translate('commodity_weight')}: ${state.shipments[index].shipmentItems![0].commodityWeight!} ${localeState.value.languageCode == 'en' ? "kg" : "كغ"}',
+                                                            style: TextStyle(
+                                                              // color: AppColor.lightBlue,
+                                                              fontSize: 17.sp,
+                                                            ),
+                                                          ),
                                                         ],
                                                       ),
-                                                    ),
+                                                      Container(
+                                                        height: 65.h,
+                                                        width: 75.w,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(5),
+                                                        ),
+                                                        child: Center(
+                                                          child: Stack(
+                                                            clipBehavior:
+                                                                Clip.none,
+                                                            children: [
+                                                              Card(
+                                                                shape: RoundedRectangleBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            5)),
+                                                                elevation: 2,
+                                                                child: Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .all(
+                                                                          8.0),
+                                                                  child: Center(
+                                                                    child: Text(
+                                                                      AppLocalizations.of(
+                                                                              context)!
+                                                                          .translate(
+                                                                              'tasks'),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              getunfinishedTasks(
+                                                                          state.shipments[
+                                                                              index]) >
+                                                                      0
+                                                                  ? Positioned(
+                                                                      right: localeState.value.languageCode ==
+                                                                              'en'
+                                                                          ? 0
+                                                                          : null,
+                                                                      left: localeState.value.languageCode ==
+                                                                              'en'
+                                                                          ? null
+                                                                          : 0,
+                                                                      child:
+                                                                          Container(
+                                                                        height:
+                                                                            25,
+                                                                        width:
+                                                                            25,
+                                                                        decoration:
+                                                                            BoxDecoration(
+                                                                          color:
+                                                                              Colors.red,
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(45),
+                                                                        ),
+                                                                        child:
+                                                                            Center(
+                                                                          child: Text(
+                                                                              getunfinishedTasks(state.shipments[index]).toString(),
+                                                                              style: TextStyle(
+                                                                                color: Colors.white,
+                                                                              )),
+                                                                        ),
+                                                                      ),
+                                                                    )
+                                                                  : const SizedBox
+                                                                      .shrink(),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ],
                                               ),
                                             ),
                                           ),
-                                        ),
+                                        ).animate().slideX(
+                                            duration: 350.ms,
+                                            delay: 0.ms,
+                                            begin: 1,
+                                            end: 0,
+                                            curve: Curves.easeInOutSine),
                                       );
                                     },
                                   );

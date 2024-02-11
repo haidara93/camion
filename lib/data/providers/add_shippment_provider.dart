@@ -101,9 +101,18 @@ class AddShippmentProvider extends ChangeNotifier {
   bool _thereARoute = true;
   bool get thereARoute => _thereARoute;
 
-  void onMapCreated(GoogleMapController controller, String _mapStyle) {
+  void onMapCreated(GoogleMapController controller, String style) {
     _mapController = controller;
-    _mapController.setMapStyle(_mapStyle);
+    _mapController.setMapStyle(style);
+    notifyListeners();
+  }
+
+  void setMapStyle(String style) async {
+    print("ert");
+    await _mapController
+        .setMapStyle(style)
+        .onError((error, stackTrace) => print(error));
+    print("ert");
     notifyListeners();
   }
 
@@ -187,21 +196,26 @@ class AddShippmentProvider extends ChangeNotifier {
   }
 
   void getBounds(List<Marker> markers) {
-    var lngs = markers.map<double>((m) => m.position.longitude).toList();
-    var lats = markers.map<double>((m) => m.position.latitude).toList();
+    try {
+      var lngs = markers.map<double>((m) => m.position.longitude).toList();
+      var lats = markers.map<double>((m) => m.position.latitude).toList();
 
-    double topMost = lngs.reduce(max);
-    double leftMost = lats.reduce(min);
-    double rightMost = lats.reduce(max);
-    double bottomMost = lngs.reduce(min);
+      double topMost = lngs.reduce(max);
+      double leftMost = lats.reduce(min);
+      double rightMost = lats.reduce(max);
+      double bottomMost = lngs.reduce(min);
 
-    LatLngBounds _bounds = LatLngBounds(
-      northeast: LatLng(rightMost, topMost),
-      southwest: LatLng(leftMost, bottomMost),
-    );
-    var cameraUpdate = CameraUpdate.newLatLngBounds(_bounds, 50.0);
-    _mapController.animateCamera(cameraUpdate);
-    notifyListeners();
+      LatLngBounds _bounds = LatLngBounds(
+        northeast: LatLng(rightMost, topMost),
+        southwest: LatLng(leftMost, bottomMost),
+      );
+      var cameraUpdate = CameraUpdate.newLatLngBounds(_bounds, 50.0);
+      _mapController.animateCamera(cameraUpdate);
+    } catch (e) {
+      print(e.toString());
+    }
+    print("333333");
+    // notifyListeners();
   }
 
   setIsThereRout(bool value) {
@@ -232,15 +246,11 @@ class AddShippmentProvider extends ChangeNotifier {
       (result) {
         _polylineCoordinates = [];
         _isThereARoute = true;
-        notifyListeners();
 
-        print("result.points.length");
-        print(result.points.length);
         if (result.points.isNotEmpty) {
           _isThereARoute = true;
           _isThereARouteError = false;
           _thereARoute = true;
-          notifyListeners();
           result.points.forEach((element) {
             _polylineCoordinates.add(
               LatLng(
@@ -339,6 +349,7 @@ class AddShippmentProvider extends ChangeNotifier {
     _pickup_lat = lat;
     _pickup_lang = lang;
     _pickup_latlng = LatLng(lat, lang);
+    notifyListeners();
     if (_delivery_location_name.isNotEmpty) {
       getPolyPoints();
       List<Marker> markers = [];
@@ -355,8 +366,18 @@ class AddShippmentProvider extends ChangeNotifier {
         ),
       );
       getBounds(markers);
+    } else {
+      updateMap(_pickup_latlng!);
     }
     notifyListeners();
+  }
+
+  Future<void> updateMap(LatLng position) async {
+    await _mapController.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(target: position, zoom: 14.47),
+      ),
+    );
   }
 
   setDeliveryLatLang(double lat, double lang) {

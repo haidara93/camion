@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -9,7 +11,6 @@ import 'package:camion/business_logic/cubit/bottom_nav_bar_cubit.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/data/models/co2_report.dart';
 import 'package:camion/data/models/place_model.dart';
-import 'package:camion/data/models/shipment_model.dart';
 import 'package:camion/data/models/truck_type_model.dart';
 import 'package:camion/data/providers/add_shippment_provider.dart';
 import 'package:camion/data/services/co2_service.dart';
@@ -18,6 +19,7 @@ import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/helpers/formatter.dart';
 import 'package:camion/views/screens/merchant/add_shippment_pickup_map.dart';
 import 'package:camion/views/screens/merchant/choose_shipment_path_screen.dart';
+import 'package:camion/views/screens/merchant/shipment_map_preview.dart';
 import 'package:camion/views/screens/select_truck_screen.dart';
 import 'package:camion/views/widgets/custom_botton.dart';
 import 'package:camion/views/widgets/loading_indicator.dart';
@@ -88,6 +90,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
   final GlobalKey<FormState> _addShipmentformKey = GlobalKey<FormState>();
   AddShippmentProvider? addShippmentProvider;
   String _mapStyle = "";
+  String _darkmapStyle = "";
 
   late BitmapDescriptor pickupicon;
   late BitmapDescriptor deliveryicon;
@@ -124,8 +127,11 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
       setState(() => _count++);
     });
 
-    rootBundle.loadString('assets/style/map_style.json').then((string) {
+    rootBundle.loadString('assets/style/normal_style.json').then((string) {
       _mapStyle = string;
+    });
+    rootBundle.loadString('assets/style/map_style.json').then((string) {
+      _darkmapStyle = string;
     });
   }
 
@@ -817,6 +823,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                               vertical: 15.h),
                                                       child: GestureDetector(
                                                         onTap: () {
+                                                          FocusManager.instance
+                                                              .primaryFocus
+                                                              ?.unfocus();
                                                           setState(() {
                                                             truckError = false;
                                                             truckNumControllers[
@@ -933,10 +942,15 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                                     height: 7.h,
                                                                   ),
                                                                   Text(
-                                                                    state
-                                                                        .truckTypes[
-                                                                            index]
-                                                                        .name!,
+                                                                    localeState.value.languageCode ==
+                                                                            'en'
+                                                                        ? state
+                                                                            .truckTypes[
+                                                                                index]
+                                                                            .name!
+                                                                        : state
+                                                                            .truckTypes[index]
+                                                                            .nameAr!,
                                                                     style:
                                                                         TextStyle(
                                                                       fontSize:
@@ -1199,268 +1213,182 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    AppLocalizations.of(context)!
-                                        .translate('choose_shippment_path'),
-                                    style: TextStyle(
-                                      // color: AppColor.lightBlue,
-                                      fontSize: 19.sp,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 20.h,
-                                  ),
-                                  // Text(
-                                  //   AppLocalizations.of(context)!
-                                  //       .translate('pickup_address'),
-                                  //   style: TextStyle(
-                                  //     // color: AppColor.lightBlue,
-                                  //     fontSize: 19.sp,
-                                  //     fontWeight: FontWeight.bold,
-                                  //   ),
-                                  // ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  TypeAheadField(
-                                    textFieldConfiguration:
-                                        TextFieldConfiguration(
-                                      // autofocus: true,
-                                      keyboardType: TextInputType.multiline,
-                                      maxLines: null,
-                                      controller:
-                                          shippmentProvider.pickup_controller,
-                                      scrollPadding: EdgeInsets.only(
-                                          bottom: MediaQuery.of(context)
-                                                  .viewInsets
-                                                  .bottom +
-                                              150),
-                                      onTapOutside: (event) {
-                                        BlocProvider.of<BottomNavBarCubit>(
-                                                context)
-                                            .emitShow();
-                                      },
-                                      onTap: () {
-                                        BlocProvider.of<BottomNavBarCubit>(
-                                                context)
-                                            .emitHide();
-
-                                        shippmentProvider
-                                                .pickup_controller!.selection =
-                                            TextSelection(
-                                                baseOffset: 0,
-                                                extentOffset: shippmentProvider
-                                                    .pickup_controller!
-                                                    .value
-                                                    .text
-                                                    .length);
-                                      },
-
-                                      style: const TextStyle(fontSize: 18),
-                                      decoration: InputDecoration(
-                                        labelText: AppLocalizations.of(context)!
-                                            .translate('pickup_address'),
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                          horizontal: 9.0,
-                                          vertical: 11.0,
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        AppLocalizations.of(context)!
+                                            .translate('choose_shippment_path'),
+                                        style: TextStyle(
+                                          // color: AppColor.lightBlue,
+                                          fontSize: 19.sp,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                        // prefixIcon: const Padding(
-                                        //   padding: EdgeInsets.all(8.0),
-                                        //   child: SizedBox(
-                                        //     height: 20,
-                                        //     width: 15,
-                                        //     child: Image(
-                                        //         height: 20,
-                                        //         width: 15,
-                                        //         image: AssetImage(
-                                        //             "assets/icons/location1.png"),
-                                        //         fit: BoxFit.contain),
-                                        //   ),
-                                        // ),
-                                        suffixIcon: GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    ShippmentPickUpMapScreen(
-                                                        type: 0,
-                                                        location: shippmentProvider
-                                                                .pickup_latlng ??
-                                                            null),
-                                              ),
-                                            );
-                                            // Get.to(SearchFilterView());
-                                          },
-                                          child: Container(
-                                            margin: const EdgeInsets.all(7),
-                                            width: 55.0,
-                                            height: 15.0,
+                                                    ChooseShippmentPathScreen(),
+                                              )).then((value) {
+                                            if (shippmentProvider
+                                                .delivery_location_name
+                                                .isNotEmpty) {
+                                              // getPolyPoints();
+                                              List<Marker> markers = [];
+                                              markers.add(
+                                                Marker(
+                                                  markerId:
+                                                      const MarkerId("pickup"),
+                                                  position: LatLng(
+                                                      shippmentProvider
+                                                          .pickup_lat,
+                                                      shippmentProvider
+                                                          .pickup_lang),
+                                                ),
+                                              );
+                                              markers.add(
+                                                Marker(
+                                                  markerId: const MarkerId(
+                                                      "delivery"),
+                                                  position: LatLng(
+                                                      shippmentProvider
+                                                          .delivery_lat,
+                                                      shippmentProvider
+                                                          .delivery_lang),
+                                                ),
+                                              );
+                                              shippmentProvider
+                                                  .getBounds(markers);
+                                              setState(() {});
+                                            }
+                                          });
+                                        },
+                                        child: Visibility(
+                                          visible: shippmentProvider
+                                                  .pickup_controller
+                                                  .text
+                                                  .isNotEmpty &&
+                                              shippmentProvider
+                                                  .delivery_controller
+                                                  .text
+                                                  .isNotEmpty,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
                                             child: Icon(
-                                              Icons.map,
+                                              Icons.edit,
                                               color: AppColor.deepYellow,
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      onSubmitted: (value) {
-                                        // BlocProvider.of<StopScrollCubit>(context)
-                                        //     .emitEnable();
-                                        BlocProvider.of<BottomNavBarCubit>(
-                                                context)
-                                            .emitShow();
-
-                                        FocusManager.instance.primaryFocus
-                                            ?.unfocus();
-                                      },
-                                    ),
-                                    loadingBuilder: (context) {
-                                      return Container(
-                                        color: Colors.white,
-                                        child: const Center(
-                                          child: LoadingIndicator(),
-                                        ),
-                                      );
-                                    },
-                                    errorBuilder: (context, error) {
-                                      return Container(
-                                        color: Colors.white,
-                                      );
-                                    },
-                                    noItemsFoundBuilder: (value) {
-                                      var localizedMessage =
-                                          AppLocalizations.of(context)!
-                                              .translate('no_result_found');
-                                      return Container(
-                                        width: double.infinity,
-                                        color: Colors.white,
-                                        child: Center(
-                                          child: Text(
-                                            localizedMessage,
-                                            style: TextStyle(fontSize: 18.sp),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    suggestionsCallback: (pattern) async {
-                                      return pattern.isEmpty
-                                          ? []
-                                          : await PlaceService.getAutocomplete(
-                                              pattern);
-                                    },
-                                    itemBuilder: (context, suggestion) {
-                                      return Container(
-                                        color: Colors.white,
-                                        child: Column(
-                                          children: [
-                                            ListTile(
-                                              // leading: Icon(Icons.shopping_cart),
-                                              tileColor: Colors.white,
-                                              title:
-                                                  Text(suggestion.description!),
-                                              // subtitle: Text('\$${suggestion['price']}'),
-                                            ),
-                                            Divider(
-                                              color: Colors.grey[300],
-                                              height: 3,
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                    onSuggestionSelected: (suggestion) async {
-                                      var sLocation =
-                                          await PlaceService.getPlace(
-                                              suggestion.placeId);
-                                      setState(() {
-                                        shippmentProvider
-                                            .setPickUpPlace(sLocation);
-                                        shippmentProvider.setPickupLatLang(
-                                            sLocation.geometry.location.lat,
-                                            sLocation.geometry.location.lng);
-                                        shippmentProvider.setPickupName(
-                                            suggestion.description);
-                                        shippmentProvider!.pickup_controller!
-                                            .text = suggestion.description;
-                                      });
-                                      if (evaluateCo2()) {
-                                        calculateCo2Report();
-                                      }
-                                      BlocProvider.of<BottomNavBarCubit>(
-                                              context)
-                                          .emitShow();
-
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
-                                    },
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
+                                      )
+                                    ],
                                   ),
                                   Visibility(
-                                    visible: !deliveryPosition,
-                                    child: !pickupLoading
-                                        ? GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                pickupLoading = true;
-                                                pickupPosition = true;
-                                              });
-                                              _getCurrentPositionForPickup();
-                                            },
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                Icon(
-                                                  Icons.location_on,
-                                                  color: AppColor.deepYellow,
-                                                ),
-                                                SizedBox(
-                                                  width: 5.w,
-                                                ),
-                                                Text(
-                                                  AppLocalizations.of(context)!
-                                                      .translate(
-                                                          'pick_my_location'),
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                        : const Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              SizedBox(
-                                                height: 25,
-                                                width: 25,
-                                                child: LoadingIndicator(),
+                                    visible: shippmentProvider.pickup_controller
+                                            .text.isNotEmpty &&
+                                        shippmentProvider.delivery_controller
+                                            .text.isNotEmpty,
+                                    replacement: GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ChooseShippmentPathScreen(),
+                                            )).then((value) {
+                                          if (shippmentProvider
+                                              .delivery_location_name
+                                              .isNotEmpty) {
+                                            // getPolyPoints();
+                                            List<Marker> markers = [];
+                                            markers.add(
+                                              Marker(
+                                                markerId:
+                                                    const MarkerId("pickup"),
+                                                position: LatLng(
+                                                    shippmentProvider
+                                                        .pickup_lat,
+                                                    shippmentProvider
+                                                        .pickup_lang),
                                               ),
-                                            ],
+                                            );
+                                            markers.add(
+                                              Marker(
+                                                markerId:
+                                                    const MarkerId("delivery"),
+                                                position: LatLng(
+                                                    shippmentProvider
+                                                        .delivery_lat,
+                                                    shippmentProvider
+                                                        .delivery_lang),
+                                              ),
+                                            );
+                                            shippmentProvider
+                                                .getBounds(markers);
+                                            setState(() {});
+                                          }
+                                        });
+                                      },
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 15,
                                           ),
-                                  ),
-                                  const SizedBox(
-                                    height: 12,
-                                  ),
-                                  Visibility(
-                                    visible: true,
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: AppColor.deepYellow,
+                                              borderRadius:
+                                                  BorderRadius.circular(7),
+                                            ),
+                                            width: double.infinity,
+                                            height: 40.h,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(5.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    AppLocalizations.of(
+                                                            context)!
+                                                        .translate(
+                                                            'choose_shippment_path'),
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 19.sp,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  localeState.value
+                                                              .languageCode ==
+                                                          'en'
+                                                      ? const Icon(
+                                                          Icons
+                                                              .arrow_forward_ios,
+                                                          color: Colors.white,
+                                                        )
+                                                      : const Icon(
+                                                          Icons.arrow_back_ios,
+                                                          color: Colors.white,
+                                                        ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
                                       children: [
-                                        // Text(
-                                        //   AppLocalizations.of(context)!
-                                        //       .translate('delivery_address'),
-                                        //   style: TextStyle(
-                                        //     // color: AppColor.lightBlue,
-                                        //     fontSize: 19.sp,
-                                        //     fontWeight: FontWeight.bold,
-                                        //   ),
-                                        // ),
-                                        const SizedBox(
-                                          height: 5,
+                                        SizedBox(
+                                          height: 20.h,
                                         ),
                                         TypeAheadField(
                                           textFieldConfiguration:
@@ -1469,107 +1397,21 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                             keyboardType:
                                                 TextInputType.multiline,
                                             maxLines: null,
-                                            controller: shippmentProvider!
-                                                .delivery_controller,
-                                            scrollPadding: EdgeInsets.only(
-                                                bottom: MediaQuery.of(context)
-                                                        .viewInsets
-                                                        .bottom +
-                                                    150),
-                                            onTapOutside: (event) {
-                                              BlocProvider.of<
-                                                          BottomNavBarCubit>(
-                                                      context)
-                                                  .emitShow();
-                                            },
-                                            onTap: () {
-                                              BlocProvider.of<
-                                                          BottomNavBarCubit>(
-                                                      context)
-                                                  .emitHide();
-
-                                              shippmentProvider!
-                                                      .delivery_controller!
-                                                      .selection =
-                                                  TextSelection(
-                                                      baseOffset: 0,
-                                                      extentOffset:
-                                                          shippmentProvider!
-                                                              .delivery_controller!
-                                                              .value
-                                                              .text
-                                                              .length);
-                                            },
-
+                                            controller: shippmentProvider
+                                                .pickup_controller,
+                                            enabled: false,
                                             style:
                                                 const TextStyle(fontSize: 18),
                                             decoration: InputDecoration(
-                                              labelText:
-                                                  AppLocalizations.of(context)!
-                                                      .translate(
-                                                          'delivery_address'),
+                                              labelText: AppLocalizations.of(
+                                                      context)!
+                                                  .translate('pickup_address'),
                                               contentPadding:
                                                   const EdgeInsets.symmetric(
                                                 horizontal: 9.0,
                                                 vertical: 11.0,
                                               ),
-                                              // prefixIcon: const Padding(
-                                              //   padding: EdgeInsets.all(8.0),
-                                              //   child: SizedBox(
-                                              //     height: 20,
-                                              //     width: 15,
-                                              //     child: Image(
-                                              //         height: 20,
-                                              //         width: 15,
-                                              //         image: AssetImage(
-                                              //             "assets/icons/location2.png"),
-                                              //         fit: BoxFit.contain),
-                                              //   ),
-                                              // ),
-                                              suffixIcon: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ShippmentPickUpMapScreen(
-                                                              type: 1,
-                                                              location:
-                                                                  shippmentProvider
-                                                                          .delivery_latlng ??
-                                                                      null),
-                                                    ),
-                                                  );
-                                                  // Get.to(SearchFilterView());
-                                                },
-                                                child: Container(
-                                                  margin:
-                                                      const EdgeInsets.all(7),
-                                                  width: 55.0,
-                                                  height: 15.0,
-                                                  // decoration: new BoxDecoration(
-                                                  //   borderRadius: BorderRadius.circular(10),
-                                                  //   border: Border.all(
-                                                  //       color: Colors.black87, width: 1),
-                                                  // ),
-                                                  child: Icon(
-                                                    Icons.map,
-                                                    color: AppColor.deepYellow,
-                                                  ),
-                                                ),
-                                              ),
                                             ),
-                                            onSubmitted: (value) {
-                                              // BlocProvider.of<StopScrollCubit>(context)
-                                              //     .emitEnable();
-                                              BlocProvider.of<
-                                                          BottomNavBarCubit>(
-                                                      context)
-                                                  .emitShow();
-
-                                              FocusManager.instance.primaryFocus
-                                                  ?.unfocus();
-                                            },
                                           ),
                                           loadingBuilder: (context) {
                                             return Container(
@@ -1579,137 +1421,79 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                               ),
                                             );
                                           },
-                                          errorBuilder: (context, error) {
-                                            return Container(
-                                              color: Colors.white,
-                                            );
-                                          },
-                                          noItemsFoundBuilder: (value) {
-                                            var localizedMessage =
-                                                AppLocalizations.of(context)!
-                                                    .translate(
-                                                        'no_result_found');
-                                            return Container(
-                                              width: double.infinity,
-                                              color: Colors.white,
-                                              child: Center(
-                                                child: Text(
-                                                  localizedMessage,
-                                                  style: TextStyle(
-                                                      fontSize: 18.sp),
-                                                ),
-                                              ),
-                                            );
-                                          },
                                           suggestionsCallback: (pattern) async {
-                                            // if (pattern.isNotEmpty) {
-                                            //   BlocProvider.of<StopScrollCubit>(context)
-                                            //       .emitDisable();
-                                            // }
                                             return pattern.isEmpty
                                                 ? []
                                                 : await PlaceService
                                                     .getAutocomplete(pattern);
                                           },
                                           itemBuilder: (context, suggestion) {
-                                            return Container(
-                                              color: Colors.white,
-                                              child: Column(
-                                                children: [
-                                                  ListTile(
-                                                    // leading: Icon(Icons.shopping_cart),
-                                                    tileColor: Colors.white,
-                                                    title: Text(suggestion
-                                                        .description!),
-                                                    // subtitle: Text('\$${suggestion['price']}'),
-                                                  ),
-                                                  Divider(
-                                                    color: Colors.grey[300],
-                                                    height: 3,
-                                                  ),
-                                                ],
-                                              ),
-                                            );
+                                            return Container();
                                           },
                                           onSuggestionSelected:
-                                              (suggestion) async {
-                                            var sLocation =
-                                                await PlaceService.getPlace(
-                                                    suggestion.placeId);
-                                            setState(() {
-                                              shippmentProvider
-                                                  .setDeliveryPlace(sLocation);
-                                              shippmentProvider
-                                                  .setDeliveryLatLang(
-                                                      sLocation.geometry
-                                                          .location.lat,
-                                                      sLocation.geometry
-                                                          .location.lng);
-                                              shippmentProvider.setDeliveryName(
-                                                  suggestion.description);
-                                              shippmentProvider!
-                                                      .delivery_controller!
-                                                      .text =
-                                                  suggestion.description;
-                                            });
-                                            calculateCo2Report();
-                                            BlocProvider.of<BottomNavBarCubit>(
-                                                    context)
-                                                .emitShow();
-
-                                            FocusManager.instance.primaryFocus
-                                                ?.unfocus();
-                                          },
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        Visibility(
-                                          visible: !pickupPosition,
-                                          child: !deliveryLoading
-                                              ? GestureDetector(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      deliveryLoading = true;
-                                                      deliveryPosition = true;
-                                                    });
-                                                    _getCurrentPositionForDelivery();
-                                                  },
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      Icon(
-                                                        Icons.location_on,
-                                                        color:
-                                                            AppColor.deepYellow,
-                                                      ),
-                                                      SizedBox(
-                                                        width: 5.w,
-                                                      ),
-                                                      Text(
-                                                        AppLocalizations.of(
-                                                                context)!
-                                                            .translate(
-                                                                'pick_my_location'),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )
-                                              : const Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    SizedBox(
-                                                      height: 25,
-                                                      width: 25,
-                                                      child: LoadingIndicator(),
-                                                    ),
-                                                  ],
-                                                ),
+                                              (suggestion) async {},
                                         ),
                                         const SizedBox(
                                           height: 12,
+                                        ),
+                                        Visibility(
+                                          visible: true,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const SizedBox(
+                                                height: 5,
+                                              ),
+                                              TypeAheadField(
+                                                textFieldConfiguration:
+                                                    TextFieldConfiguration(
+                                                  // autofocus: true,
+                                                  keyboardType:
+                                                      TextInputType.multiline,
+                                                  maxLines: null,
+                                                  controller: shippmentProvider!
+                                                      .delivery_controller,
+                                                  enabled: false,
+                                                  style: const TextStyle(
+                                                      fontSize: 18),
+                                                  decoration: InputDecoration(
+                                                    labelText: AppLocalizations
+                                                            .of(context)!
+                                                        .translate(
+                                                            'delivery_address'),
+                                                    contentPadding:
+                                                        const EdgeInsets
+                                                            .symmetric(
+                                                      horizontal: 9.0,
+                                                      vertical: 11.0,
+                                                    ),
+                                                  ),
+                                                ),
+                                                suggestionsCallback:
+                                                    (pattern) async {
+                                                  // if (pattern.isNotEmpty) {
+                                                  //   BlocProvider.of<StopScrollCubit>(context)
+                                                  //       .emitDisable();
+                                                  // }
+                                                  return pattern.isEmpty
+                                                      ? []
+                                                      : await PlaceService
+                                                          .getAutocomplete(
+                                                              pattern);
+                                                },
+                                                itemBuilder:
+                                                    (context, suggestion) {
+                                                  return Container();
+                                                },
+                                                onSuggestionSelected:
+                                                    (suggestion) async {},
+                                              ),
+                                              const SizedBox(
+                                                height: 12,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -1749,7 +1533,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                             children: [
                               GestureDetector(
                                 onTap: () {
+                                  print("normal");
                                   shippmentProvider.setMapMode(MapType.normal);
+                                  shippmentProvider.setMapStyle(_mapStyle);
                                 },
                                 child: SizedBox(
                                   height: 50,
@@ -1768,8 +1554,28 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  shippmentProvider
-                                      .setMapMode(MapType.satellite);
+                                  print("dark");
+                                  shippmentProvider.setMapMode(MapType.normal);
+                                  shippmentProvider.setMapStyle(_darkmapStyle);
+                                },
+                                child: SizedBox(
+                                  height: 50,
+                                  width: 70,
+                                  child: Center(
+                                    child: Text(
+                                      AppLocalizations.of(context)!
+                                          .translate('dark'),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18.sp,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  shippmentProvider.setMapMode(MapType.hybrid);
                                 },
                                 child: SizedBox(
                                   height: 50,
@@ -1787,22 +1593,94 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                 ),
                               ),
                               const Spacer(),
-                              // GestureDetector(
-                              //   onTap: () {
-                              //     // shippmentProvider.setMapMode(MapType.satellite);
-                              //   },
-                              //   child: const SizedBox(
-                              //     height: 50,
-                              //     width: 70,
-                              //     child: Center(
-                              //       child: Icon(
-                              //         Icons.zoom_out_map,
-                              //         color: Colors.white,
-                              //         size: 35,
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ),
+                              (shippmentProvider
+                                          .pickup_location_name.isNotEmpty &&
+                                      shippmentProvider
+                                          .delivery_location_name.isNotEmpty)
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                            pageBuilder: (context, animation,
+                                                    secondaryAnimation) =>
+                                                ShipmentMapPreview(
+                                              pickup: shippmentProvider
+                                                  .pickup_latlng!,
+                                              delivery: shippmentProvider
+                                                  .delivery_latlng!,
+                                            ),
+                                            transitionDuration: const Duration(
+                                                milliseconds: 1000),
+                                            transitionsBuilder: (context,
+                                                animation,
+                                                secondaryAnimation,
+                                                child) {
+                                              var begin =
+                                                  const Offset(0.0, -1.0);
+                                              var end = Offset.zero;
+                                              var curve = Curves.ease;
+
+                                              var tween = Tween(
+                                                      begin: begin, end: end)
+                                                  .chain(
+                                                      CurveTween(curve: curve));
+
+                                              return SlideTransition(
+                                                position:
+                                                    animation.drive(tween),
+                                                child: child,
+                                              );
+                                            },
+                                          ),
+                                        ).then((value) {
+                                          if (shippmentProvider
+                                              .delivery_location_name
+                                              .isNotEmpty) {
+                                            // getPolyPoints();
+                                            List<Marker> markers = [];
+                                            markers.add(
+                                              Marker(
+                                                markerId:
+                                                    const MarkerId("pickup"),
+                                                position: LatLng(
+                                                    shippmentProvider
+                                                        .pickup_lat,
+                                                    shippmentProvider
+                                                        .pickup_lang),
+                                              ),
+                                            );
+                                            markers.add(
+                                              Marker(
+                                                markerId:
+                                                    const MarkerId("delivery"),
+                                                position: LatLng(
+                                                    shippmentProvider
+                                                        .delivery_lat,
+                                                    shippmentProvider
+                                                        .delivery_lang),
+                                              ),
+                                            );
+                                            shippmentProvider
+                                                .getBounds(markers);
+                                            setState(() {});
+                                          }
+                                        });
+                                        // shippmentProvider.setMapMode(MapType.satellite);
+                                      },
+                                      child: const SizedBox(
+                                        height: 50,
+                                        width: 70,
+                                        child: Center(
+                                          child: Icon(
+                                            Icons.zoom_out_map,
+                                            color: Colors.white,
+                                            size: 35,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : const SizedBox.shrink(),
                             ],
                           ),
                         ),
@@ -1810,68 +1688,75 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                           height: 300.h,
                           child: AbsorbPointer(
                             absorbing: false,
-                            child: GoogleMap(
-                              onMapCreated: (controller) {
-                                shippmentProvider.onMapCreated(
-                                    controller, _mapStyle);
-                              },
-                              myLocationButtonEnabled: false,
-                              zoomGesturesEnabled: false,
-                              scrollGesturesEnabled: false,
-                              tiltGesturesEnabled: false,
-                              rotateGesturesEnabled: false,
-                              // zoomControlsEnabled: false,
-                              initialCameraPosition: CameraPosition(
-                                target: shippmentProvider.center,
-                                zoom: shippmentProvider.zoom,
+                            child: Hero(
+                              tag: "shipment_map",
+                              transitionOnUserGestures: true,
+                              child: GoogleMap(
+                                onMapCreated: (controller) {
+                                  shippmentProvider.onMapCreated(
+                                      controller, _mapStyle);
+                                },
+                                myLocationButtonEnabled: false,
+                                zoomGesturesEnabled: false,
+                                scrollGesturesEnabled: false,
+                                tiltGesturesEnabled: false,
+                                rotateGesturesEnabled: false,
+                                // zoomControlsEnabled: false,
+                                initialCameraPosition: CameraPosition(
+                                  target: shippmentProvider.center,
+                                  zoom: shippmentProvider.zoom,
+                                ),
+                                gestureRecognizers: {},
+                                markers: (shippmentProvider.pickup_latlng !=
+                                            null ||
+                                        shippmentProvider.delivery_latlng !=
+                                            null)
+                                    ? {
+                                        shippmentProvider.pickup_latlng != null
+                                            ? Marker(
+                                                markerId:
+                                                    const MarkerId("pickup"),
+                                                position: LatLng(
+                                                    shippmentProvider
+                                                        .pickup_lat,
+                                                    shippmentProvider
+                                                        .pickup_lang),
+                                                icon: pickupicon,
+                                              )
+                                            : const Marker(
+                                                markerId: MarkerId("pickup"),
+                                              ),
+                                        shippmentProvider.delivery_latlng !=
+                                                null
+                                            ? Marker(
+                                                markerId:
+                                                    const MarkerId("delivery"),
+                                                position: LatLng(
+                                                    shippmentProvider
+                                                        .delivery_lat,
+                                                    shippmentProvider
+                                                        .delivery_lang),
+                                                icon: deliveryicon,
+                                              )
+                                            : const Marker(
+                                                markerId: MarkerId("delivery"),
+                                              ),
+                                      }
+                                    : {},
+                                polylines: shippmentProvider
+                                        .polylineCoordinates.isNotEmpty
+                                    ? {
+                                        Polyline(
+                                          polylineId: const PolylineId("route"),
+                                          points: shippmentProvider
+                                              .polylineCoordinates,
+                                          color: AppColor.deepYellow,
+                                          width: 5,
+                                        ),
+                                      }
+                                    : {},
+                                mapType: shippmentProvider.mapType,
                               ),
-                              gestureRecognizers: {},
-                              markers: (shippmentProvider.pickup_latlng !=
-                                          null ||
-                                      shippmentProvider.delivery_latlng != null)
-                                  ? {
-                                      shippmentProvider.pickup_latlng != null
-                                          ? Marker(
-                                              markerId:
-                                                  const MarkerId("pickup"),
-                                              position: LatLng(
-                                                  shippmentProvider.pickup_lat,
-                                                  shippmentProvider
-                                                      .pickup_lang),
-                                              icon: pickupicon,
-                                            )
-                                          : const Marker(
-                                              markerId: MarkerId("pickup"),
-                                            ),
-                                      shippmentProvider.delivery_latlng != null
-                                          ? Marker(
-                                              markerId:
-                                                  const MarkerId("delivery"),
-                                              position: LatLng(
-                                                  shippmentProvider
-                                                      .delivery_lat,
-                                                  shippmentProvider
-                                                      .delivery_lang),
-                                              icon: deliveryicon,
-                                            )
-                                          : const Marker(
-                                              markerId: MarkerId("delivery"),
-                                            ),
-                                    }
-                                  : {},
-                              polylines: shippmentProvider
-                                      .polylineCoordinates.isNotEmpty
-                                  ? {
-                                      Polyline(
-                                        polylineId: const PolylineId("route"),
-                                        points: shippmentProvider
-                                            .polylineCoordinates,
-                                        color: AppColor.deepYellow,
-                                        width: 5,
-                                      ),
-                                    }
-                                  : {},
-                              mapType: shippmentProvider.mapType,
                             ),
                           ),
                         ),
@@ -2250,93 +2135,102 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                 color: AppColor.deepBlack,
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 30,
-                          width: 30,
-                          child: SvgPicture.asset("assets/icons/time.svg"),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        SizedBox(
-                          // width: MediaQuery.of(context).size.width * .4,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 5.0),
-                            child: Text(
-                              "${addShippmentProvider!.co2report!.duration}",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
+              child: BlocBuilder<LocaleCubit, LocaleState>(
+                builder: (context, localeState) {
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 30,
+                              width: 30,
+                              child: SvgPicture.asset("assets/icons/time.svg"),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            SizedBox(
+                              // width: MediaQuery.of(context).size.width * .4,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5.0),
+                                child: Text(
+                                  localeState.value.languageCode == 'en'
+                                      ? "${addShippmentProvider!.co2report!.duration}"
+                                      : "${addShippmentProvider!.co2report!.duration!.replaceAll(RegExp('mins'), 'دقيقة')}",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        SizedBox(
-                          height: 30,
-                          width: 30,
-                          child: SvgPicture.asset("assets/icons/distance.svg"),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * .3,
-                          child: Text(
-                            "${addShippmentProvider!.co2report!.distance}",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
+                            const SizedBox(
+                              width: 5,
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Divider(
-                    color: AppColor.lightGrey,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 30,
-                          width: 30,
-                          child: SvgPicture.asset(
-                              "assets/icons/co2fingerprint.svg"),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * .75,
-                          child: Text(
-                            "${AppLocalizations.of(context)!.translate('total_co2')}: ${f.format(addShippmentProvider!.co2report!.et!.toInt())} kg",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
+                            SizedBox(
+                              height: 30,
+                              width: 30,
+                              child:
+                                  SvgPicture.asset("assets/icons/distance.svg"),
                             ),
-                          ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * .3,
+                              child: Text(
+                                localeState.value.languageCode == 'en'
+                                    ? "${addShippmentProvider!.co2report!.distance}"
+                                    : "${addShippmentProvider!.co2report!.distance!.replaceAll(RegExp('km'), 'كم')}",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                ],
+                      ),
+                      Divider(
+                        color: AppColor.lightGrey,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 30,
+                              width: 30,
+                              child: SvgPicture.asset(
+                                  "assets/icons/co2fingerprint.svg"),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * .75,
+                              child: Text(
+                                "${AppLocalizations.of(context)!.translate('total_co2')}: ${f.format(addShippmentProvider!.co2report!.et!.toInt())} ${localeState.value.languageCode == 'en' ? "kg" : "كغ"}",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           )
@@ -2391,9 +2285,23 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text(
-              'Location services are disabled. Please enable the services')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.orange,
+          dismissDirection: DismissDirection.up,
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.only(
+              bottom: MediaQuery.of(context).size.height - 150,
+              left: 10,
+              right: 10),
+          content: const Text(
+            'Location services are disabled. Please enable the services',
+            style: TextStyle(
+              fontSize: 18,
+            ),
+          ),
+        ),
+      );
       // setState(() {
       //   pickupLoading = false;
       // });
@@ -2404,7 +2312,22 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Location permissions are denied')));
+          SnackBar(
+            backgroundColor: Colors.orange,
+            dismissDirection: DismissDirection.up,
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.only(
+                bottom: MediaQuery.of(context).size.height - 150,
+                left: 10,
+                right: 10),
+            content: const Text(
+              'Location permissions are denied',
+              style: TextStyle(
+                fontSize: 18,
+              ),
+            ),
+          ),
+        );
         setState(() {
           pickupLoading = false;
         });
@@ -2412,9 +2335,23 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
       }
     }
     if (permission == LocationPermission.deniedForever) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text(
-              'Location permissions are permanently denied, we cannot request permissions.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.orange,
+          dismissDirection: DismissDirection.up,
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.only(
+              bottom: MediaQuery.of(context).size.height - 150,
+              left: 10,
+              right: 10),
+          content: const Text(
+            'Location permissions are permanently denied, we cannot request permissions.',
+            style: TextStyle(
+              fontSize: 18,
+            ),
+          ),
+        ),
+      );
       setState(() {
         pickupLoading = false;
       });

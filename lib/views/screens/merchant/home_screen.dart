@@ -18,6 +18,7 @@ import 'package:camion/views/screens/main_screen.dart';
 import 'package:camion/views/screens/merchant/shipment_task_screen.dart';
 import 'package:camion/views/screens/shippment_log_screen.dart';
 import 'package:camion/views/widgets/custom_app_bar.dart';
+import 'package:camion/views/widgets/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -58,6 +59,8 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+
+    getUserData();
     BlocProvider.of<PostBloc>(context).add(PostLoadEvent());
 
     notificationServices.requestNotificationPermission();
@@ -73,7 +76,6 @@ class _HomeScreenState extends State<HomeScreen>
     );
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      getUserData();
       addShippmentProvider =
           Provider.of<AddShippmentProvider>(context, listen: false);
       setState(() {
@@ -186,13 +188,8 @@ class _HomeScreenState extends State<HomeScreen>
                             backgroundColor: AppColor.deepYellow,
                             radius: 35.h,
                             child: userloading
-                                ? Center(
-                                    child: Text(
-                                      "AY",
-                                      style: TextStyle(
-                                        fontSize: 28.sp,
-                                      ),
-                                    ),
+                                ? const Center(
+                                    child: LoadingIndicator(),
                                   )
                                 : (_usermodel.image!.isNotEmpty ||
                                         _usermodel.image! != null)
@@ -206,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen>
                                       )
                                     : Center(
                                         child: Text(
-                                          "AY",
+                                          "${_usermodel.firstName![0].toUpperCase()} ${_usermodel.lastName![0].toUpperCase()}",
                                           style: TextStyle(
                                             fontSize: 28.sp,
                                           ),
@@ -260,8 +257,8 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                           title: Text(
                             localeState.value.languageCode != 'en'
-                                ? "اللغة: English"
-                                : "language: العربية",
+                                ? "English"
+                                : "العربية",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16.sp,
@@ -378,340 +375,354 @@ class _HomeScreenState extends State<HomeScreen>
                     ]),
                   ),
                 ),
-                bottomNavigationBar:
-                    BlocBuilder<BottomNavBarCubit, BottomNavBarState>(
-                  builder: (context, state) {
-                    if (state is BottomNavBarShown) {
-                      return Container(
-                        height: 88.h,
-                        color: AppColor.deepBlack,
-                        child: TabBar(
-                          labelPadding: EdgeInsets.zero,
-                          controller: _tabController,
-                          indicatorColor: AppColor.deepYellow,
-                          labelColor: AppColor.deepYellow,
-                          unselectedLabelColor: Colors.white,
-                          labelStyle: TextStyle(fontSize: 15.sp),
-                          unselectedLabelStyle: TextStyle(fontSize: 14.sp),
-                          padding: EdgeInsets.zero,
-                          onTap: (value) {
-                            changeSelectedValue(
-                                selectedValue: value, contxt: context);
-                          },
-                          tabs: [
-                            Tab(
-                              height: 66.h,
-                              icon: navigationValue == 0
-                                  ? Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        SvgPicture.asset(
-                                          "assets/icons/home_selected.svg",
-                                          width: 36.w,
-                                          height: 36.h,
-                                        ),
-                                        localeState.value.languageCode == 'en'
-                                            ? const SizedBox(
-                                                height: 4,
-                                              )
-                                            : const SizedBox.shrink(),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .translate('home'),
-                                          style: TextStyle(
-                                              color: AppColor.deepYellow,
-                                              fontSize: 15.sp),
-                                        )
-                                      ],
-                                    )
-                                  : Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        SvgPicture.asset(
-                                          "assets/icons/home.svg",
-                                          width: 30.w,
-                                          height: 30.h,
-                                        ),
-                                        localeState.value.languageCode == 'en'
-                                            ? const SizedBox(
-                                                height: 4,
-                                              )
-                                            : const SizedBox.shrink(),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .translate('home'),
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 15.sp),
-                                        )
-                                      ],
-                                    ),
-                            ),
-                            Tab(
-                              // text: "الحاسبة",
-                              height: 66.h,
-                              icon: navigationValue == 1
-                                  ? Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        SvgPicture.asset(
-                                          "assets/icons/listalt_selected.svg",
-                                          width: 36.w,
-                                          height: 36.h,
-                                        ),
-                                        localeState.value.languageCode == 'en'
-                                            ? const SizedBox(
-                                                height: 4,
-                                              )
-                                            : const SizedBox.shrink(),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .translate('shippment_log'),
-                                          style: TextStyle(
-                                              color: AppColor.deepYellow,
-                                              fontSize: 15.sp),
-                                        )
-                                      ],
-                                    )
-                                  : Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        SvgPicture.asset(
-                                          "assets/icons/listalt.svg",
-                                          width: 30.w,
-                                          height: 30.h,
-                                        ),
-                                        localeState.value.languageCode == 'en'
-                                            ? const SizedBox(
-                                                height: 4,
-                                              )
-                                            : const SizedBox.shrink(),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .translate('shippment_log'),
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 15.sp),
-                                        )
-                                      ],
-                                    ),
-                            ),
-                            Tab(
-                              // text: "الرئيسية",
-                              height: 66.h,
-                              icon: navigationValue == 2
-                                  ? Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        SvgPicture.asset(
-                                          "assets/icons/truck_order_selected.svg",
-                                          width: 36.w,
-                                          height: 36.h,
-                                        ),
-                                        localeState.value.languageCode == 'en'
-                                            ? const SizedBox(
-                                                height: 4,
-                                              )
-                                            : const SizedBox.shrink(),
-                                        FittedBox(
-                                          fit: BoxFit.scaleDown,
-                                          child: Text(
+                bottomNavigationBar: Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: BlocBuilder<BottomNavBarCubit, BottomNavBarState>(
+                    builder: (context, state) {
+                      if (state is BottomNavBarShown) {
+                        return Container(
+                          height: 88.h,
+                          color: AppColor.deepBlack,
+                          child: TabBar(
+                            labelPadding: EdgeInsets.zero,
+                            controller: _tabController,
+                            indicatorColor: AppColor.deepYellow,
+                            labelColor: AppColor.deepYellow,
+                            unselectedLabelColor: Colors.white,
+                            labelStyle: TextStyle(fontSize: 15.sp),
+                            unselectedLabelStyle: TextStyle(fontSize: 14.sp),
+                            padding: EdgeInsets.zero,
+                            onTap: (value) {
+                              changeSelectedValue(
+                                  selectedValue: value, contxt: context);
+                            },
+                            tabs: [
+                              Tab(
+                                height: 66.h,
+                                icon: navigationValue == 0
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          SvgPicture.asset(
+                                            "assets/icons/home_selected.svg",
+                                            width: 36.w,
+                                            height: 36.h,
+                                          ),
+                                          localeState.value.languageCode == 'en'
+                                              ? const SizedBox(
+                                                  height: 4,
+                                                )
+                                              : const SizedBox.shrink(),
+                                          Text(
                                             AppLocalizations.of(context)!
-                                                .translate('order_shippment'),
+                                                .translate('home'),
                                             style: TextStyle(
                                                 color: AppColor.deepYellow,
                                                 fontSize: 15.sp),
+                                          )
+                                        ],
+                                      )
+                                    : Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          SvgPicture.asset(
+                                            "assets/icons/home.svg",
+                                            width: 30.w,
+                                            height: 30.h,
                                           ),
-                                        )
-                                      ],
-                                    )
-                                  : Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        SvgPicture.asset(
-                                          "assets/icons/truck_order.svg",
-                                          width: 30.w,
-                                          height: 30.h,
-                                        ),
-                                        localeState.value.languageCode == 'en'
-                                            ? const SizedBox(
-                                                height: 4,
-                                              )
-                                            : const SizedBox.shrink(),
-                                        FittedBox(
-                                          fit: BoxFit.scaleDown,
-                                          child: Text(
+                                          localeState.value.languageCode == 'en'
+                                              ? const SizedBox(
+                                                  height: 4,
+                                                )
+                                              : const SizedBox.shrink(),
+                                          Text(
                                             AppLocalizations.of(context)!
-                                                .translate('order_shippment'),
+                                                .translate('home'),
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 15.sp),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                            ),
-                            Tab(
-                              height: 66.h,
-                              icon: navigationValue == 3
-                                  ? Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        SvgPicture.asset(
-                                          "assets/icons/location_selected.svg",
-                                          width: 36.w,
-                                          height: 36.h,
-                                        ),
-                                        localeState.value.languageCode == 'en'
-                                            ? const SizedBox(
-                                                height: 4,
-                                              )
-                                            : const SizedBox.shrink(),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .translate('tracking'),
-                                          style: TextStyle(
-                                              color: AppColor.deepYellow,
-                                              fontSize: 15.sp),
-                                        )
-                                      ],
-                                    )
-                                  : Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        SvgPicture.asset(
-                                          "assets/icons/location.svg",
-                                          width: 30.w,
-                                          height: 30.h,
-                                        ),
-                                        localeState.value.languageCode == 'en'
-                                            ? const SizedBox(
-                                                height: 4,
-                                              )
-                                            : const SizedBox.shrink(),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .translate('tracking'),
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 15.sp),
-                                        )
-                                      ],
-                                    ),
-                            ),
-                            Tab(
-                              height: 66.h,
-                              icon: Consumer<TaskNumProvider>(
-                                builder: (context, value, child) {
-                                  return BlocListener<ActiveShipmentListBloc,
-                                      ActiveShipmentListState>(
-                                    listener: (context, state) {
-                                      if (state
-                                          is ActiveShipmentListLoadedSuccess) {
-                                        var taskNum = 0;
-                                        for (var element in state.shipments) {
-                                          if (element.shipmentinstruction ==
-                                              null) {
-                                            taskNum++;
-                                          }
-                                          if (element.shipmentpayment == null) {
-                                            taskNum++;
-                                          }
-                                        }
-                                        value.setTaskNum(taskNum);
-                                      }
-                                    },
-                                    child: Stack(
-                                      children: [
-                                        navigationValue == 4
-                                            ? Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                children: [
-                                                  SvgPicture.asset(
-                                                    "assets/icons/task_selected.svg",
-                                                    width: 36.w,
-                                                    height: 36.h,
-                                                  ),
-                                                  localeState.value
-                                                              .languageCode ==
-                                                          'en'
-                                                      ? const SizedBox(
-                                                          height: 4,
-                                                        )
-                                                      : const SizedBox.shrink(),
-                                                  Text(
-                                                    AppLocalizations.of(
-                                                            context)!
-                                                        .translate('tasks'),
-                                                    style: TextStyle(
-                                                        color:
-                                                            AppColor.deepYellow,
-                                                        fontSize: 15.sp),
-                                                  )
-                                                ],
-                                              )
-                                            : Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                children: [
-                                                  SvgPicture.asset(
-                                                    "assets/icons/tasks.svg",
-                                                    width: 30.w,
-                                                    height: 30.h,
-                                                  ),
-                                                  localeState.value
-                                                              .languageCode ==
-                                                          'en'
-                                                      ? const SizedBox(
-                                                          height: 4,
-                                                        )
-                                                      : const SizedBox.shrink(),
-                                                  Text(
-                                                    AppLocalizations.of(
-                                                            context)!
-                                                        .translate('tasks'),
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 15.sp),
-                                                  )
-                                                ],
-                                              ),
-                                        value.taskNum > 0
-                                            ? Positioned(
-                                                child: Container(
-                                                  height: 25,
-                                                  width: 25,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.red,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            45),
-                                                  ),
-                                                  child: Center(
-                                                    child: Text(
-                                                        value.taskNum
-                                                            .toString(),
-                                                        style: const TextStyle(
-                                                          color: Colors.white,
-                                                        )),
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox.shrink(),
-                                      ],
-                                    ),
-                                  );
-                                },
+                                          )
+                                        ],
+                                      ),
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  },
+                              Tab(
+                                // text: "الحاسبة",
+                                height: 66.h,
+                                icon: navigationValue == 1
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          SvgPicture.asset(
+                                            "assets/icons/listalt_selected.svg",
+                                            width: 36.w,
+                                            height: 36.h,
+                                          ),
+                                          localeState.value.languageCode == 'en'
+                                              ? const SizedBox(
+                                                  height: 4,
+                                                )
+                                              : const SizedBox.shrink(),
+                                          Text(
+                                            AppLocalizations.of(context)!
+                                                .translate('shippment_log'),
+                                            style: TextStyle(
+                                                color: AppColor.deepYellow,
+                                                fontSize: 15.sp),
+                                          )
+                                        ],
+                                      )
+                                    : Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          SvgPicture.asset(
+                                            "assets/icons/listalt.svg",
+                                            width: 30.w,
+                                            height: 30.h,
+                                          ),
+                                          localeState.value.languageCode == 'en'
+                                              ? const SizedBox(
+                                                  height: 4,
+                                                )
+                                              : const SizedBox.shrink(),
+                                          Text(
+                                            AppLocalizations.of(context)!
+                                                .translate('shippment_log'),
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15.sp),
+                                          )
+                                        ],
+                                      ),
+                              ),
+                              Tab(
+                                // text: "الرئيسية",
+                                height: 66.h,
+                                icon: navigationValue == 2
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          SvgPicture.asset(
+                                            "assets/icons/truck_order_selected.svg",
+                                            width: 36.w,
+                                            height: 36.h,
+                                          ),
+                                          localeState.value.languageCode == 'en'
+                                              ? const SizedBox(
+                                                  height: 4,
+                                                )
+                                              : const SizedBox.shrink(),
+                                          FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            child: Text(
+                                              AppLocalizations.of(context)!
+                                                  .translate('order_shippment'),
+                                              style: TextStyle(
+                                                  color: AppColor.deepYellow,
+                                                  fontSize: 15.sp),
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    : Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          SvgPicture.asset(
+                                            "assets/icons/truck_order.svg",
+                                            width: 30.w,
+                                            height: 30.h,
+                                          ),
+                                          localeState.value.languageCode == 'en'
+                                              ? const SizedBox(
+                                                  height: 4,
+                                                )
+                                              : const SizedBox.shrink(),
+                                          FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            child: Text(
+                                              AppLocalizations.of(context)!
+                                                  .translate('order_shippment'),
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15.sp),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                              ),
+                              Tab(
+                                height: 66.h,
+                                icon: navigationValue == 3
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          SvgPicture.asset(
+                                            "assets/icons/location_selected.svg",
+                                            width: 36.w,
+                                            height: 36.h,
+                                          ),
+                                          localeState.value.languageCode == 'en'
+                                              ? const SizedBox(
+                                                  height: 4,
+                                                )
+                                              : const SizedBox.shrink(),
+                                          Text(
+                                            AppLocalizations.of(context)!
+                                                .translate('tracking'),
+                                            style: TextStyle(
+                                                color: AppColor.deepYellow,
+                                                fontSize: 15.sp),
+                                          )
+                                        ],
+                                      )
+                                    : Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          SvgPicture.asset(
+                                            "assets/icons/location.svg",
+                                            width: 30.w,
+                                            height: 30.h,
+                                          ),
+                                          localeState.value.languageCode == 'en'
+                                              ? const SizedBox(
+                                                  height: 4,
+                                                )
+                                              : const SizedBox.shrink(),
+                                          Text(
+                                            AppLocalizations.of(context)!
+                                                .translate('tracking'),
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15.sp),
+                                          )
+                                        ],
+                                      ),
+                              ),
+                              Tab(
+                                height: 66.h,
+                                icon: Consumer<TaskNumProvider>(
+                                  builder: (context, value, child) {
+                                    return BlocListener<ActiveShipmentListBloc,
+                                        ActiveShipmentListState>(
+                                      listener: (context, state) {
+                                        if (state
+                                            is ActiveShipmentListLoadedSuccess) {
+                                          var taskNum = 0;
+                                          for (var element in state.shipments) {
+                                            if (element.shipmentinstruction ==
+                                                null) {
+                                              taskNum++;
+                                            }
+                                            if (element.shipmentpayment ==
+                                                null) {
+                                              taskNum++;
+                                            }
+                                          }
+                                          value.setTaskNum(taskNum);
+                                        }
+                                      },
+                                      child: Stack(
+                                        children: [
+                                          navigationValue == 4
+                                              ? Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      "assets/icons/task_selected.svg",
+                                                      width: 36.w,
+                                                      height: 36.h,
+                                                    ),
+                                                    localeState.value
+                                                                .languageCode ==
+                                                            'en'
+                                                        ? const SizedBox(
+                                                            height: 4,
+                                                          )
+                                                        : const SizedBox
+                                                            .shrink(),
+                                                    Text(
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .translate('tasks'),
+                                                      style: TextStyle(
+                                                          color: AppColor
+                                                              .deepYellow,
+                                                          fontSize: 15.sp),
+                                                    )
+                                                  ],
+                                                )
+                                              : Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      "assets/icons/tasks.svg",
+                                                      width: 30.w,
+                                                      height: 30.h,
+                                                    ),
+                                                    localeState.value
+                                                                .languageCode ==
+                                                            'en'
+                                                        ? const SizedBox(
+                                                            height: 4,
+                                                          )
+                                                        : const SizedBox
+                                                            .shrink(),
+                                                    Text(
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .translate('tasks'),
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 15.sp),
+                                                    )
+                                                  ],
+                                                ),
+                                          value.taskNum > 0
+                                              ? Positioned(
+                                                  child: Container(
+                                                    height: 25,
+                                                    width: 25,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.red,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              45),
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(
+                                                          value.taskNum
+                                                              .toString(),
+                                                          style:
+                                                              const TextStyle(
+                                                            color: Colors.white,
+                                                          )),
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox.shrink(),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    },
+                  ),
                 ),
                 body: currentScreen,
               ),

@@ -130,6 +130,8 @@ class SelectTruckScreen extends StatelessWidget {
                                           child: Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Image.network(
                                                 state.trucks[index].images![0]
@@ -196,102 +198,100 @@ class SelectTruckScreen extends StatelessWidget {
                                                     SizedBox(
                                                       height: 7.h,
                                                     ),
-                                                    Text(
-                                                      '${AppLocalizations.of(context)!.translate('truck_location')}: ${state.trucks[index].location!}',
-                                                      style: TextStyle(
-                                                        // color: AppColor.lightBlue,
-                                                        fontSize: 17.sp,
-                                                      ),
-                                                    ),
                                                     SizedBox(
-                                                      height: 7.h,
-                                                    ),
-                                                    Text(
-                                                      '${AppLocalizations.of(context)!.translate('empty_weight')}: ${state.trucks[index].emptyWeight!}',
-                                                      style: TextStyle(
-                                                        // color: AppColor.lightBlue,
-                                                        fontSize: 17.sp,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              .5,
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          state.trucks[index]
+                                                                      .rating! >=
+                                                                  1
+                                                              ? Icon(
+                                                                  Icons.star,
+                                                                  color: AppColor
+                                                                      .deepYellow,
+                                                                )
+                                                              : Icon(
+                                                                  Icons
+                                                                      .star_border,
+                                                                  color: AppColor
+                                                                      .deepYellow,
+                                                                ),
+                                                          state.trucks[index]
+                                                                      .rating! >=
+                                                                  2
+                                                              ? Icon(
+                                                                  Icons.star,
+                                                                  color: AppColor
+                                                                      .deepYellow,
+                                                                )
+                                                              : Icon(
+                                                                  Icons
+                                                                      .star_border,
+                                                                  color: AppColor
+                                                                      .deepYellow,
+                                                                ),
+                                                          state.trucks[index]
+                                                                      .rating! >=
+                                                                  3
+                                                              ? Icon(
+                                                                  Icons.star,
+                                                                  color: AppColor
+                                                                      .deepYellow,
+                                                                )
+                                                              : Icon(
+                                                                  Icons
+                                                                      .star_border,
+                                                                  color: AppColor
+                                                                      .deepYellow,
+                                                                ),
+                                                          state.trucks[index]
+                                                                      .rating! >=
+                                                                  4
+                                                              ? Icon(
+                                                                  Icons.star,
+                                                                  color: AppColor
+                                                                      .deepYellow,
+                                                                )
+                                                              : Icon(
+                                                                  Icons
+                                                                      .star_border,
+                                                                  color: AppColor
+                                                                      .deepYellow,
+                                                                ),
+                                                          state.trucks[index]
+                                                                      .rating! ==
+                                                                  5
+                                                              ? Icon(
+                                                                  Icons.star,
+                                                                  color: AppColor
+                                                                      .deepYellow,
+                                                                )
+                                                              : Icon(
+                                                                  Icons
+                                                                      .star_border,
+                                                                  color: AppColor
+                                                                      .deepYellow,
+                                                                ),
+                                                          Text(
+                                                            '(${state.trucks[index].rating!.toString()})',
+                                                            style: TextStyle(
+                                                              color: AppColor
+                                                                  .deepYellow,
+                                                              fontSize: 19,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 7.h,
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceAround,
-                                                      children: [
-                                                        state.trucks[index]
-                                                                    .rating! >=
-                                                                1
-                                                            ? Icon(
-                                                                Icons.star,
-                                                                color: AppColor
-                                                                    .deepYellow,
-                                                              )
-                                                            : Icon(
-                                                                Icons
-                                                                    .star_border,
-                                                                color: AppColor
-                                                                    .deepYellow,
-                                                              ),
-                                                        state.trucks[index]
-                                                                    .rating! >=
-                                                                2
-                                                            ? Icon(
-                                                                Icons.star,
-                                                                color: AppColor
-                                                                    .deepYellow,
-                                                              )
-                                                            : Icon(
-                                                                Icons
-                                                                    .star_border,
-                                                                color: AppColor
-                                                                    .deepYellow,
-                                                              ),
-                                                        state.trucks[index]
-                                                                    .rating! >=
-                                                                3
-                                                            ? Icon(
-                                                                Icons.star,
-                                                                color: AppColor
-                                                                    .deepYellow,
-                                                              )
-                                                            : Icon(
-                                                                Icons
-                                                                    .star_border,
-                                                                color: AppColor
-                                                                    .deepYellow,
-                                                              ),
-                                                        state.trucks[index]
-                                                                    .rating! >=
-                                                                4
-                                                            ? Icon(
-                                                                Icons.star,
-                                                                color: AppColor
-                                                                    .deepYellow,
-                                                              )
-                                                            : Icon(
-                                                                Icons
-                                                                    .star_border,
-                                                                color: AppColor
-                                                                    .deepYellow,
-                                                              ),
-                                                        state.trucks[index]
-                                                                    .rating! ==
-                                                                5
-                                                            ? Icon(
-                                                                Icons.star,
-                                                                color: AppColor
-                                                                    .deepYellow,
-                                                              )
-                                                            : Icon(
-                                                                Icons
-                                                                    .star_border,
-                                                                color: AppColor
-                                                                    .deepYellow,
-                                                              ),
-                                                      ],
                                                     ),
                                                     SizedBox(
                                                       height: 7.h,

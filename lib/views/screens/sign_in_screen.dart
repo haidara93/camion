@@ -218,6 +218,16 @@ class _SignInScreenState extends State<SignInScreen> {
                                       if (state is AuthDriverSuccessState) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
+                                          backgroundColor: AppColor.deepGreen,
+                                          dismissDirection: DismissDirection.up,
+                                          behavior: SnackBarBehavior.floating,
+                                          margin: EdgeInsets.only(
+                                              bottom: MediaQuery.of(context)
+                                                      .size
+                                                      .height -
+                                                  150,
+                                              left: 10,
+                                              right: 10),
                                           content: localeState.value.languageCode ==
                                                   'en'
                                               ? const Text(
@@ -238,6 +248,16 @@ class _SignInScreenState extends State<SignInScreen> {
                                       if (state is AuthOwnerSuccessState) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
+                                          backgroundColor: AppColor.deepGreen,
+                                          dismissDirection: DismissDirection.up,
+                                          behavior: SnackBarBehavior.floating,
+                                          margin: EdgeInsets.only(
+                                              bottom: MediaQuery.of(context)
+                                                      .size
+                                                      .height -
+                                                  150,
+                                              left: 10,
+                                              right: 10),
                                           content: localeState.value.languageCode ==
                                                   'en'
                                               ? const Text(
@@ -258,6 +278,16 @@ class _SignInScreenState extends State<SignInScreen> {
                                       if (state is AuthMerchentSuccessState) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
+                                          backgroundColor: AppColor.deepGreen,
+                                          dismissDirection: DismissDirection.up,
+                                          behavior: SnackBarBehavior.floating,
+                                          margin: EdgeInsets.only(
+                                              bottom: MediaQuery.of(context)
+                                                      .size
+                                                      .height -
+                                                  150,
+                                              left: 10,
+                                              right: 10),
                                           content: localeState.value.languageCode ==
                                                   'en'
                                               ? const Text(
@@ -278,6 +308,16 @@ class _SignInScreenState extends State<SignInScreen> {
                                       if (state is AuthLoginErrorState) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
+                                          backgroundColor: Colors.red[300],
+                                          dismissDirection: DismissDirection.up,
+                                          behavior: SnackBarBehavior.floating,
+                                          margin: EdgeInsets.only(
+                                              bottom: MediaQuery.of(context)
+                                                      .size
+                                                      .height -
+                                                  150,
+                                              left: 10,
+                                              right: 10),
                                           content: localeState.value.languageCode ==
                                                   'en'
                                               ? const Text(

@@ -938,6 +938,11 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                                           .of(context)!
                                                       .translate(
                                                           'commodity_weight'),
+                                                  suffixText: localeState.value
+                                                              .languageCode ==
+                                                          'en'
+                                                      ? "kg"
+                                                      : "كغ",
                                                   contentPadding:
                                                       const EdgeInsets
                                                           .symmetric(
@@ -1548,11 +1553,27 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
 
                           if (state is InstructionCreateSuccessState) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: AppColor.deepGreen,
+                              dismissDirection: DismissDirection.up,
+                              behavior: SnackBarBehavior.floating,
+                              margin: EdgeInsets.only(
+                                  bottom:
+                                      MediaQuery.of(context).size.height - 150,
+                                  left: 10,
+                                  right: 10),
                               content: localeState.value.languageCode == 'en'
                                   ? const Text(
-                                      'shipment instruction has been created successfully.')
+                                      'shipment instruction has been created successfully.',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                    )
                                   : const Text(
-                                      'تم اضافة تعليمات الشحن بنجاح..'),
+                                      'تم اضافة تعليمات الشحن بنجاح..',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                    ),
                               duration: const Duration(seconds: 3),
                             ));
                             Navigator.pushAndRemoveUntil(

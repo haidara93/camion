@@ -8,3 +8,5 @@ sealed class ActiveShipmentListEvent extends Equatable {
 }
 
 class ActiveShipmentListLoadEvent extends ActiveShipmentListEvent {}
+
+class ActiveShipmentListRefreash extends ActiveShipmentListEvent {}

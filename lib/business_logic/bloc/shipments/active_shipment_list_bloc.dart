@@ -20,5 +20,16 @@ class ActiveShipmentListBloc
         emit(ActiveShipmentListLoadedFailed(e.toString()));
       }
     });
+
+    on<ActiveShipmentListRefreash>((event, emit) async {
+      ActiveShipmentListLoadedSuccess currentState =
+          state as ActiveShipmentListLoadedSuccess;
+      emit(ActiveShipmentListLoadingProgress());
+      try {
+        emit(ActiveShipmentListLoadedSuccess(currentState.shipments));
+      } catch (e) {
+        emit(ActiveShipmentListLoadedFailed(e.toString()));
+      }
+    });
   }
 }

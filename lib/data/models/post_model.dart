@@ -4,30 +4,36 @@ class Post {
   int? id;
   String? image;
   String? title;
+  String? titleAr;
   DateTime? date;
   int? readCount;
   String? source;
   String? content;
+  String? contentAr;
   bool? is_saved;
 
   Post(
       {this.id,
       this.image,
       this.title,
+      this.titleAr,
       this.date,
       this.readCount,
       this.source,
       this.content,
+      this.contentAr,
       this.is_saved});
 
   Post.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     image = json['image'];
     title = json['title'];
+    titleAr = json['title_ar'];
     date = DateTime.parse(json['date']);
     readCount = json['read_count'];
     source = json['source'];
     content = json['content'];
+    contentAr = json['content_ar'];
     is_saved = json['is_saved'];
   }
 
@@ -36,10 +42,12 @@ class Post {
     data['id'] = id;
     data['image'] = image;
     data['title'] = title;
+    data['title_ar'] = titleAr;
     data['date'] = date;
     data['read_count'] = readCount;
     data['source'] = source;
     data['content'] = content;
+    data['content_ar'] = contentAr;
     data['is_saved'] = is_saved;
     return data;
   }

@@ -162,14 +162,6 @@ class _ActiveShipmentDetailsScreenState
     });
   }
 
-  double? _getTopForPanel(PanelState state, Size size) {
-    if (state == PanelState.open) {
-      return size.height - 90.h;
-    } else if (state == PanelState.hidden) {
-      return (size.height - 200.h);
-    }
-  }
-
   double? _getSizeForPanel(PanelState state, Size size) {
     if (state == PanelState.open) {
       return size.height;
@@ -234,7 +226,7 @@ class _ActiveShipmentDetailsScreenState
                 // }
                 _printed =
                     true; // Set the flag to true to prevent starting multiple timers
-                timer = Timer.periodic(Duration(seconds: 10), (timer) {
+                timer = Timer.periodic(const Duration(seconds: 10), (timer) {
                   // if (!snapshot.data!.docs.singleWhere((element) =>
                   //     element.id == widget.user_id)['reach_pickup']) {
                   //   gettruckpolylineCoordinates(
@@ -350,49 +342,6 @@ class _ActiveShipmentDetailsScreenState
                             color: AppColor.deepYellow,
                             width: 7,
                           ),
-                          // Polyline(
-                          //   polylineId: const PolylineId("truckroute"),
-                          //   points: _truckpolyline,
-                          //   color: Colors.green,
-                          //   width: 7,
-                          // ),
-                          // Polyline(
-                          //   polylineId: const PolylineId("truckroute"),
-                          //   points: shipmentProvider.truckpolylineCoordinates,
-                          //   color: Colors.green.withOpacity(.6),
-                          //   width: 8,
-                          // ),
-                          // snapshot.data!.docs.singleWhere((element) =>
-                          //         element.id ==
-                          //         widget.user_id)['reach_pickup']??false
-                          //     ? getpolylineCoordinates(
-                          // LatLng(
-                          //   snapshot.data!.docs.singleWhere(
-                          //       (element) =>
-                          //           element.id ==
-                          //           widget.user_id)['latitude'],
-                          //   snapshot.data!.docs.singleWhere(
-                          //       (element) =>
-                          //           element.id ==
-                          //           widget.user_id)['longitude'],
-                          // ),
-                          // LatLng(widget.shipment.deliveryCityLat!,
-                          //     widget.shipment.deliveryCityLang!),
-                          //       )
-                          //     : getpolylineCoordinates(
-                          //         LatLng(
-                          //           snapshot.data!.docs.singleWhere(
-                          //               (element) =>
-                          //                   element.id ==
-                          //                   widget.user_id)['latitude'],
-                          //           snapshot.data!.docs.singleWhere(
-                          //               (element) =>
-                          //                   element.id ==
-                          //                   widget.user_id)['longitude'],
-                          //         ),
-                          //         LatLng(widget.shipment.pickupCityLat!,
-                          //             widget.shipment.pickupCityLang!),
-                          //       )
                         },
                       ),
                       AnimatedPositioned(
@@ -400,13 +349,14 @@ class _ActiveShipmentDetailsScreenState
                         curve: Curves.decelerate,
                         left: 0,
                         right: 0,
-                        bottom: 0,
+                        bottom: _getTopForPanel(),
                         child: GestureDetector(
                           onVerticalDragUpdate: _onVerticalGesture,
-                          child: AnimatedSwitcher(
-                            duration: panelTransation,
-                            child: _buildPanelOption(context),
-                          ),
+                          child: _buildExpandedPanelWidget(context),
+                          // child: AnimatedSwitcher(
+                          //   duration: panelTransation,
+                          //   child: _buildPanelOption(context),
+                          // ),
                         ),
                       ),
                     ],
@@ -425,13 +375,13 @@ class _ActiveShipmentDetailsScreenState
     List<Marker> markers = [];
     markers.add(
       Marker(
-        markerId: MarkerId("pickup"),
+        markerId: const MarkerId("pickup"),
         position: LatLng(shipment.pickupCityLat!, shipment.pickupCityLang!),
       ),
     );
     markers.add(
       Marker(
-        markerId: MarkerId("delivery"),
+        markerId: const MarkerId("delivery"),
         position: LatLng(shipment.deliveryCityLat!, shipment.deliveryCityLang!),
       ),
     );
@@ -462,6 +412,14 @@ class _ActiveShipmentDetailsScreenState
     setState(() {});
   }
 
+  double? _getTopForPanel() {
+    if (panelState == PanelState.hidden) {
+      return 90.h - 420.h;
+    } else if (panelState == PanelState.open) {
+      return 0;
+    }
+  }
+
   Widget _buildPanelOption(BuildContext context) {
     if (panelState == PanelState.hidden) {
       return _buildPanelWidget(context);
@@ -473,224 +431,264 @@ class _ActiveShipmentDetailsScreenState
   }
 
   Widget _buildExpandedPanelWidget(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          height: 420.h,
-          width: MediaQuery.of(context).size.width,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(13),
-              topRight: Radius.circular(13),
-            ),
-          ),
-          child: Column(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  changeToHidden();
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(13.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const SizedBox(
-                        width: 50,
-                        height: 50,
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+    return BlocBuilder<LocaleCubit, LocaleState>(
+      builder: (context, localeState) {
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              height: 435.h,
+              width: MediaQuery.of(context).size.width,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(13),
+                  topRight: Radius.circular(13),
+                ),
+              ),
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      changeToHidden();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(13.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          const SizedBox(
+                            width: 50,
+                            height: 50,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "${AppLocalizations.of(context)!.translate('truck_type')}: \n${localeState.value.languageCode == 'en' ? widget.shipment.truckType!.name! : widget.shipment.truckType!.nameAr!}",
+                                style: TextStyle(
+                                  fontSize: 19.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              // Text(
+                              //   "commodity name: ${widget.shipment.shipmentItems![0].commodityName!}",
+                              //   style: TextStyle(
+                              //     fontSize: 19.sp,
+                              //   ),
+                              // ),
+                            ],
+                          ),
                           Text(
-                            "${AppLocalizations.of(context)!.translate('truck_type')}: \n${widget.shipment.truckType!.name!}",
+                            "${AppLocalizations.of(context)!.translate('shipment_number')} \n#${widget.shipment.id!}",
                             style: TextStyle(
                               fontSize: 19.sp,
                               fontWeight: FontWeight.bold,
                             ),
-                          ),
-                          // Text(
-                          //   "commodity name: ${widget.shipment.shipmentItems![0].commodityName!}",
-                          //   style: TextStyle(
-                          //     fontSize: 19.sp,
-                          //   ),
-                          // ),
+                          )
                         ],
                       ),
-                      Text(
-                        "${AppLocalizations.of(context)!.translate('shipment_number')} \n#${widget.shipment.id!}",
-                        style: TextStyle(
-                          fontSize: 19.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )
-                    ],
+                    ),
                   ),
-                ),
+                  const Divider(),
+                  SizedBox(
+                    height: 100.h,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TimelineTile(
+                          direction: Axis.horizontal,
+                          oppositeContents: Text(
+                            setLoadDate(widget.shipment.pickupDate!),
+                          ),
+                          contents: SizedBox(
+                            width: MediaQuery.of(context).size.width * .18,
+                            child: Text(
+                              'Pickup: ${widget.shipment.pickupCityLocation!}',
+                              style: const TextStyle(),
+                              maxLines: 2,
+                            ),
+                          ),
+                          node: SizedBox(
+                            width: MediaQuery.of(context).size.width * .3,
+                            child: TimelineNode(
+                              indicator:
+                                  DotIndicator(color: AppColor.deepYellow),
+                              // startConnector: SolidLineConnector(),
+                              endConnector: DashedLineConnector(
+                                  color: AppColor.deepYellow),
+                            ),
+                          ),
+                        ),
+                        TimelineTile(
+                          direction: Axis.horizontal,
+                          oppositeContents: const SizedBox.shrink(),
+                          contents: const SizedBox.shrink(),
+                          node: SizedBox(
+                            width: MediaQuery.of(context).size.width * .35,
+                            child:
+                                DashedLineConnector(color: AppColor.deepYellow),
+                          ),
+                        ),
+                        TimelineTile(
+                          direction: Axis.horizontal,
+                          oppositeContents: Text(
+                            setLoadDate(widget.shipment.pickupDate!),
+                          ),
+                          contents: SizedBox(
+                            width: MediaQuery.of(context).size.width * .18,
+                            child: Text(
+                              'Delivery:${widget.shipment.deliveryCityLocation!}',
+                              style: const TextStyle(),
+                              maxLines: 2,
+                            ),
+                          ),
+                          node: SizedBox(
+                            width: MediaQuery.of(context).size.width * .3,
+                            child: TimelineNode(
+                              indicator:
+                                  DotIndicator(color: AppColor.deepYellow),
+                              startConnector: DashedLineConnector(
+                                  color: AppColor.deepYellow),
+                              // endConnector: SolidLineConnector(),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  const Divider(),
+                  _buildCommodityWidget(widget.shipment.shipmentItems),
+                  const Divider(),
+                  _buildCo2Report(),
+                ],
               ),
-              const Divider(),
-              SizedBox(
-                height: 100.h,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+            ),
+            Positioned(
+              top: -45,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
                   children: [
-                    TimelineTile(
-                      direction: Axis.horizontal,
-                      oppositeContents: Text(
-                        setLoadDate(widget.shipment.pickupDate!),
+                    Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(45),
                       ),
-                      contents: SizedBox(
-                        width: MediaQuery.of(context).size.width * .18,
-                        child: Text(
-                          'Pickup: ${widget.shipment.pickupCityLocation!}',
-                          style: const TextStyle(),
-                          maxLines: 2,
-                        ),
-                      ),
-                      node: SizedBox(
-                        width: MediaQuery.of(context).size.width * .3,
-                        child: TimelineNode(
-                          indicator: DotIndicator(color: AppColor.deepYellow),
-                          // startConnector: SolidLineConnector(),
-                          endConnector:
-                              DashedLineConnector(color: AppColor.deepYellow),
+                      child: Container(
+                        margin: const EdgeInsets.all(3),
+                        padding: const EdgeInsets.all(1),
+                        decoration: BoxDecoration(
+                            color: AppColor.deepYellow,
+                            borderRadius: BorderRadius.circular(45)),
+                        child: CircleAvatar(
+                          radius: 30.h,
+                          backgroundColor: Colors.white,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(180),
+                            child: SvgPicture.asset(
+                              "assets/images/person_orange.svg",
+                              fit: BoxFit.fill,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                    TimelineTile(
-                      direction: Axis.horizontal,
-                      oppositeContents: const SizedBox.shrink(),
-                      contents: const SizedBox.shrink(),
-                      node: SizedBox(
-                        width: MediaQuery.of(context).size.width * .35,
-                        child: DashedLineConnector(color: AppColor.deepYellow),
+                    Text(
+                      AppLocalizations.of(context)!.translate('driver_name'),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        // color: AppColor.deepYellow,
                       ),
                     ),
-                    TimelineTile(
-                      direction: Axis.horizontal,
-                      oppositeContents: Text(
-                        setLoadDate(widget.shipment.pickupDate!),
+                    Text(
+                      "${widget.shipment.driver!.user!.firstName!} ${widget.shipment.driver!.user!.lastName!}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColor.deepYellow,
+                        fontSize: 16,
                       ),
-                      contents: SizedBox(
-                        width: MediaQuery.of(context).size.width * .18,
-                        child: Text(
-                          'Delivery:${widget.shipment.deliveryCityLocation!}',
-                          style: const TextStyle(),
-                          maxLines: 2,
-                        ),
-                      ),
-                      node: SizedBox(
-                        width: MediaQuery.of(context).size.width * .3,
-                        child: TimelineNode(
-                          indicator: DotIndicator(color: AppColor.deepYellow),
-                          startConnector:
-                              DashedLineConnector(color: AppColor.deepYellow),
-                          // endConnector: SolidLineConnector(),
-                        ),
-                      ),
-                    )
+                    ),
                   ],
                 ),
               ),
-              const Divider(),
-              _buildCommodityWidget(widget.shipment.shipmentItems),
-              const Divider(),
-              _buildCo2Report(),
-            ],
-          ),
-        ),
-        Positioned(
-          top: -45,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Card(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(45),
-                  ),
-                  child: Container(
-                    margin: const EdgeInsets.all(3),
-                    padding: const EdgeInsets.all(1),
-                    decoration: BoxDecoration(
-                        color: AppColor.deepYellow,
-                        borderRadius: BorderRadius.circular(45)),
-                    child: CircleAvatar(
-                      radius: 30.h,
-                      backgroundColor: Colors.white,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(180),
-                        child: SvgPicture.asset(
-                          "assets/images/person_orange.svg",
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const Text(
-                  "Driver Name",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    // color: AppColor.deepYellow,
-                  ),
-                ),
-                Text(
-                  "${widget.shipment.driver!.user!.firstName!} ${widget.shipment.driver!.user!.lastName!}",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: AppColor.deepYellow,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
             ),
-          ),
-        ),
-        BlocBuilder<LocaleCubit, LocaleState>(
-          builder: (context, localeState) {
-            return Positioned(
-              top: -20,
-              right: MediaQuery.of(context).size.width * .45,
-              child: GestureDetector(
-                onTap: () {
-                  changeToHidden();
-                },
-                child: AbsorbPointer(
-                  absorbing: true,
-                  child: Container(
-                    height: 45.h,
-                    width: 45.w,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey[300]!,
-                        width: 1,
-                      ),
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(45),
-                    ),
-                    child: Center(
-                      child: SizedBox(
-                        height: 25.h,
-                        width: 25.w,
-                        child: SvgPicture.asset(
-                          "assets/icons/arrow_down.svg",
-                          fit: BoxFit.contain,
-                          height: 25.h,
-                          width: 25.w,
+            BlocBuilder<LocaleCubit, LocaleState>(
+              builder: (context, localeState) {
+                return Positioned(
+                  top: -20,
+                  right: MediaQuery.of(context).size.width * .45,
+                  child: panelState == PanelState.hidden
+                      ? GestureDetector(
+                          onTap: () {
+                            changeToOpen();
+                          },
+                          child: AbsorbPointer(
+                            absorbing: true,
+                            child: Container(
+                              height: 45.h,
+                              width: 45.w,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey[300]!,
+                                  width: 1,
+                                ),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(45),
+                              ),
+                              child: Center(
+                                child: SizedBox(
+                                  height: 25.h,
+                                  width: 25.w,
+                                  child: SvgPicture.asset(
+                                    "assets/icons/arrow_up.svg",
+                                    fit: BoxFit.contain,
+                                    height: 25.h,
+                                    width: 25.w,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      : GestureDetector(
+                          onTap: () {
+                            changeToHidden();
+                          },
+                          child: AbsorbPointer(
+                            absorbing: true,
+                            child: Container(
+                              height: 45.h,
+                              width: 45.w,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey[300]!,
+                                  width: 1,
+                                ),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(45),
+                              ),
+                              child: Center(
+                                child: SizedBox(
+                                  height: 25.h,
+                                  width: 25.w,
+                                  child: SvgPicture.asset(
+                                    "assets/icons/arrow_down.svg",
+                                    fit: BoxFit.contain,
+                                    height: 25.h,
+                                    width: 25.w,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ],
+                );
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -832,8 +830,16 @@ class _ActiveShipmentDetailsScreenState
                         borderRadius: BorderRadius.circular(45),
                       ),
                       child: Center(
-                        child: SvgPicture.asset("assets/icons/arrow_up.svg",
-                            fit: BoxFit.fill),
+                        child: SizedBox(
+                          height: 25.h,
+                          width: 25.w,
+                          child: SvgPicture.asset(
+                            "assets/icons/arrow_up.svg",
+                            fit: BoxFit.contain,
+                            height: 25.h,
+                            width: 25.w,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -993,15 +999,19 @@ class _ActiveShipmentDetailsScreenState
             const SizedBox(
               width: 5,
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * .7,
-              child: Text(
-                "${AppLocalizations.of(context)!.translate('total_co2')}: ${f.format(_report!.et!.toInt())} kg",
-                style: const TextStyle(
-                  // color: Colors.white,
-                  fontSize: 17,
-                ),
-              ),
+            BlocBuilder<LocaleCubit, LocaleState>(
+              builder: (context, localeState) {
+                return SizedBox(
+                  width: MediaQuery.of(context).size.width * .7,
+                  child: Text(
+                    "${AppLocalizations.of(context)!.translate('total_co2')}: ${f.format(_report!.et!.toInt())} ${localeState.value.languageCode == 'en' ? "kg" : "كغ"}",
+                    style: const TextStyle(
+                      // color: Colors.white,
+                      fontSize: 17,
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),

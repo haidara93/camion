@@ -100,6 +100,9 @@ class ActiveShippmentProvider extends ChangeNotifier {
         ),
       );
       getBounds(markers, _maps[i]!);
+      print("get route for ${shipments[i]}");
+
+      notifyListeners();
     }
     notifyListeners();
   }

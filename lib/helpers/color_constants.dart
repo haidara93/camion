@@ -5,6 +5,7 @@ import 'package:hexcolor/hexcolor.dart';
 
 class AppColor {
   static final deepYellow = HexColor("#FFC400");
+  static final deepGreen = HexColor("#A3CC84");
   static final lightYellow = HexColor("#FEDB6A");
   static final deepBlack = HexColor("#363636");
   static final darkGrey = HexColor("#616161");
