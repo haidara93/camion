@@ -3,6 +3,7 @@ import 'package:camion/business_logic/bloc/shipments/shipment_complete_list_bloc
 import 'package:camion/business_logic/bloc/shipments/shipment_list_bloc.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/helpers/color_constants.dart';
+import 'package:camion/views/widgets/shipment_path_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -280,123 +281,31 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                                               CrossAxisAlignment
                                                                   .start,
                                                           children: [
-                                                            SizedBox(
-                                                              height: (state.shipments[index].pickupCityLocation!.length >
-                                                                          11 ||
-                                                                      state.shipments[index].deliveryCityLocation!
-                                                                              .length >
-                                                                          11)
-                                                                  ? 100
-                                                                  : 70.h,
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                children: [
-                                                                  TimelineTile(
-                                                                    direction: Axis
-                                                                        .horizontal,
-                                                                    oppositeContents:
-                                                                        Text(
-                                                                      setLoadDate(state
-                                                                          .shipments[
-                                                                              index]
-                                                                          .pickupDate!),
-                                                                    ),
-                                                                    contents:
-                                                                        SizedBox(
-                                                                      width: MediaQuery.of(context)
-                                                                              .size
-                                                                              .width *
-                                                                          .18,
-                                                                      child:
-                                                                          Text(
-                                                                        state
-                                                                            .shipments[index]
-                                                                            .pickupCityLocation!,
-                                                                        maxLines:
-                                                                            2,
-                                                                      ),
-                                                                    ),
-                                                                    node:
-                                                                        SizedBox(
-                                                                      width: MediaQuery.of(context)
-                                                                              .size
-                                                                              .width *
-                                                                          .18,
-                                                                      child:
-                                                                          TimelineNode(
-                                                                        indicator:
-                                                                            DotIndicator(color: AppColor.deepYellow),
-                                                                        // startConnector: SolidLineConnector(),
-                                                                        endConnector:
-                                                                            DashedLineConnector(color: AppColor.deepYellow),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  TimelineTile(
-                                                                    direction: Axis
-                                                                        .horizontal,
-                                                                    oppositeContents:
-                                                                        const SizedBox
-                                                                            .shrink(),
-                                                                    contents:
-                                                                        const SizedBox
-                                                                            .shrink(),
-                                                                    node:
-                                                                        SizedBox(
-                                                                      width: MediaQuery.of(context)
-                                                                              .size
-                                                                              .width *
-                                                                          .18,
-                                                                      child: DashedLineConnector(
-                                                                          color:
-                                                                              AppColor.deepYellow),
-                                                                    ),
-                                                                  ),
-                                                                  TimelineTile(
-                                                                    direction: Axis
-                                                                        .horizontal,
-                                                                    oppositeContents:
-                                                                        Text(
-                                                                      setLoadDate(state
-                                                                          .shipments[
-                                                                              index]
-                                                                          .pickupDate!),
-                                                                    ),
-                                                                    contents:
-                                                                        SizedBox(
-                                                                      width: MediaQuery.of(context)
-                                                                              .size
-                                                                              .width *
-                                                                          .18,
-                                                                      child:
-                                                                          Text(
-                                                                        state
-                                                                            .shipments[index]
-                                                                            .deliveryCityLocation!,
-                                                                        maxLines:
-                                                                            2,
-                                                                      ),
-                                                                    ),
-                                                                    node:
-                                                                        SizedBox(
-                                                                      width: MediaQuery.of(context)
-                                                                              .size
-                                                                              .width *
-                                                                          .3,
-                                                                      child:
-                                                                          TimelineNode(
-                                                                        indicator:
-                                                                            DotIndicator(color: AppColor.deepYellow),
-                                                                        startConnector:
-                                                                            DashedLineConnector(color: AppColor.deepYellow),
-                                                                        // endConnector: SolidLineConnector(),
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
+                                                            ShipmentPathWidget(
+                                                              loadDate:
+                                                                  setLoadDate(state
+                                                                      .shipments[
+                                                                          index]
+                                                                      .pickupDate!),
+                                                              pickupName: state
+                                                                  .shipments[
+                                                                      index]
+                                                                  .pickupCityLocation!,
+                                                              deliveryName: state
+                                                                  .shipments[
+                                                                      index]
+                                                                  .deliveryCityLocation!,
+                                                              width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  .66,
+                                                              pathwidth:
+                                                                  MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      .56,
                                                             ).animate().slideX(
                                                                 duration:
                                                                     300.ms,

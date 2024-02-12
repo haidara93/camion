@@ -15,9 +15,11 @@ import 'package:camion/views/screens/control_view.dart';
 import 'package:camion/views/widgets/custom_app_bar.dart';
 import 'package:camion/views/widgets/custom_botton.dart';
 import 'package:camion/views/widgets/loading_indicator.dart';
+import 'package:camion/views/widgets/shipment_path_widget.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:ensure_visible_when_focused/ensure_visible_when_focused.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -188,76 +190,18 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                         const SizedBox(
                           height: 10,
                         ),
-                        SizedBox(
-                          height: (widget.shipment.pickupCityLocation!.length >
-                                      11 ||
-                                  widget.shipment.deliveryCityLocation!.length >
-                                      11)
-                              ? 100
-                              : 70.h,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TimelineTile(
-                                direction: Axis.horizontal,
-                                oppositeContents: Text(
-                                  setLoadDate(widget.shipment.pickupDate!),
-                                ),
-                                contents: SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * .18,
-                                  child: Text(
-                                    widget.shipment.pickupCityLocation!,
-                                  ),
-                                ),
-                                node: SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * .25,
-                                  child: TimelineNode(
-                                    indicator: DotIndicator(
-                                        color: AppColor.deepYellow),
-                                    // startConnector: SolidLineConnector(),
-                                    endConnector: DashedLineConnector(
-                                        color: AppColor.deepYellow),
-                                  ),
-                                ),
-                              ),
-                              TimelineTile(
-                                direction: Axis.horizontal,
-                                oppositeContents: const SizedBox.shrink(),
-                                contents: const SizedBox.shrink(),
-                                node: SizedBox(
-                                  width: MediaQuery.of(context).size.width * .3,
-                                  child: DashedLineConnector(
-                                      color: AppColor.deepYellow),
-                                ),
-                              ),
-                              TimelineTile(
-                                direction: Axis.horizontal,
-                                oppositeContents: Text(
-                                  setLoadDate(widget.shipment.pickupDate!),
-                                ),
-                                contents: SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * .18,
-                                  child: Text(
-                                    widget.shipment.deliveryCityLocation!,
-                                  ),
-                                ),
-                                node: SizedBox(
-                                  width: MediaQuery.of(context).size.width * .2,
-                                  child: TimelineNode(
-                                    indicator: DotIndicator(
-                                        color: AppColor.deepYellow),
-                                    startConnector: DashedLineConnector(
-                                        color: AppColor.deepYellow),
-                                    // endConnector: SolidLineConnector(),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
+                        ShipmentPathWidget(
+                          loadDate: setLoadDate(widget.shipment.pickupDate!),
+                          pickupName: widget.shipment.pickupCityLocation!,
+                          deliveryName: widget.shipment.deliveryCityLocation!,
+                          width: MediaQuery.of(context).size.width * .8,
+                          pathwidth: MediaQuery.of(context).size.width * .7,
+                        ).animate().slideX(
+                            duration: 300.ms,
+                            delay: 0.ms,
+                            begin: 1,
+                            end: 0,
+                            curve: Curves.easeInOutSine),
                       ],
                     ),
                   ),
@@ -398,371 +342,523 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                     ),
                   ),
                 ),
-                Visibility(
-                  visible: (selectedRadioTile.isEmpty ||
-                          selectedRadioTile == "M" ||
-                          selectedRadioTile == "R") ||
-                      (widget.hasinstruction
-                          ? (widget.shipment.shipmentinstruction!.userType ==
-                                  "M") ||
-                              (widget.shipment.shipmentinstruction!.userType ==
-                                  "R")
-                          : false),
-                  child: Card(
-                    color: Colors.white,
-                    margin: const EdgeInsets.all(5),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 7.5),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                Card(
+                  color: Colors.white,
+                  margin: const EdgeInsets.all(5),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10.0, vertical: 7.5),
+                    child: Theme(
+                      data: Theme.of(context)
+                          .copyWith(dividerColor: Colors.transparent),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * .88,
+                        child: ExpansionTile(
+                          initiallyExpanded: false,
+                          tilePadding: EdgeInsets.zero,
+
+                          // controlAffinity: ListTileControlAffinity.leading,
+                          childrenPadding: EdgeInsets.zero,
+                          title: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(
-                                  AppLocalizations.of(context)!
-                                      .translate('charger_info'),
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColor.darkGrey,
-                                  )),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * .6,
+                                child: Text(
+                                    AppLocalizations.of(context)!
+                                        .translate('commodity_info'),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColor.darkGrey,
+                                    )),
+                              )
                             ],
                           ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          TextFormField(
-                            controller: charger_name_controller,
-                            onTap: () {
-                              charger_name_controller.selection = TextSelection(
-                                  baseOffset: 0,
-                                  extentOffset: charger_name_controller
-                                      .value.text.length);
-                            },
-                            scrollPadding: EdgeInsets.only(
-                                bottom:
-                                    MediaQuery.of(context).viewInsets.bottom),
-                            enabled:
-                                widget.shipment.shipmentinstruction == null,
-                            textInputAction: TextInputAction.done,
-                            style: const TextStyle(fontSize: 18),
-                            decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)!
-                                  .translate('charger_name'),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 11.0, horizontal: 9.0),
-                            ),
-                            onTapOutside: (event) {},
-                            onEditingComplete: () {
-                              // evaluatePrice();
-                            },
-                            onChanged: (value) {},
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return AppLocalizations.of(context)!
-                                    .translate('insert_value_validate');
-                              }
-                              return null;
-                            },
-                            onSaved: (newValue) {
-                              charger_name_controller.text = newValue!;
-                            },
-                            onFieldSubmitted: (value) {},
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          TextFormField(
-                            controller: charger_address_controller,
-                            onTap: () {
-                              charger_address_controller.selection =
-                                  TextSelection(
-                                      baseOffset: 0,
-                                      extentOffset: charger_address_controller
-                                          .value.text.length);
-                            },
-                            enabled:
-                                widget.shipment.shipmentinstruction == null,
-                            scrollPadding: EdgeInsets.only(
-                                bottom:
-                                    MediaQuery.of(context).viewInsets.bottom),
-                            textInputAction: TextInputAction.done,
-                            style: const TextStyle(fontSize: 18),
-                            decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)!
-                                  .translate('charger_address'),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 11.0, horizontal: 9.0),
-                            ),
-                            onTapOutside: (event) {
-                              // FocusManager.instance.primaryFocus?.unfocus();
-                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-                            },
-                            onEditingComplete: () {
-                              // evaluatePrice();
-                            },
-                            onChanged: (value) {},
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return AppLocalizations.of(context)!
-                                    .translate('insert_value_validate');
-                              }
-                              return null;
-                            },
-                            onSaved: (newValue) {
-                              // commodityWeight_controller.text = newValue!;
-                            },
-                            onFieldSubmitted: (value) {
-                              // FocusManager.instance.primaryFocus?.unfocus();
-                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-                            },
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          TextFormField(
-                            controller: charger_phone_controller,
-                            onTap: () {
-                              charger_phone_controller.selection =
-                                  TextSelection(
-                                      baseOffset: 0,
-                                      extentOffset: charger_phone_controller
-                                          .value.text.length);
-                            },
-                            enabled:
-                                widget.shipment.shipmentinstruction == null,
-                            scrollPadding: EdgeInsets.only(
-                                bottom:
-                                    MediaQuery.of(context).viewInsets.bottom),
-                            textInputAction: TextInputAction.done,
-                            keyboardType: TextInputType.phone,
-                            style: const TextStyle(fontSize: 18),
-                            decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)!
-                                  .translate('charger_phone'),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 11.0, horizontal: 9.0),
-                            ),
-                            onTapOutside: (event) {
-                              // FocusManager.instance.primaryFocus?.unfocus();
-                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-                            },
-                            onEditingComplete: () {
-                              // evaluatePrice();
-                            },
-                            onChanged: (value) {},
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return AppLocalizations.of(context)!
-                                    .translate('insert_value_validate');
-                              }
-                              return null;
-                            },
-                            onSaved: (newValue) {
-                              // commodityWeight_controller.text = newValue!;
-                            },
-                            onFieldSubmitted: (value) {
-                              // FocusManager.instance.primaryFocus?.unfocus();
-                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-                            },
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: (selectedRadioTile.isEmpty ||
-                          selectedRadioTile == "M" ||
-                          selectedRadioTile == "C") ||
-                      (widget.hasinstruction
-                          ? (widget.shipment.shipmentinstruction!.userType ==
-                                  "M") ||
-                              (widget.shipment.shipmentinstruction!.userType ==
-                                  "C")
-                          : false),
-                  child: Card(
-                    color: Colors.white,
-                    margin: const EdgeInsets.all(5),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 7.5),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                  AppLocalizations.of(context)!
-                                      .translate('reciever_info'),
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColor.darkGrey,
-                                  )),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          TextFormField(
-                            controller: reciever_name_controller,
-                            onTap: () {
-                              reciever_name_controller.selection =
-                                  TextSelection(
-                                      baseOffset: 0,
-                                      extentOffset: reciever_name_controller
-                                          .value.text.length);
-                            },
-                            enabled:
-                                widget.shipment.shipmentinstruction == null,
-                            scrollPadding: EdgeInsets.only(
-                                bottom:
-                                    MediaQuery.of(context).viewInsets.bottom),
-                            textInputAction: TextInputAction.done,
-                            style: const TextStyle(fontSize: 18),
-                            decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)!
-                                  .translate('reciever_name'),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 11.0, horizontal: 9.0),
-                            ),
-                            onTapOutside: (event) {},
-                            onEditingComplete: () {
-                              // evaluatePrice();
-                            },
-                            onChanged: (value) {},
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return AppLocalizations.of(context)!
-                                    .translate('insert_value_validate');
-                              }
-                              return null;
-                            },
-                            onSaved: (newValue) {
-                              reciever_name_controller.text = newValue!;
-                            },
-                            onFieldSubmitted: (value) {},
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          TextFormField(
-                            controller: reciever_address_controller,
-                            onTap: () {
-                              reciever_address_controller.selection =
-                                  TextSelection(
-                                      baseOffset: 0,
-                                      extentOffset: reciever_address_controller
-                                          .value.text.length);
-                            },
-                            enabled:
-                                widget.shipment.shipmentinstruction == null,
-                            scrollPadding: EdgeInsets.only(
-                                bottom:
-                                    MediaQuery.of(context).viewInsets.bottom),
-                            textInputAction: TextInputAction.done,
-                            style: const TextStyle(fontSize: 18),
-                            decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)!
-                                  .translate('reciever_address'),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 11.0, horizontal: 9.0),
-                            ),
-                            onTapOutside: (event) {
-                              // FocusManager.instance.primaryFocus?.unfocus();
-                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-                            },
-                            onEditingComplete: () {
-                              // evaluatePrice();
-                            },
-                            onChanged: (value) {},
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return AppLocalizations.of(context)!
-                                    .translate('insert_value_validate');
-                              }
-                              return null;
-                            },
-                            onSaved: (newValue) {
-                              // commodityWeight_controller.text = newValue!;
-                            },
-                            onFieldSubmitted: (value) {
-                              // FocusManager.instance.primaryFocus?.unfocus();
-                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-                            },
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          TextFormField(
-                            controller: reciever_phone_controller,
-                            onTap: () {
-                              reciever_phone_controller.selection =
-                                  TextSelection(
-                                      baseOffset: 0,
-                                      extentOffset: reciever_phone_controller
-                                          .value.text.length);
-                            },
-                            enabled:
-                                widget.shipment.shipmentinstruction == null,
-                            scrollPadding: EdgeInsets.only(
-                                bottom:
-                                    MediaQuery.of(context).viewInsets.bottom),
-                            textInputAction: TextInputAction.done,
-                            keyboardType: TextInputType.phone,
-                            style: const TextStyle(fontSize: 18),
-                            decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)!
-                                  .translate('reciever_phone'),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 11.0, horizontal: 9.0),
-                            ),
-                            onTapOutside: (event) {
-                              // FocusManager.instance.primaryFocus?.unfocus();
-                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-                            },
-                            onEditingComplete: () {
-                              // evaluatePrice();
-                            },
-                            onChanged: (value) {},
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return AppLocalizations.of(context)!
-                                    .translate('insert_value_validate');
-                              }
-                              return null;
-                            },
-                            onSaved: (newValue) {
-                              // commodityWeight_controller.text = newValue!;
-                            },
-                            onFieldSubmitted: (value) {
-                              // FocusManager.instance.primaryFocus?.unfocus();
-                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
-                            },
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                        ],
+                          onExpansionChanged: (value) {},
+                          children: [
+                            Column(
+                              children: [
+                                Visibility(
+                                  visible: (selectedRadioTile.isEmpty ||
+                                          selectedRadioTile == "M" ||
+                                          selectedRadioTile == "R") ||
+                                      (widget.hasinstruction
+                                          ? (widget
+                                                      .shipment
+                                                      .shipmentinstruction!
+                                                      .userType ==
+                                                  "M") ||
+                                              (widget
+                                                      .shipment
+                                                      .shipmentinstruction!
+                                                      .userType ==
+                                                  "R")
+                                          : false),
+                                  child: Card(
+                                    color: Colors.white,
+                                    margin: const EdgeInsets.all(5),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0, vertical: 7.5),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                  AppLocalizations.of(context)!
+                                                      .translate(
+                                                          'charger_info'),
+                                                  style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: AppColor.darkGrey,
+                                                  )),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          TextFormField(
+                                            controller: charger_name_controller,
+                                            onTap: () {
+                                              charger_name_controller
+                                                      .selection =
+                                                  TextSelection(
+                                                      baseOffset: 0,
+                                                      extentOffset:
+                                                          charger_name_controller
+                                                              .value
+                                                              .text
+                                                              .length);
+                                            },
+                                            scrollPadding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context)
+                                                    .viewInsets
+                                                    .bottom),
+                                            enabled: widget.shipment
+                                                    .shipmentinstruction ==
+                                                null,
+                                            textInputAction:
+                                                TextInputAction.done,
+                                            style:
+                                                const TextStyle(fontSize: 18),
+                                            decoration: InputDecoration(
+                                              labelText: AppLocalizations.of(
+                                                      context)!
+                                                  .translate('charger_name'),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 11.0,
+                                                      horizontal: 9.0),
+                                            ),
+                                            onTapOutside: (event) {},
+                                            onEditingComplete: () {
+                                              // evaluatePrice();
+                                            },
+                                            onChanged: (value) {},
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return AppLocalizations.of(
+                                                        context)!
+                                                    .translate(
+                                                        'insert_value_validate');
+                                              }
+                                              return null;
+                                            },
+                                            onSaved: (newValue) {
+                                              charger_name_controller.text =
+                                                  newValue!;
+                                            },
+                                            onFieldSubmitted: (value) {},
+                                          ),
+                                          const SizedBox(
+                                            height: 12,
+                                          ),
+                                          TextFormField(
+                                            controller:
+                                                charger_address_controller,
+                                            onTap: () {
+                                              charger_address_controller
+                                                      .selection =
+                                                  TextSelection(
+                                                      baseOffset: 0,
+                                                      extentOffset:
+                                                          charger_address_controller
+                                                              .value
+                                                              .text
+                                                              .length);
+                                            },
+                                            enabled: widget.shipment
+                                                    .shipmentinstruction ==
+                                                null,
+                                            scrollPadding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context)
+                                                    .viewInsets
+                                                    .bottom),
+                                            textInputAction:
+                                                TextInputAction.done,
+                                            style:
+                                                const TextStyle(fontSize: 18),
+                                            decoration: InputDecoration(
+                                              labelText: AppLocalizations.of(
+                                                      context)!
+                                                  .translate('charger_address'),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 11.0,
+                                                      horizontal: 9.0),
+                                            ),
+                                            onTapOutside: (event) {
+                                              // FocusManager.instance.primaryFocus?.unfocus();
+                                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
+                                            },
+                                            onEditingComplete: () {
+                                              // evaluatePrice();
+                                            },
+                                            onChanged: (value) {},
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return AppLocalizations.of(
+                                                        context)!
+                                                    .translate(
+                                                        'insert_value_validate');
+                                              }
+                                              return null;
+                                            },
+                                            onSaved: (newValue) {
+                                              // commodityWeight_controller.text = newValue!;
+                                            },
+                                            onFieldSubmitted: (value) {
+                                              // FocusManager.instance.primaryFocus?.unfocus();
+                                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
+                                            },
+                                          ),
+                                          const SizedBox(
+                                            height: 12,
+                                          ),
+                                          TextFormField(
+                                            controller:
+                                                charger_phone_controller,
+                                            onTap: () {
+                                              charger_phone_controller
+                                                      .selection =
+                                                  TextSelection(
+                                                      baseOffset: 0,
+                                                      extentOffset:
+                                                          charger_phone_controller
+                                                              .value
+                                                              .text
+                                                              .length);
+                                            },
+                                            enabled: widget.shipment
+                                                    .shipmentinstruction ==
+                                                null,
+                                            scrollPadding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context)
+                                                    .viewInsets
+                                                    .bottom),
+                                            textInputAction:
+                                                TextInputAction.done,
+                                            keyboardType: TextInputType.phone,
+                                            style:
+                                                const TextStyle(fontSize: 18),
+                                            decoration: InputDecoration(
+                                              labelText: AppLocalizations.of(
+                                                      context)!
+                                                  .translate('charger_phone'),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 11.0,
+                                                      horizontal: 9.0),
+                                            ),
+                                            onTapOutside: (event) {
+                                              // FocusManager.instance.primaryFocus?.unfocus();
+                                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
+                                            },
+                                            onEditingComplete: () {
+                                              // evaluatePrice();
+                                            },
+                                            onChanged: (value) {},
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return AppLocalizations.of(
+                                                        context)!
+                                                    .translate(
+                                                        'insert_value_validate');
+                                              }
+                                              return null;
+                                            },
+                                            onSaved: (newValue) {
+                                              // commodityWeight_controller.text = newValue!;
+                                            },
+                                            onFieldSubmitted: (value) {
+                                              // FocusManager.instance.primaryFocus?.unfocus();
+                                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
+                                            },
+                                          ),
+                                          const SizedBox(
+                                            height: 12,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: (selectedRadioTile.isEmpty ||
+                                          selectedRadioTile == "M" ||
+                                          selectedRadioTile == "C") ||
+                                      (widget.hasinstruction
+                                          ? (widget
+                                                      .shipment
+                                                      .shipmentinstruction!
+                                                      .userType ==
+                                                  "M") ||
+                                              (widget
+                                                      .shipment
+                                                      .shipmentinstruction!
+                                                      .userType ==
+                                                  "C")
+                                          : false),
+                                  child: Card(
+                                    color: Colors.white,
+                                    margin: const EdgeInsets.all(5),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0, vertical: 7.5),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                  AppLocalizations.of(context)!
+                                                      .translate(
+                                                          'reciever_info'),
+                                                  style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: AppColor.darkGrey,
+                                                  )),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          TextFormField(
+                                            controller:
+                                                reciever_name_controller,
+                                            onTap: () {
+                                              reciever_name_controller
+                                                      .selection =
+                                                  TextSelection(
+                                                      baseOffset: 0,
+                                                      extentOffset:
+                                                          reciever_name_controller
+                                                              .value
+                                                              .text
+                                                              .length);
+                                            },
+                                            enabled: widget.shipment
+                                                    .shipmentinstruction ==
+                                                null,
+                                            scrollPadding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context)
+                                                    .viewInsets
+                                                    .bottom),
+                                            textInputAction:
+                                                TextInputAction.done,
+                                            style:
+                                                const TextStyle(fontSize: 18),
+                                            decoration: InputDecoration(
+                                              labelText: AppLocalizations.of(
+                                                      context)!
+                                                  .translate('reciever_name'),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 11.0,
+                                                      horizontal: 9.0),
+                                            ),
+                                            onTapOutside: (event) {},
+                                            onEditingComplete: () {
+                                              // evaluatePrice();
+                                            },
+                                            onChanged: (value) {},
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return AppLocalizations.of(
+                                                        context)!
+                                                    .translate(
+                                                        'insert_value_validate');
+                                              }
+                                              return null;
+                                            },
+                                            onSaved: (newValue) {
+                                              reciever_name_controller.text =
+                                                  newValue!;
+                                            },
+                                            onFieldSubmitted: (value) {},
+                                          ),
+                                          const SizedBox(
+                                            height: 12,
+                                          ),
+                                          TextFormField(
+                                            controller:
+                                                reciever_address_controller,
+                                            onTap: () {
+                                              reciever_address_controller
+                                                      .selection =
+                                                  TextSelection(
+                                                      baseOffset: 0,
+                                                      extentOffset:
+                                                          reciever_address_controller
+                                                              .value
+                                                              .text
+                                                              .length);
+                                            },
+                                            enabled: widget.shipment
+                                                    .shipmentinstruction ==
+                                                null,
+                                            scrollPadding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context)
+                                                    .viewInsets
+                                                    .bottom),
+                                            textInputAction:
+                                                TextInputAction.done,
+                                            style:
+                                                const TextStyle(fontSize: 18),
+                                            decoration: InputDecoration(
+                                              labelText:
+                                                  AppLocalizations.of(context)!
+                                                      .translate(
+                                                          'reciever_address'),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 11.0,
+                                                      horizontal: 9.0),
+                                            ),
+                                            onTapOutside: (event) {
+                                              // FocusManager.instance.primaryFocus?.unfocus();
+                                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
+                                            },
+                                            onEditingComplete: () {
+                                              // evaluatePrice();
+                                            },
+                                            onChanged: (value) {},
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return AppLocalizations.of(
+                                                        context)!
+                                                    .translate(
+                                                        'insert_value_validate');
+                                              }
+                                              return null;
+                                            },
+                                            onSaved: (newValue) {
+                                              // commodityWeight_controller.text = newValue!;
+                                            },
+                                            onFieldSubmitted: (value) {
+                                              // FocusManager.instance.primaryFocus?.unfocus();
+                                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
+                                            },
+                                          ),
+                                          const SizedBox(
+                                            height: 12,
+                                          ),
+                                          TextFormField(
+                                            controller:
+                                                reciever_phone_controller,
+                                            onTap: () {
+                                              reciever_phone_controller
+                                                      .selection =
+                                                  TextSelection(
+                                                      baseOffset: 0,
+                                                      extentOffset:
+                                                          reciever_phone_controller
+                                                              .value
+                                                              .text
+                                                              .length);
+                                            },
+                                            enabled: widget.shipment
+                                                    .shipmentinstruction ==
+                                                null,
+                                            scrollPadding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context)
+                                                    .viewInsets
+                                                    .bottom),
+                                            textInputAction:
+                                                TextInputAction.done,
+                                            keyboardType: TextInputType.phone,
+                                            style:
+                                                const TextStyle(fontSize: 18),
+                                            decoration: InputDecoration(
+                                              labelText: AppLocalizations.of(
+                                                      context)!
+                                                  .translate('reciever_phone'),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 11.0,
+                                                      horizontal: 9.0),
+                                            ),
+                                            onTapOutside: (event) {
+                                              // FocusManager.instance.primaryFocus?.unfocus();
+                                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
+                                            },
+                                            onEditingComplete: () {
+                                              // evaluatePrice();
+                                            },
+                                            onChanged: (value) {},
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return AppLocalizations.of(
+                                                        context)!
+                                                    .translate(
+                                                        'insert_value_validate');
+                                              }
+                                              return null;
+                                            },
+                                            onSaved: (newValue) {
+                                              // commodityWeight_controller.text = newValue!;
+                                            },
+                                            onFieldSubmitted: (value) {
+                                              // FocusManager.instance.primaryFocus?.unfocus();
+                                              // BlocProvider.of<BottomNavBarCubit>(context).emitShow();
+                                            },
+                                          ),
+                                          const SizedBox(
+                                            height: 12,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -1314,227 +1410,321 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text(
-                              AppLocalizations.of(context)!
-                                  .translate('other_info'),
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: AppColor.darkGrey,
+                            Theme(
+                              data: Theme.of(context)
+                                  .copyWith(dividerColor: Colors.transparent),
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width * .88,
+                                child: ExpansionTile(
+                                  initiallyExpanded: false,
+                                  tilePadding: EdgeInsets.zero,
+
+                                  // controlAffinity: ListTileControlAffinity.leading,
+                                  childrenPadding: EdgeInsets.zero,
+                                  title: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                .6,
+                                        child: Text(
+                                          AppLocalizations.of(context)!
+                                              .translate('other_info'),
+                                          style: TextStyle(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppColor.darkGrey,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  onExpansionChanged: (value) {},
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .43,
+                                          child: TextFormField(
+                                            controller: total_weight_controller,
+                                            onTap: () {
+                                              total_weight_controller
+                                                      .selection =
+                                                  TextSelection(
+                                                      baseOffset: 0,
+                                                      extentOffset:
+                                                          total_weight_controller
+                                                              .value
+                                                              .text
+                                                              .length);
+                                            },
+                                            enabled: widget.shipment
+                                                    .shipmentinstruction ==
+                                                null,
+                                            scrollPadding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context)
+                                                    .viewInsets
+                                                    .bottom),
+                                            textInputAction:
+                                                TextInputAction.done,
+                                            keyboardType: const TextInputType
+                                                .numberWithOptions(
+                                                decimal: true, signed: true),
+                                            style:
+                                                const TextStyle(fontSize: 18),
+                                            decoration: InputDecoration(
+                                              labelText: AppLocalizations.of(
+                                                      context)!
+                                                  .translate('total_weight'),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 11.0,
+                                                      horizontal: 9.0),
+                                            ),
+                                            onTapOutside: (event) {},
+                                            onEditingComplete: () {
+                                              // evaluatePrice();
+                                            },
+                                            onChanged: (value) {},
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return AppLocalizations.of(
+                                                        context)!
+                                                    .translate(
+                                                        'insert_value_validate');
+                                              }
+                                              return null;
+                                            },
+                                            onSaved: (newValue) {
+                                              total_weight_controller.text =
+                                                  newValue!;
+                                            },
+                                            onFieldSubmitted: (value) {},
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .43,
+                                          child: TextFormField(
+                                            controller: net_weight_controller,
+                                            onTap: () {
+                                              net_weight_controller.selection =
+                                                  TextSelection(
+                                                      baseOffset: 0,
+                                                      extentOffset:
+                                                          net_weight_controller
+                                                              .value
+                                                              .text
+                                                              .length);
+                                            },
+                                            enabled: widget.shipment
+                                                    .shipmentinstruction ==
+                                                null,
+                                            scrollPadding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context)
+                                                    .viewInsets
+                                                    .bottom),
+                                            textInputAction:
+                                                TextInputAction.done,
+                                            keyboardType: const TextInputType
+                                                .numberWithOptions(
+                                                decimal: true, signed: true),
+                                            style:
+                                                const TextStyle(fontSize: 18),
+                                            decoration: InputDecoration(
+                                              labelText:
+                                                  AppLocalizations.of(context)!
+                                                      .translate('net_weight'),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 11.0,
+                                                      horizontal: 9.0),
+                                            ),
+                                            onTapOutside: (event) {},
+                                            onEditingComplete: () {
+                                              // evaluatePrice();
+                                            },
+                                            onChanged: (value) {},
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return AppLocalizations.of(
+                                                        context)!
+                                                    .translate(
+                                                        'insert_value_validate');
+                                              }
+                                              return null;
+                                            },
+                                            onSaved: (newValue) {
+                                              net_weight_controller.text =
+                                                  newValue!;
+                                            },
+                                            onFieldSubmitted: (value) {},
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .43,
+                                          child: TextFormField(
+                                            controller: truck_weight_controller,
+                                            onTap: () {
+                                              truck_weight_controller
+                                                      .selection =
+                                                  TextSelection(
+                                                      baseOffset: 0,
+                                                      extentOffset:
+                                                          truck_weight_controller
+                                                              .value
+                                                              .text
+                                                              .length);
+                                            },
+                                            enabled: widget.shipment
+                                                    .shipmentinstruction ==
+                                                null,
+                                            scrollPadding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context)
+                                                    .viewInsets
+                                                    .bottom),
+                                            textInputAction:
+                                                TextInputAction.done,
+                                            keyboardType: const TextInputType
+                                                .numberWithOptions(
+                                                decimal: true, signed: true),
+                                            style:
+                                                const TextStyle(fontSize: 18),
+                                            decoration: InputDecoration(
+                                              labelText: AppLocalizations.of(
+                                                      context)!
+                                                  .translate('truck_weight'),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 11.0,
+                                                      horizontal: 9.0),
+                                            ),
+                                            onTapOutside: (event) {},
+                                            onEditingComplete: () {
+                                              // evaluatePrice();
+                                            },
+                                            onChanged: (value) {},
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return AppLocalizations.of(
+                                                        context)!
+                                                    .translate(
+                                                        'insert_value_validate');
+                                              }
+                                              return null;
+                                            },
+                                            onSaved: (newValue) {
+                                              truck_weight_controller.text =
+                                                  newValue!;
+                                            },
+                                            onFieldSubmitted: (value) {},
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .43,
+                                          child: TextFormField(
+                                            controller: final_weight_controller,
+                                            onTap: () {
+                                              final_weight_controller
+                                                      .selection =
+                                                  TextSelection(
+                                                      baseOffset: 0,
+                                                      extentOffset:
+                                                          final_weight_controller
+                                                              .value
+                                                              .text
+                                                              .length);
+                                            },
+                                            enabled: widget.shipment
+                                                    .shipmentinstruction ==
+                                                null,
+                                            scrollPadding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context)
+                                                    .viewInsets
+                                                    .bottom),
+                                            textInputAction:
+                                                TextInputAction.done,
+                                            keyboardType: const TextInputType
+                                                .numberWithOptions(
+                                                decimal: true, signed: true),
+                                            style:
+                                                const TextStyle(fontSize: 18),
+                                            decoration: InputDecoration(
+                                              labelText: AppLocalizations.of(
+                                                      context)!
+                                                  .translate('final_weight'),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 11.0,
+                                                      horizontal: 9.0),
+                                            ),
+                                            onTapOutside: (event) {},
+                                            onEditingComplete: () {
+                                              // evaluatePrice();
+                                            },
+                                            onChanged: (value) {},
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return AppLocalizations.of(
+                                                        context)!
+                                                    .translate(
+                                                        'insert_value_validate');
+                                              }
+                                              return null;
+                                            },
+                                            onSaved: (newValue) {
+                                              final_weight_controller.text =
+                                                  newValue!;
+                                            },
+                                            onFieldSubmitted: (value) {},
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .43,
-                              child: TextFormField(
-                                controller: total_weight_controller,
-                                onTap: () {
-                                  total_weight_controller.selection =
-                                      TextSelection(
-                                          baseOffset: 0,
-                                          extentOffset: total_weight_controller
-                                              .value.text.length);
-                                },
-                                enabled:
-                                    widget.shipment.shipmentinstruction == null,
-                                scrollPadding: EdgeInsets.only(
-                                    bottom: MediaQuery.of(context)
-                                        .viewInsets
-                                        .bottom),
-                                textInputAction: TextInputAction.done,
-                                keyboardType:
-                                    const TextInputType.numberWithOptions(
-                                        decimal: true, signed: true),
-                                style: const TextStyle(fontSize: 18),
-                                decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context)!
-                                      .translate('total_weight'),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 11.0, horizontal: 9.0),
-                                ),
-                                onTapOutside: (event) {},
-                                onEditingComplete: () {
-                                  // evaluatePrice();
-                                },
-                                onChanged: (value) {},
-                                autovalidateMode:
-                                    AutovalidateMode.onUserInteraction,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return AppLocalizations.of(context)!
-                                        .translate('insert_value_validate');
-                                  }
-                                  return null;
-                                },
-                                onSaved: (newValue) {
-                                  total_weight_controller.text = newValue!;
-                                },
-                                onFieldSubmitted: (value) {},
-                              ),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .43,
-                              child: TextFormField(
-                                controller: net_weight_controller,
-                                onTap: () {
-                                  net_weight_controller.selection =
-                                      TextSelection(
-                                          baseOffset: 0,
-                                          extentOffset: net_weight_controller
-                                              .value.text.length);
-                                },
-                                enabled:
-                                    widget.shipment.shipmentinstruction == null,
-                                scrollPadding: EdgeInsets.only(
-                                    bottom: MediaQuery.of(context)
-                                        .viewInsets
-                                        .bottom),
-                                textInputAction: TextInputAction.done,
-                                keyboardType:
-                                    const TextInputType.numberWithOptions(
-                                        decimal: true, signed: true),
-                                style: const TextStyle(fontSize: 18),
-                                decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context)!
-                                      .translate('net_weight'),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 11.0, horizontal: 9.0),
-                                ),
-                                onTapOutside: (event) {},
-                                onEditingComplete: () {
-                                  // evaluatePrice();
-                                },
-                                onChanged: (value) {},
-                                autovalidateMode:
-                                    AutovalidateMode.onUserInteraction,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return AppLocalizations.of(context)!
-                                        .translate('insert_value_validate');
-                                  }
-                                  return null;
-                                },
-                                onSaved: (newValue) {
-                                  net_weight_controller.text = newValue!;
-                                },
-                                onFieldSubmitted: (value) {},
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 12,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .43,
-                              child: TextFormField(
-                                controller: truck_weight_controller,
-                                onTap: () {
-                                  truck_weight_controller.selection =
-                                      TextSelection(
-                                          baseOffset: 0,
-                                          extentOffset: truck_weight_controller
-                                              .value.text.length);
-                                },
-                                enabled:
-                                    widget.shipment.shipmentinstruction == null,
-                                scrollPadding: EdgeInsets.only(
-                                    bottom: MediaQuery.of(context)
-                                        .viewInsets
-                                        .bottom),
-                                textInputAction: TextInputAction.done,
-                                keyboardType:
-                                    const TextInputType.numberWithOptions(
-                                        decimal: true, signed: true),
-                                style: const TextStyle(fontSize: 18),
-                                decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context)!
-                                      .translate('truck_weight'),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 11.0, horizontal: 9.0),
-                                ),
-                                onTapOutside: (event) {},
-                                onEditingComplete: () {
-                                  // evaluatePrice();
-                                },
-                                onChanged: (value) {},
-                                autovalidateMode:
-                                    AutovalidateMode.onUserInteraction,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return AppLocalizations.of(context)!
-                                        .translate('insert_value_validate');
-                                  }
-                                  return null;
-                                },
-                                onSaved: (newValue) {
-                                  truck_weight_controller.text = newValue!;
-                                },
-                                onFieldSubmitted: (value) {},
-                              ),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .43,
-                              child: TextFormField(
-                                controller: final_weight_controller,
-                                onTap: () {
-                                  final_weight_controller.selection =
-                                      TextSelection(
-                                          baseOffset: 0,
-                                          extentOffset: final_weight_controller
-                                              .value.text.length);
-                                },
-                                enabled:
-                                    widget.shipment.shipmentinstruction == null,
-                                scrollPadding: EdgeInsets.only(
-                                    bottom: MediaQuery.of(context)
-                                        .viewInsets
-                                        .bottom),
-                                textInputAction: TextInputAction.done,
-                                keyboardType:
-                                    const TextInputType.numberWithOptions(
-                                        decimal: true, signed: true),
-                                style: const TextStyle(fontSize: 18),
-                                decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context)!
-                                      .translate('final_weight'),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 11.0, horizontal: 9.0),
-                                ),
-                                onTapOutside: (event) {},
-                                onEditingComplete: () {
-                                  // evaluatePrice();
-                                },
-                                onChanged: (value) {},
-                                autovalidateMode:
-                                    AutovalidateMode.onUserInteraction,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return AppLocalizations.of(context)!
-                                        .translate('insert_value_validate');
-                                  }
-                                  return null;
-                                },
-                                onSaved: (newValue) {
-                                  final_weight_controller.text = newValue!;
-                                },
-                                onFieldSubmitted: (value) {},
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 12,
                         ),
                       ],
                     ),

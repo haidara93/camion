@@ -373,14 +373,14 @@ class _TruckDetailsScreenState extends State<TruckDetailsScreen> {
                                                   Icons.star_border,
                                                   color: AppColor.deepYellow,
                                                 ),
-                                          Text(
-                                            '(${widget.truck.rating!.toString()})',
-                                            style: TextStyle(
-                                              color: AppColor.deepYellow,
-                                              fontSize: 19,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
+                                          // Text(
+                                          //   '(${widget.truck.rating!.toString()})',
+                                          //   style: TextStyle(
+                                          //     color: AppColor.deepYellow,
+                                          //     fontSize: 19,
+                                          //     fontWeight: FontWeight.bold,
+                                          //   ),
+                                          // ),
                                         ],
                                       ),
                                     ),

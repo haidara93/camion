@@ -176,11 +176,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                   SizedBox(
                     height: 45.h,
-                    // width: 175.w,
+                    // width: MediaQuery.of(context).size,
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
                         title,
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 28.sp,

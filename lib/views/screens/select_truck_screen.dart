@@ -279,17 +279,17 @@ class SelectTruckScreen extends StatelessWidget {
                                                                   color: AppColor
                                                                       .deepYellow,
                                                                 ),
-                                                          Text(
-                                                            '(${state.trucks[index].rating!.toString()})',
-                                                            style: TextStyle(
-                                                              color: AppColor
-                                                                  .deepYellow,
-                                                              fontSize: 19,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                            ),
-                                                          ),
+                                                          // Text(
+                                                          //   '(${state.trucks[index].rating!.toString()})',
+                                                          //   style: TextStyle(
+                                                          //     color: AppColor
+                                                          //         .deepYellow,
+                                                          //     fontSize: 19,
+                                                          //     fontWeight:
+                                                          //         FontWeight
+                                                          //             .bold,
+                                                          //   ),
+                                                          // ),
                                                         ],
                                                       ),
                                                     ),

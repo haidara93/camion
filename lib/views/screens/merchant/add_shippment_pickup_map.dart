@@ -80,9 +80,9 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
     if (response.statusCode == 200) {
       var result = jsonDecode(response.body);
       addShippmentProvider!.setPickupName(
-          result["results"][0]["address_components"][1]["long_name"]);
+          '${(result["results"][0]["address_components"][3]["long_name"]) ?? ""},${(result["results"][0]["address_components"][1]["long_name"]) ?? ""}');
       addShippmentProvider!.pickup_controller.text =
-          result["results"][0]["address_components"][1]["long_name"];
+          '${(result["results"][0]["address_components"][3]["long_name"]) ?? ""},${(result["results"][0]["address_components"][1]["long_name"]) ?? ""}';
     }
     setState(() {
       pickupLoading = false;
@@ -98,9 +98,9 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
     if (response.statusCode == 200) {
       var result = jsonDecode(response.body);
       addShippmentProvider!.setDeliveryName(
-          result["results"][0]["address_components"][1]["long_name"]);
+          '${(result["results"][0]["address_components"][3]["long_name"]) ?? ""},${(result["results"][0]["address_components"][1]["long_name"]) ?? ""}');
       addShippmentProvider!.delivery_controller.text =
-          result["results"][0]["address_components"][1]["long_name"];
+          '${(result["results"][0]["address_components"][3]["long_name"]) ?? ""},${(result["results"][0]["address_components"][1]["long_name"]) ?? ""}';
     }
     setState(() {
       pickupLoading = false;
@@ -131,21 +131,7 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
                 GoogleMap(
                   initialCameraPosition: _initialCameraPosition,
                   zoomControlsEnabled: false,
-                  onTap: (tapPosition) {
-                    // Get.find<PropertyController>()
-                    //     .setLocation(tapPosition.latitude, tapPosition.longitude);
-                    // Future.delayed(const Duration(seconds: 2), () {
-                    //   Get.back();
-                    // });
 
-                    // setState(() {
-                    //   selectedPosition = tapPosition;
-                    //   myMarker = new Set();
-                    //   myMarker.add(Marker(
-                    //       markerId: MarkerId(tapPosition.toString()),
-                    //       position: tapPosition));
-                    // });
-                  },
                   onCameraMove: (position) {
                     // controller.address_latitude =
                     //     (position.target.latitude.toString());
@@ -199,11 +185,6 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
                               setState(() {
                                 pickupLoading = true;
                               });
-                              // print(controller.address_latitude);
-                              // print(controller.address_longitude);
-                              // Get.find<PropertyController>().setLocation(
-                              //     double.parse(controller.address_latitude!),
-                              //     double.parse(controller.address_longitude!));
                               if (widget.type == 0) {
                                 addShippmentProvider!.setPickupLatLang(
                                     selectedPosition!.latitude,

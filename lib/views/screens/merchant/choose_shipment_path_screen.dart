@@ -65,6 +65,12 @@ class _ChooseShippmentPathScreenState extends State<ChooseShippmentPathScreen> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    addShippmentProvider!.dispose();
+    super.dispose();
+  }
+
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
     LocationPermission permission;

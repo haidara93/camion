@@ -541,7 +541,7 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                             ],
                           ),
                           Text(
-                            "${AppLocalizations.of(context)!.translate('shipment_number')} \n#${shipment.id!}",
+                            "${AppLocalizations.of(context)!.translate('shipment_number')} \n${shipment.id!}",
                             style: TextStyle(
                               fontSize: 19.sp,
                               fontWeight: FontWeight.bold,
@@ -685,38 +685,71 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                 return Positioned(
                   top: -20,
                   right: MediaQuery.of(context).size.width * .45,
-                  child: GestureDetector(
-                    onTap: () {
-                      changeToHidden();
-                    },
-                    child: AbsorbPointer(
-                      absorbing: true,
-                      child: Container(
-                        height: 45.h,
-                        width: 45.w,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey[300]!,
-                            width: 1,
+                  child: panelState == PanelState.hidden
+                      ? GestureDetector(
+                          onTap: () {
+                            changeToOpen();
+                          },
+                          child: AbsorbPointer(
+                            absorbing: true,
+                            child: Container(
+                              height: 45.h,
+                              width: 45.w,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey[300]!,
+                                  width: 1,
+                                ),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(45),
+                              ),
+                              child: Center(
+                                child: SizedBox(
+                                  height: 25.h,
+                                  width: 25.w,
+                                  child: SvgPicture.asset(
+                                    "assets/icons/arrow_up.svg",
+                                    fit: BoxFit.contain,
+                                    height: 25.h,
+                                    width: 25.w,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(45),
-                        ),
-                        child: Center(
-                          child: SizedBox(
-                            height: 25.h,
-                            width: 25.w,
-                            child: SvgPicture.asset(
-                              "assets/icons/arrow_down.svg",
-                              fit: BoxFit.contain,
-                              height: 25.h,
-                              width: 25.w,
+                        )
+                      : GestureDetector(
+                          onTap: () {
+                            changeToHidden();
+                          },
+                          child: AbsorbPointer(
+                            absorbing: true,
+                            child: Container(
+                              height: 45.h,
+                              width: 45.w,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey[300]!,
+                                  width: 1,
+                                ),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(45),
+                              ),
+                              child: Center(
+                                child: SizedBox(
+                                  height: 25.h,
+                                  width: 25.w,
+                                  child: SvgPicture.asset(
+                                    "assets/icons/arrow_down.svg",
+                                    fit: BoxFit.contain,
+                                    height: 25.h,
+                                    width: 25.w,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
                 );
               },
             ),
@@ -780,7 +813,7 @@ class _ActiveShipmentDetailsFromNotificationScreenState
                         ],
                       ),
                       Text(
-                        "#${shipment.id!}",
+                        "${shipment.id!}",
                         style: TextStyle(
                           fontSize: 23.sp,
                           fontWeight: FontWeight.bold,
@@ -846,37 +879,71 @@ class _ActiveShipmentDetailsFromNotificationScreenState
               return Positioned(
                 top: -20,
                 right: MediaQuery.of(context).size.width * .45,
-                child: GestureDetector(
-                    onTap: () {
-                      changeToOpen();
-                    },
-                    child: AbsorbPointer(
-                      absorbing: true,
-                      child: Container(
-                        height: 45.h,
-                        width: 45.w,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey[300]!,
-                            width: 1,
+                child: panelState == PanelState.hidden
+                    ? GestureDetector(
+                        onTap: () {
+                          changeToOpen();
+                        },
+                        child: AbsorbPointer(
+                          absorbing: true,
+                          child: Container(
+                            height: 45.h,
+                            width: 45.w,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.grey[300]!,
+                                width: 1,
+                              ),
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(45),
+                            ),
+                            child: Center(
+                              child: SizedBox(
+                                height: 25.h,
+                                width: 25.w,
+                                child: SvgPicture.asset(
+                                  "assets/icons/arrow_up.svg",
+                                  fit: BoxFit.contain,
+                                  height: 25.h,
+                                  width: 25.w,
+                                ),
+                              ),
+                            ),
                           ),
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(45),
                         ),
-                        child: Center(
-                          child: SizedBox(
-                            height: 25.h,
-                            width: 25.w,
-                            child: SvgPicture.asset(
-                              "assets/icons/arrow_up.svg",
-                              fit: BoxFit.contain,
-                              height: 25.h,
-                              width: 25.w,
+                      )
+                    : GestureDetector(
+                        onTap: () {
+                          changeToHidden();
+                        },
+                        child: AbsorbPointer(
+                          absorbing: true,
+                          child: Container(
+                            height: 45.h,
+                            width: 45.w,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.grey[300]!,
+                                width: 1,
+                              ),
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(45),
+                            ),
+                            child: Center(
+                              child: SizedBox(
+                                height: 25.h,
+                                width: 25.w,
+                                child: SvgPicture.asset(
+                                  "assets/icons/arrow_down.svg",
+                                  fit: BoxFit.contain,
+                                  height: 25.h,
+                                  width: 25.w,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    )),
               );
             },
           ),

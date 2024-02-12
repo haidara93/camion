@@ -9,4 +9,6 @@ class DrawRouteState extends Equatable {
 
 class DrawRouteInitial extends DrawRouteState {}
 
+class DrawRouteLoading extends DrawRouteState {}
+
 class DrawRouteSuccess extends DrawRouteState {}

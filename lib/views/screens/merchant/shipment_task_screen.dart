@@ -5,6 +5,7 @@ import 'package:camion/data/models/instruction_model.dart';
 import 'package:camion/data/models/shipment_model.dart';
 import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/merchant/shipment_task_details_screen.dart';
+import 'package:camion/views/widgets/shipment_path_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -202,130 +203,42 @@ class _ShipmentTaskScreenState extends State<ShipmentTaskScreen>
                                                   SizedBox(
                                                     height: 7.h,
                                                   ),
-                                                  SizedBox(
-                                                    height: (state
-                                                                    .shipments[
-                                                                        index]
-                                                                    .pickupCityLocation!
-                                                                    .length >
-                                                                11 ||
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      ShipmentPathWidget(
+                                                        loadDate: setLoadDate(
                                                             state
-                                                                    .shipments[
-                                                                        index]
-                                                                    .deliveryCityLocation!
-                                                                    .length >
-                                                                11)
-                                                        ? 100
-                                                        : 70.h,
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        TimelineTile(
-                                                          direction:
-                                                              Axis.horizontal,
-                                                          oppositeContents:
-                                                              Text(
-                                                            setLoadDate(state
                                                                 .shipments[
                                                                     index]
                                                                 .pickupDate!),
-                                                          ),
-                                                          contents: SizedBox(
-                                                            width: MediaQuery.of(
+                                                        pickupName: state
+                                                            .shipments[index]
+                                                            .pickupCityLocation!,
+                                                        deliveryName: state
+                                                            .shipments[index]
+                                                            .deliveryCityLocation!,
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            .8,
+                                                        pathwidth:
+                                                            MediaQuery.of(
                                                                         context)
                                                                     .size
                                                                     .width *
-                                                                .20,
-                                                            child: Text(
-                                                              state
-                                                                  .shipments[
-                                                                      index]
-                                                                  .pickupCityLocation!,
-                                                            ),
-                                                          ),
-                                                          node: SizedBox(
-                                                            width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                .25,
-                                                            child: TimelineNode(
-                                                              indicator: DotIndicator(
-                                                                  color: AppColor
-                                                                      .deepYellow),
-                                                              // startConnector: SolidLineConnector(),
-                                                              endConnector:
-                                                                  DashedLineConnector(
-                                                                      color: AppColor
-                                                                          .deepYellow),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        TimelineTile(
-                                                          direction:
-                                                              Axis.horizontal,
-                                                          oppositeContents:
-                                                              const SizedBox
-                                                                  .shrink(),
-                                                          contents:
-                                                              const SizedBox
-                                                                  .shrink(),
-                                                          node: SizedBox(
-                                                            width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                .25,
-                                                            child: DashedLineConnector(
-                                                                color: AppColor
-                                                                    .deepYellow),
-                                                          ),
-                                                        ),
-                                                        TimelineTile(
-                                                          direction:
-                                                              Axis.horizontal,
-                                                          oppositeContents:
-                                                              Text(
-                                                            setLoadDate(state
-                                                                .shipments[
-                                                                    index]
-                                                                .pickupDate!),
-                                                          ),
-                                                          contents: SizedBox(
-                                                            width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                .20,
-                                                            child: Text(
-                                                              state
-                                                                  .shipments[
-                                                                      index]
-                                                                  .deliveryCityLocation!,
-                                                            ),
-                                                          ),
-                                                          node: SizedBox(
-                                                            width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                .2,
-                                                            child: TimelineNode(
-                                                              indicator: DotIndicator(
-                                                                  color: AppColor
-                                                                      .deepYellow),
-                                                              startConnector:
-                                                                  DashedLineConnector(
-                                                                      color: AppColor
-                                                                          .deepYellow),
-                                                              // endConnector: SolidLineConnector(),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
+                                                                .7,
+                                                      ).animate().slideX(
+                                                          duration: 300.ms,
+                                                          delay: 0.ms,
+                                                          begin: 1,
+                                                          end: 0,
+                                                          curve: Curves
+                                                              .easeInOutSine),
+                                                    ],
                                                   ),
                                                   SizedBox(
                                                     height: 7.h,

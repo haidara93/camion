@@ -480,7 +480,7 @@ class _ActiveShipmentDetailsScreenState
                             ],
                           ),
                           Text(
-                            "${AppLocalizations.of(context)!.translate('shipment_number')} \n#${widget.shipment.id!}",
+                            "${AppLocalizations.of(context)!.translate('shipment_number')} \n${widget.shipment.id!}",
                             style: TextStyle(
                               fontSize: 19.sp,
                               fontWeight: FontWeight.bold,
@@ -746,7 +746,7 @@ class _ActiveShipmentDetailsScreenState
                         ],
                       ),
                       Text(
-                        "#${widget.shipment.id!}",
+                        "${widget.shipment.id!}",
                         style: TextStyle(
                           fontSize: 23.sp,
                           fontWeight: FontWeight.bold,

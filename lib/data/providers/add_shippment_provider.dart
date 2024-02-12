@@ -116,6 +116,10 @@ class AddShippmentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void dispose() {
+    _mapController.dispose();
+  }
+
   initForm() {
     _pickup_location_name = "";
     _delivery_location_name = "";
@@ -161,7 +165,6 @@ class AddShippmentProvider extends ChangeNotifier {
   }
 
   initMapbounds() {
-    print("asd");
     if (_pickup_controller.text.isNotEmpty &&
         _delivery_controller.text.isNotEmpty) {
       List<Marker> markers = [];
@@ -190,8 +193,10 @@ class AddShippmentProvider extends ChangeNotifier {
         southwest: LatLng(leftMost, bottomMost),
       );
       var cameraUpdate = CameraUpdate.newLatLngBounds(_bounds, 50.0);
+      print("asd");
       _mapController.animateCamera(cameraUpdate);
-      notifyListeners();
+      print("asd");
+      // notifyListeners();
     }
   }
 
@@ -384,6 +389,7 @@ class AddShippmentProvider extends ChangeNotifier {
     _delivery_lat = lat;
     _delivery_lang = lang;
     _delivery_latlng = LatLng(lat, lang);
+    notifyListeners();
     getPolyPoints();
     List<Marker> markers = [];
     markers.add(

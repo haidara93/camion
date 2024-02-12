@@ -96,6 +96,7 @@
     "charger":"Shipper",
     "mediator":"Forwarder",
     "reciever":"Consignee",
+    "charger_details":"Shipper Details",
     "charger_info":"Shipper Info",
     "reciever_info":"Consignee Info",
     "commodity_info":"Commodity Info",
