@@ -143,7 +143,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                         labelText: AppLocalizations.of(context)!
                                             .translate('username'),
                                         floatingLabelStyle: TextStyle(
-                                          color: Colors.grey[400],
+                                          color: AppColor.deepYellow,
                                           fontSize: 24.sp,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -197,7 +197,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                         labelText: AppLocalizations.of(context)!
                                             .translate('password'),
                                         floatingLabelStyle: TextStyle(
-                                          color: Colors.grey[400],
+                                          color: AppColor.deepYellow,
                                           fontSize: 24.sp,
                                           fontWeight: FontWeight.bold,
                                         ),

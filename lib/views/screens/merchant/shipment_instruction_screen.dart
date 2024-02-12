@@ -367,7 +367,7 @@ class _ShipmentInstructionScreenState extends State<ShipmentInstructionScreen> {
                                 width: MediaQuery.of(context).size.width * .6,
                                 child: Text(
                                     AppLocalizations.of(context)!
-                                        .translate('commodity_info'),
+                                        .translate('charger_details'),
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: 17,
