@@ -15,6 +15,7 @@ import 'package:camion/views/widgets/custom_app_bar.dart';
 import 'package:camion/views/widgets/custom_botton.dart';
 import 'package:camion/views/widgets/loading_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:timelines/timelines.dart';
+import 'package:camion/views/widgets/shipment_path_widget.dart';
 
 class ShipmentPaymentScreen extends StatefulWidget {
   final Shipment shipment;
@@ -142,81 +144,25 @@ class _ShipmentPaymentScreenState extends State<ShipmentPaymentScreen> {
                                       SizedBox(
                                         height: 7.h,
                                       ),
-                                      SizedBox(
-                                        height: 70.h,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            TimelineTile(
-                                              direction: Axis.horizontal,
-                                              oppositeContents: Text(
-                                                '${widget.shipment.pickupDate!.year.toString()}-${widget.shipment.pickupDate!.month.toString()}-${widget.shipment.pickupDate!.day.toString()}',
-                                              ),
-                                              contents: Text(
-                                                widget.shipment
-                                                    .pickupCityLocation!,
-                                              ),
-                                              node: SizedBox(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    .26,
-                                                child: TimelineNode(
-                                                  indicator: DotIndicator(
-                                                      color:
-                                                          AppColor.deepYellow),
-                                                  // startConnector: SolidLineConnector(),
-                                                  endConnector:
-                                                      DashedLineConnector(
-                                                          color: AppColor
-                                                              .deepYellow),
-                                                ),
-                                              ),
-                                            ),
-                                            TimelineTile(
-                                              direction: Axis.horizontal,
-                                              oppositeContents:
-                                                  const SizedBox.shrink(),
-                                              contents: const SizedBox.shrink(),
-                                              node: SizedBox(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    .26,
-                                                child: DashedLineConnector(
-                                                    color: AppColor.deepYellow),
-                                              ),
-                                            ),
-                                            TimelineTile(
-                                              direction: Axis.horizontal,
-                                              oppositeContents: Text(
-                                                '${widget.shipment.pickupDate!.year.toString()}-${widget.shipment.pickupDate!.month.toString()}-${widget.shipment.pickupDate!.day.toString()}',
-                                              ),
-                                              contents: Text(
-                                                widget.shipment
-                                                    .deliveryCityLocation!,
-                                              ),
-                                              node: SizedBox(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    .3,
-                                                child: TimelineNode(
-                                                  indicator: DotIndicator(
-                                                      color:
-                                                          AppColor.deepYellow),
-                                                  startConnector:
-                                                      DashedLineConnector(
-                                                          color: AppColor
-                                                              .deepYellow),
-                                                  // endConnector: SolidLineConnector(),
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
+                                      ShipmentPathWidget(
+                                        loadDate: setLoadDate(
+                                            widget.shipment.pickupDate!),
+                                        pickupName:
+                                            widget.shipment.pickupCityLocation!,
+                                        deliveryName: widget
+                                            .shipment.deliveryCityLocation!,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                .8,
+                                        pathwidth:
+                                            MediaQuery.of(context).size.width *
+                                                .7,
+                                      ).animate().slideX(
+                                          duration: 300.ms,
+                                          delay: 0.ms,
+                                          begin: 1,
+                                          end: 0,
+                                          curve: Curves.easeInOutSine),
                                       SizedBox(
                                         height: 7.h,
                                       ),

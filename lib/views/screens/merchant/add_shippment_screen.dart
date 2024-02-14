@@ -19,7 +19,6 @@ import 'package:camion/data/services/places_service.dart';
 import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/helpers/formatter.dart';
 import 'package:camion/views/screens/merchant/add_shippment_pickup_map.dart';
-import 'package:camion/views/screens/merchant/choose_shipment_path_screen.dart';
 import 'package:camion/views/screens/merchant/shipment_map_preview.dart';
 import 'package:camion/views/screens/select_truck_screen.dart';
 import 'package:camion/views/widgets/custom_botton.dart';
@@ -30,7 +29,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ensure_visible_when_focused/ensure_visible_when_focused.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -451,7 +449,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                               style:
                                                                   const TextStyle(
                                                                       fontSize:
-                                                                          18),
+                                                                          20),
                                                               decoration:
                                                                   InputDecoration(
                                                                 labelText: AppLocalizations.of(
@@ -581,7 +579,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                               style:
                                                                   const TextStyle(
                                                                       fontSize:
-                                                                          18),
+                                                                          20),
                                                               decoration:
                                                                   InputDecoration(
                                                                 labelText: AppLocalizations.of(
@@ -1542,6 +1540,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                   ).then((value) => FocusManager
                                                       .instance.primaryFocus
                                                       ?.unfocus());
+
+                                                  print(
+                                                      "delivry address co2 evaluation");
                                                   // Get.to(SearchFilterView());
                                                   Future.delayed(const Duration(
                                                           milliseconds: 1500))
@@ -2365,7 +2366,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                 child: Text(
                                   localeState.value.languageCode == 'en'
                                       ? "${addShippmentProvider!.co2report!.duration}"
-                                      : "${addShippmentProvider!.co2report!.duration!.replaceAll(RegExp('mins'), 'دقيقة')}",
+                                      : "${addShippmentProvider!.co2report!.duration!.replaceAll(RegExp('mins'), 'دقيقة').replaceAll(RegExp('hours'), 'ساعة')}",
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 17,
@@ -2489,6 +2490,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
     setState(() {
       co2Loading = false;
     });
+    print("calculation end");
   }
 
   Future<bool> _handleLocationPermission() async {
@@ -2644,5 +2646,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
       deliveryLoading = false;
     });
     calculateCo2Report();
+    if (evaluateCo2()) {
+      calculateCo2Report();
+    }
   }
 }

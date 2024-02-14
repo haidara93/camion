@@ -43,6 +43,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // you need to initialize firebase first
@@ -63,7 +64,8 @@ void main() async {
   // });
   final LocaleCubit localeCubit = LocaleCubit();
   await localeCubit.initializeFromPreferences();
-
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String lang = prefs.getString("language") ?? "en";
   Stripe.publishableKey =
       "pk_test_51IZr3HApYMiHRCEPfSdLaWzGSzImzW2kc61cSI4mYf3JptVXsfFj2SG1xcBLBgLVdvW8EXckH50FgzKZeNp454dK00xplc6hCI";
   Stripe.merchantIdentifier = "AcrossMena";
@@ -76,11 +78,14 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  runApp(MyApp());
+  runApp(MyApp(
+    lang: lang,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  final String? lang;
+  MyApp({super.key, required this.lang});
   final Connectivity connectivity = Connectivity();
 
   // This widget is the root of your application.

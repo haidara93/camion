@@ -96,15 +96,15 @@ class _ShipmentMapPreviewState extends State<ShipmentMapPreview> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            "Pick Location",
-            style: TextStyle(
-              // color: AppColor.lightBlue,
-              fontSize: 19.sp,
-              fontWeight: FontWeight.bold,
+            // title: Text(
+            //   "Pick Location",
+            //   style: TextStyle(
+            //     // color: AppColor.lightBlue,
+            //     fontSize: 19.sp,
+            //     fontWeight: FontWeight.bold,
+            //   ),
+            // ),
             ),
-          ),
-        ),
         body: SafeArea(
           child: Stack(
             alignment: Alignment.center,
@@ -139,7 +139,7 @@ class _ShipmentMapPreviewState extends State<ShipmentMapPreview> {
                         shippmentProvider.initMapbounds();
                       },
                       compassEnabled: true,
-                      rotateGesturesEnabled: false,
+                      // rotateGesturesEnabled: false,
                       // mapType: controller.currentMapType,
                       mapToolbarEnabled: true,
                       polylines: shippmentProvider
@@ -162,33 +162,33 @@ class _ShipmentMapPreviewState extends State<ShipmentMapPreview> {
                   ],
                 );
               }),
-              Positioned(
-                bottom: 25.h,
-                left: 20.w,
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    // FloatingActionButton(
-                    //   foregroundColor: Colors.black,
-                    //   onPressed: () {
-                    //     controller.gotolocation();
-                    //   },
-                    //   child: const Icon(Icons.center_focus_strong),
-                    // ),
-                    // const SizedBox(
-                    //   height: 10,
-                    // ),
-                    // FloatingActionButton(
-                    //   tooltip: "تغيير نمط الخريطة",
-                    //   foregroundColor: Colors.black,
-                    //   onPressed: () => controller.changeMapType(),
-                    //   child: controller.currentMapType == MapType.normal
-                    //       ? Image.asset("assets/icons/sattalite_map.png")
-                    //       : Image.asset("assets/icons/normal_map.png"),
-                    // ),
-                  ],
-                ),
-              ),
+              // Positioned(
+              //   bottom: 25.h,
+              //   left: 20.w,
+              //   child: Column(
+              //     mainAxisAlignment: MainAxisAlignment.end,
+              //     children: [
+              // FloatingActionButton(
+              //   foregroundColor: Colors.black,
+              //   onPressed: () {
+              //     controller.gotolocation();
+              //   },
+              //   child: const Icon(Icons.center_focus_strong),
+              // ),
+              // const SizedBox(
+              //   height: 10,
+              // ),
+              // FloatingActionButton(
+              //   tooltip: "تغيير نمط الخريطة",
+              //   foregroundColor: Colors.black,
+              //   onPressed: () {},
+              //   child: controller.currentMapType == MapType.normal
+              //       ? Image.asset("assets/icons/sattalite_map.png")
+              //       : Image.asset("assets/icons/normal_map.png"),
+              // ),
+              //   ],
+              // ),
+              // ),
             ],
           ),
         ),

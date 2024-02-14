@@ -15,7 +15,7 @@ class LoadingIndicator extends StatelessWidget {
       case TargetPlatform.linux:
       case TargetPlatform.windows:
       default:
-        return const CircularProgressIndicator();
+        return const CupertinoActivityIndicator();
     }
   }
 

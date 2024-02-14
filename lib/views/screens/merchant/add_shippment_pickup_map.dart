@@ -9,6 +9,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:camion/views/widgets/custom_botton.dart';
+import 'package:camion/data/models/co2_report.dart';
+import 'package:camion/data/services/co2_service.dart';
 
 class ShippmentPickUpMapScreen extends StatefulWidget {
   int type;
@@ -71,6 +73,60 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
     super.initState();
   }
 
+  bool evaluateCo2() {
+    if (addShippmentProvider!.delivery_location_name.isNotEmpty &&
+        addShippmentProvider!.pickup_location_name.isNotEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void calculateCo2Report() {
+    ShippmentDetail detail = ShippmentDetail();
+    detail.legs = [];
+    detail.load = [];
+    Legs leg = Legs();
+    leg.mode = "LTL";
+    print("report!.title!");
+    Origin origin = Origin();
+    leg.origin = origin;
+    Origin destination = Origin();
+    leg.destination = destination;
+
+    leg.origin!.latitude = addShippmentProvider!.pickup_lat;
+    leg.origin!.longitude = addShippmentProvider!.pickup_lang;
+    leg.destination!.latitude = addShippmentProvider!.delivery_lat;
+    leg.destination!.longitude = addShippmentProvider!.delivery_lang;
+
+    detail.legs!.add(leg);
+
+    // for (var i = 0; i < commodityWeight_controllers.length; i++) {
+    // }
+    Load load = Load();
+    load.unitWeightKg = 25000;
+    load.unitType = "pallets";
+    detail.load!.add(load);
+
+    // for (var i = 0; i < commodityWeight_controllers.length; i++) {
+    //   Load load = Load();
+    //   load.unitWeightKg =
+    //       double.parse(commodityWeight_controllers[i].text.replaceAll(",", ""));
+    //   load.unitType = "pallets";
+    //   detail.load!.add(load);
+    // }
+
+    Co2Service.getCo2Calculate(
+            detail,
+            LatLng(addShippmentProvider!.pickup_lat,
+                addShippmentProvider!.pickup_lang),
+            LatLng(addShippmentProvider!.delivery_lat,
+                addShippmentProvider!.delivery_lang))
+        .then((value) => addShippmentProvider!.setCo2Report(value!));
+
+    print("calculation end");
+  }
+
   Future<void> _getAddressForPickupFromLatLng(LatLng position) async {
     var response = await http.get(
       Uri.parse(
@@ -87,6 +143,10 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
     setState(() {
       pickupLoading = false;
     });
+    calculateCo2Report();
+    if (evaluateCo2()) {
+      calculateCo2Report();
+    }
     Navigator.pop(context);
   }
 
@@ -105,6 +165,10 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
     setState(() {
       pickupLoading = false;
     });
+    calculateCo2Report();
+    if (evaluateCo2()) {
+      calculateCo2Report();
+    }
     Navigator.pop(context);
   }
 

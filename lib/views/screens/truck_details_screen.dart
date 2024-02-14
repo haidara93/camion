@@ -542,7 +542,7 @@ class _TruckDetailsScreenState extends State<TruckDetailsScreen> {
                           ],
                         ),
                         SizedBox(
-                          height: 50.h,
+                          height: 5.h,
                         ),
                       ],
                     ),
