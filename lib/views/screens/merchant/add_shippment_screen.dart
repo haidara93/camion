@@ -2334,107 +2334,111 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
             addShippmentProvider!.co2report != null
         ? Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Container(
+            child: Card(
               // height: 40.h,
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: AppColor.deepBlack,
+              elevation: 1,
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
               child: BlocBuilder<LocaleCubit, LocaleState>(
                 builder: (context, localeState) {
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 30,
-                              width: 30,
-                              child: SvgPicture.asset("assets/icons/time.svg"),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            SizedBox(
-                              // width: MediaQuery.of(context).size.width * .4,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 5.0),
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: SvgPicture.asset(
+                                    "assets/icons/distance.svg"),
+                              ),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * .75,
                                 child: Text(
                                   localeState.value.languageCode == 'en'
-                                      ? "${addShippmentProvider!.co2report!.duration}"
-                                      : "${addShippmentProvider!.co2report!.duration!.replaceAll(RegExp('mins'), 'دقيقة').replaceAll(RegExp('hours'), 'ساعة')}",
+                                      ? "${addShippmentProvider!.co2report!.distance}"
+                                      : "${addShippmentProvider!.co2report!.distance!.replaceAll(RegExp('km'), 'كم')}",
                                   style: const TextStyle(
-                                    color: Colors.white,
                                     fontSize: 17,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            SizedBox(
-                              height: 30,
-                              width: 30,
-                              child:
-                                  SvgPicture.asset("assets/icons/distance.svg"),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .3,
-                              child: Text(
-                                localeState.value.languageCode == 'en'
-                                    ? "${addShippmentProvider!.co2report!.distance}"
-                                    : "${addShippmentProvider!.co2report!.distance!.replaceAll(RegExp('km'), 'كم')}",
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
+                            ],
+                          ),
+                        ),
+                        Divider(
+                          color: AppColor.lightGrey,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 30,
+                                width: 30,
+                                child:
+                                    SvgPicture.asset("assets/icons/time.svg"),
+                              ),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * .75,
+                                child: Text(
+                                  localeState.value.languageCode == 'en'
+                                      ? "${addShippmentProvider!.co2report!.duration}"
+                                      : "${addShippmentProvider!.co2report!.duration!.replaceAll(RegExp('mins'), 'دقيقة').replaceAll(RegExp('hours'), 'ساعة')}",
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      Divider(
-                        color: AppColor.lightGrey,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 30,
-                              width: 30,
-                              child: SvgPicture.asset(
-                                  "assets/icons/co2fingerprint.svg"),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .75,
-                              child: Text(
-                                "${AppLocalizations.of(context)!.translate('total_co2')}: ${f.format(addShippmentProvider!.co2report!.et!.toInt())} ${localeState.value.languageCode == 'en' ? "kg" : "كغ"}",
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
+                        Divider(
+                          color: AppColor.lightGrey,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: SvgPicture.asset(
+                                    "assets/icons/co2fingerprint.svg"),
+                              ),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * .75,
+                                child: Text(
+                                  "${AppLocalizations.of(context)!.translate('total_co2')}: ${f.format(addShippmentProvider!.co2report!.et!.toInt())} ${localeState.value.languageCode == 'en' ? "kg" : "كغ"}",
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   );
                 },
               ),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/data/models/user_model.dart';
 import 'package:camion/helpers/http_helper.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -87,6 +88,8 @@ class AuthRepository {
   }
 
   Future<bool> isAuthenticated() async {
+    final LocaleCubit localeCubit = LocaleCubit();
+    await localeCubit.initializeFromPreferences();
     var token = await jwtOrEmpty;
 
     if (token != "") {
