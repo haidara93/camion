@@ -1,4 +1,4 @@
-import 'package:camion/business_logic/bloc/notification_bloc.dart';
+import 'package:camion/business_logic/bloc/core/notification_bloc.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/data/providers/notification_provider.dart';
 import 'package:camion/helpers/color_constants.dart';

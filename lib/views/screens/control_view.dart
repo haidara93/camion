@@ -1,5 +1,5 @@
-import 'package:camion/business_logic/bloc/auth_bloc.dart';
-import 'package:camion/business_logic/bloc/notification_bloc.dart';
+import 'package:camion/business_logic/bloc/core/auth_bloc.dart';
+import 'package:camion/business_logic/bloc/core/notification_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/active_shipment_list_bloc.dart';
 import 'package:camion/business_logic/cubit/internet_cubit.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';

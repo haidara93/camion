@@ -10,7 +10,7 @@ import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/merchant/add_shippment_screen.dart';
 import 'package:camion/views/screens/main_screen.dart';
 import 'package:camion/views/screens/shippment_log_screen.dart';
-import 'package:camion/views/screens/tracking_shippment_screen.dart';
+import 'package:camion/views/screens/driver/tracking_shippment_screen.dart';
 import 'package:camion/views/widgets/custom_app_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -151,9 +151,7 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen>
           setState(() {
             title = AppLocalizations.of(context)!.translate('tracking');
 
-            currentScreen = TrackingShippmentScreen(
-              user_id: "user1",
-            );
+            currentScreen = ActiveShipmentDetailsScreen();
           });
           break;
         }

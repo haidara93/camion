@@ -2,19 +2,22 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:camion/Localization/app_localizations.dart';
-import 'package:camion/business_logic/bloc/auth_bloc.dart';
+import 'package:camion/business_logic/bloc/core/auth_bloc.dart';
+import 'package:camion/business_logic/bloc/driver_shipments/driver_active_shipment_bloc.dart';
+import 'package:camion/business_logic/bloc/driver_shipments/incoming_shipments_bloc.dart';
 import 'package:camion/business_logic/bloc/post_bloc.dart';
-import 'package:camion/business_logic/bloc/shipments/shipment_list_bloc.dart';
+import 'package:camion/business_logic/bloc/driver_shipments/unassigned_shipment_list_bloc.dart';
 import 'package:camion/business_logic/cubit/bottom_nav_bar_cubit.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/data/models/user_model.dart';
 import 'package:camion/data/services/fcm_service.dart';
 import 'package:camion/helpers/color_constants.dart';
-import 'package:camion/views/screens/merchant/add_shippment_screen.dart';
+import 'package:camion/views/screens/driver/incoming_shipment_screen.dart';
+import 'package:camion/views/screens/driver/search_shipment_screen.dart';
 import 'package:camion/views/screens/main_screen.dart';
-import 'package:camion/views/screens/shippment_log_screen.dart';
-import 'package:camion/views/screens/tracking_shippment_screen.dart';
+import 'package:camion/views/screens/driver/tracking_shippment_screen.dart';
 import 'package:camion/views/widgets/custom_app_bar.dart';
+import 'package:camion/views/widgets/loading_indicator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -96,12 +99,23 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
     });
   }
 
+  bool userloading = true;
+  late UserModel _usermodel;
+  getUserData() async {
+    prefs = await SharedPreferences.getInstance();
+    _usermodel =
+        UserModel.fromJson(jsonDecode(prefs.getString("userProfile")!));
+    setState(() {
+      userloading = false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    print("ert");
     _getLocation();
     _listenLocation();
+    getUserData();
     BlocProvider.of<PostBloc>(context).add(PostLoadEvent());
 
     notificationServices.requestNotificationPermission();
@@ -152,30 +166,32 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
         }
       case 1:
         {
-          BlocProvider.of<ShipmentListBloc>(context)
-              .add(ShipmentListLoadEvent("P"));
+          BlocProvider.of<IncomingShipmentsBloc>(context)
+              .add(IncomingShipmentsLoadEvent("P"));
           setState(() {
-            title = AppLocalizations.of(context)!.translate('shippment_log');
-            currentScreen = ShippmentLogScreen();
+            title = AppLocalizations.of(context)!.translate('incoming_orders');
+            currentScreen = IncomingShippmentLogScreen();
           });
           break;
         }
       case 2:
         {
+          BlocProvider.of<UnassignedShipmentListBloc>(context)
+              .add(UnassignedShipmentListLoadEvent());
           setState(() {
-            title = AppLocalizations.of(context)!.translate('order_shippment');
-            currentScreen = AddShippmentScreen();
+            title = AppLocalizations.of(context)!.translate('shipment_search');
+            currentScreen = SearchShippmentScreen();
           });
           break;
         }
       case 3:
         {
+          BlocProvider.of<DriverActiveShipmentBloc>(context)
+              .add(DriverActiveShipmentLoadEvent("A"));
           setState(() {
-            title = AppLocalizations.of(context)!.translate('tracking');
+            title = AppLocalizations.of(context)!.translate('my_path');
 
-            currentScreen = TrackingShippmentScreen(
-              user_id: "user1",
-            );
+            currentScreen = ActiveShipmentDetailsScreen();
           });
           break;
         }
@@ -219,14 +235,44 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                           CircleAvatar(
                             backgroundColor: AppColor.deepYellow,
                             radius: 35.h,
+                            child: userloading
+                                ? const Center(
+                                    child: LoadingIndicator(),
+                                  )
+                                : (_usermodel.image!.isNotEmpty ||
+                                        _usermodel.image! != null)
+                                    ? ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(180),
+                                        child: Image.network(
+                                          _usermodel.image!,
+                                          fit: BoxFit.fill,
+                                        ),
+                                      )
+                                    : Center(
+                                        child: Text(
+                                          "${_usermodel.firstName![0].toUpperCase()} ${_usermodel.lastName![0].toUpperCase()}",
+                                          style: TextStyle(
+                                            fontSize: 28.sp,
+                                          ),
+                                        ),
+                                      ),
                           ),
-                          Text(
-                            "Morad Kara",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 26.sp,
-                                fontWeight: FontWeight.bold),
-                          )
+                          userloading
+                              ? Text(
+                                  "",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 26.sp,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              : Text(
+                                  "${_usermodel.firstName!} ${_usermodel.lastName!}",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 26.sp,
+                                      fontWeight: FontWeight.bold),
+                                )
                         ],
                       ),
                       SizedBox(
@@ -249,8 +295,43 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                             prefs.setString("language", "en");
                           }
                           Future.delayed(const Duration(milliseconds: 500))
-                              .then((value) =>
-                                  _scaffoldKey.currentState!.closeDrawer());
+                              .then((value) {
+                            _scaffoldKey.currentState!.closeDrawer();
+                            switch (navigationValue) {
+                              case 0:
+                                {
+                                  setState(() {
+                                    title = AppLocalizations.of(context)!
+                                        .translate('home');
+                                  });
+                                  break;
+                                }
+                              case 1:
+                                {
+                                  setState(() {
+                                    title = AppLocalizations.of(context)!
+                                        .translate('incoming_orders');
+                                  });
+                                  break;
+                                }
+                              case 2:
+                                {
+                                  setState(() {
+                                    title = AppLocalizations.of(context)!
+                                        .translate('shipment_search');
+                                  });
+                                  break;
+                                }
+                              case 3:
+                                {
+                                  setState(() {
+                                    title = AppLocalizations.of(context)!
+                                        .translate('my_path');
+                                  });
+                                  break;
+                                }
+                            }
+                          });
                         },
                         child: ListTile(
                           leading: SvgPicture.asset(
@@ -259,8 +340,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                           ),
                           title: Text(
                             localeState.value.languageCode != 'en'
-                                ? "اللغة: English"
-                                : "language: العربية",
+                                ? "English"
+                                : "العربية",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16.sp,
@@ -464,12 +545,21 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                                                 height: 4,
                                               )
                                             : const SizedBox.shrink(),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .translate('shippment_log'),
-                                          style: TextStyle(
-                                              color: AppColor.deepYellow,
-                                              fontSize: 15.sp),
+                                        FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 1,
+                                            ),
+                                            child: Text(
+                                              AppLocalizations.of(context)!
+                                                  .translate('incoming_orders'),
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  color: AppColor.deepYellow,
+                                                  fontSize: 15.sp),
+                                            ),
+                                          ),
                                         )
                                       ],
                                     )
@@ -486,12 +576,20 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                                                 height: 4,
                                               )
                                             : const SizedBox.shrink(),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .translate('shippment_log'),
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 15.sp),
+                                        FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 1,
+                                            ),
+                                            child: Text(
+                                              AppLocalizations.of(context)!
+                                                  .translate('incoming_orders'),
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15.sp),
+                                            ),
+                                          ),
                                         )
                                       ],
                                     ),
@@ -515,12 +613,16 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                                             : const SizedBox.shrink(),
                                         FittedBox(
                                           fit: BoxFit.scaleDown,
-                                          child: Text(
-                                            AppLocalizations.of(context)!
-                                                .translate('order_shippment'),
-                                            style: TextStyle(
-                                                color: AppColor.deepYellow,
-                                                fontSize: 15.sp),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 1),
+                                            child: Text(
+                                              AppLocalizations.of(context)!
+                                                  .translate('shipment_search'),
+                                              style: TextStyle(
+                                                  color: AppColor.deepYellow,
+                                                  fontSize: 15.sp),
+                                            ),
                                           ),
                                         )
                                       ],
@@ -540,12 +642,16 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                                             : const SizedBox.shrink(),
                                         FittedBox(
                                           fit: BoxFit.scaleDown,
-                                          child: Text(
-                                            AppLocalizations.of(context)!
-                                                .translate('order_shippment'),
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 15.sp),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 1),
+                                            child: Text(
+                                              AppLocalizations.of(context)!
+                                                  .translate('shipment_search'),
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15.sp),
+                                            ),
                                           ),
                                         )
                                       ],
@@ -570,7 +676,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                                             : const SizedBox.shrink(),
                                         Text(
                                           AppLocalizations.of(context)!
-                                              .translate('tracking'),
+                                              .translate('my_path'),
                                           style: TextStyle(
                                               color: AppColor.deepYellow,
                                               fontSize: 15.sp),
@@ -592,7 +698,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                                             : const SizedBox.shrink(),
                                         Text(
                                           AppLocalizations.of(context)!
-                                              .translate('tracking'),
+                                              .translate('my_path'),
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 15.sp),

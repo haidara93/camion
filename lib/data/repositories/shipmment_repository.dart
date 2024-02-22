@@ -19,8 +19,55 @@ class ShippmentRerository {
     shipments = [];
     var prefs = await SharedPreferences.getInstance();
     var jwt = prefs.getString("token");
+    var merchant = prefs.getInt("merchant") ?? 0;
+
     var response = await HttpHelper.get(
-      "$SHIPPMENTS_ENDPOINT?shipment_status=$status",
+      "$SHIPPMENTS_ENDPOINT?shipment_status=$status&merchant=$merchant&driver=",
+      apiToken: jwt,
+    );
+    var myDataString = utf8.decode(response.bodyBytes);
+    var json = jsonDecode(myDataString);
+    if (response.statusCode == 200) {
+      for (var element in json) {
+        shipments.add(Shipment.fromJson(element));
+      }
+
+      return shipments.reversed.toList();
+    } else {
+      return shipments;
+    }
+  }
+
+  Future<List<Shipment>> getDriverShipmentList(String status) async {
+    shipments = [];
+    var prefs = await SharedPreferences.getInstance();
+    var jwt = prefs.getString("token");
+    var driver = prefs.getInt("truckuser") ?? 0;
+    print(driver.toString());
+
+    var response = await HttpHelper.get(
+      "$SHIPPMENTS_ENDPOINT?shipment_status=$status&merchant=&driver=$driver",
+      apiToken: jwt,
+    );
+    var myDataString = utf8.decode(response.bodyBytes);
+    var json = jsonDecode(myDataString);
+    if (response.statusCode == 200) {
+      for (var element in json) {
+        shipments.add(Shipment.fromJson(element));
+      }
+
+      return shipments.reversed.toList();
+    } else {
+      return shipments;
+    }
+  }
+
+  Future<List<Shipment>> getUnAssignedShipmentList() async {
+    shipments = [];
+    var prefs = await SharedPreferences.getInstance();
+    var jwt = prefs.getString("token");
+    var response = await HttpHelper.get(
+      "${SHIPPMENTS_ENDPOINT}no_driver_shipments/",
       apiToken: jwt,
     );
     var myDataString = utf8.decode(response.bodyBytes);
@@ -182,15 +229,30 @@ class ShippmentRerository {
     }
   }
 
-  Future<bool> assignDriver(int driver) async {
+  Future<bool> assignShipment(int shipmentId, int driver) async {
     prefs = await SharedPreferences.getInstance();
     var token = prefs.getString("token");
     var response = await HttpHelper.patch(
-      "$SHIPPMENTS_ENDPOINT$driver/assign_driver/",
+      "$SHIPPMENTS_ENDPOINT$shipmentId/assign_shipment/",
       {"driver": driver},
       apiToken: token,
     );
     print(response.statusCode);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> updateShipmentStatus(int id, String status) async {
+    var prefs = await SharedPreferences.getInstance();
+    var jwt = prefs.getString("token");
+    var response = await HttpHelper.patch(
+      "$SHIPPMENTS_ENDPOINT$id/",
+      {"shipment_status": status},
+      apiToken: jwt,
+    );
     if (response.statusCode == 200) {
       return true;
     } else {

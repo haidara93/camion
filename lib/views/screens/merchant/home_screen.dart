@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:camion/Localization/app_localizations.dart';
-import 'package:camion/business_logic/bloc/auth_bloc.dart';
+import 'package:camion/business_logic/bloc/core/auth_bloc.dart';
 import 'package:camion/business_logic/bloc/post_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/active_shipment_list_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_list_bloc.dart';

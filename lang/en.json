@@ -4,6 +4,8 @@
     "truck_owner":"Truck Owner",
     "merchent":"Merchent",
     "ok":"Ok",
+    "cancel":"Cancel",
+    "reject":"Reject",
     "please_sign_in":"please sign in with your account",
     "sign_in":"Sign In",
     "username":"User Name",
@@ -52,6 +54,7 @@
     "list_error":"an error accourd during loading list...",
 
     "pending":"Pending",
+    "inprogress":"In Progress",
     "running":"Active",
     "completed":"Completed",
     "no_shipments":"No shipments are available to show.",
@@ -127,6 +130,10 @@
     
     "order_truck":"Truck Order",
 
+    "incoming_orders":"Incoming Orders",
+    "shipment_search":"Shipment Search",
+    "my_path":"My Path",
+    "store":"Store",
     "home":"Home",
     "shippment_log":"Log",
     "order_shippment":"Truck Order",

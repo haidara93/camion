@@ -1,24 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
-// import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import 'package:camion/business_logic/bloc/notification_bloc.dart';
+import 'package:camion/business_logic/bloc/core/notification_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_details_bloc.dart';
-// import 'package:camion/business_logic/bloc/offer_details_bloc.dart';
 import 'package:camion/data/providers/notification_provider.dart';
 import 'package:camion/firebase_options.dart';
 import 'package:camion/views/screens/merchant/active_shipment_details_from_notification.dart';
-import 'package:camion/views/screens/merchant/shipment_task_details_from_notification.dart';
-// import 'package:camion/views/screens/broker/order_details_screen.dart';
-// import 'package:camion/views/screens/trader/log_screens/offer_details_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

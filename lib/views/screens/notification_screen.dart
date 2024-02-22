@@ -1,13 +1,9 @@
-import 'package:camion/business_logic/bloc/notification_bloc.dart';
+import 'package:camion/business_logic/bloc/core/notification_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_details_bloc.dart';
 // import 'package:camion/business_logic/bloc/offer_details_bloc.dart';
 import 'package:camion/data/providers/notification_provider.dart';
 import 'package:camion/data/services/fcm_service.dart';
-import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/merchant/active_shipment_details_from_notification.dart';
-import 'package:camion/views/screens/merchant/shipment_task_details_from_notification.dart';
-// import 'package:camion/views/screens/broker/order_details_screen.dart';
-// import 'package:camion/views/screens/trader/log_screens/offer_details_screen.dart';
 import 'package:camion/views/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

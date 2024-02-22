@@ -4,6 +4,8 @@
     "truck_owner":"مالك شاحنة",
     "merchent":"تاجر",
     "ok":"موافق",
+    "cancel":"إلغاء",
+    "reject":"رفض",
     "please_sign_in":"الرجاء تسجيل الدخول إلى حسابك",
     "sign_in":"تسجيل الدخول",
     "username":"اسم المستخدم",
@@ -52,7 +54,8 @@
 
     "list_error":"حدث خطأ أثناء تحميل القائمة...",
     
-    "pending":"المنتظرة",
+    "pending":"المعلقة",
+    "inprogress":"المنتظرة",
     "running":"الجارية",
     "completed":"المكتملة",
     "no_shipments":"لا يوجد شحنات لعرضها",
@@ -128,6 +131,10 @@
 
     "order_truck":"اطلب الشاحنة",
 
+    "incoming_orders":"الطلبات الواردة",
+    "shipment_search":"بحث عن شحنة",
+    "my_path":"مساري",
+    "store":"المتجر",
     "home":"الرئيسية",
     "shippment_log":"السجل",
     "order_shippment":"طلب شاحنة",

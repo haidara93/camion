@@ -7,6 +7,7 @@ import 'package:camion/helpers/http_helper.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepository {
@@ -93,21 +94,10 @@ class AuthRepository {
     var token = await jwtOrEmpty;
 
     if (token != "") {
-      var str = token;
-      var jwt = str.split(".");
-
-      if (jwt.length != 3) {
+      if (JwtDecoder.isExpired(token)) {
         return false;
       } else {
-        var payload =
-            json.decode(ascii.decode(base64.decode(base64.normalize(jwt[1]))));
-        if (DateTime.fromMillisecondsSinceEpoch(
-                (payload["exp"].toInt()) * 100000)
-            .isAfter(DateTime.now())) {
-          return true;
-        } else {
-          return false;
-        }
+        return true;
       }
     } else {
       return false;

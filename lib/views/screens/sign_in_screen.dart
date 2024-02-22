@@ -1,5 +1,5 @@
 import 'package:camion/Localization/app_localizations.dart';
-import 'package:camion/business_logic/bloc/auth_bloc.dart';
+import 'package:camion/business_logic/bloc/core/auth_bloc.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/views/screens/control_view.dart';
 import 'package:camion/helpers/color_constants.dart';
@@ -103,7 +103,23 @@ class _SignInScreenState extends State<SignInScreen> {
                                     ),
                                   ),
                                   SizedBox(
-                                    height: 30.h,
+                                    height: 20.h,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        AppLocalizations.of(context)!
+                                            .translate('username'),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 19.sp,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   SizedBox(
                                     width: 350.w,
@@ -140,13 +156,13 @@ class _SignInScreenState extends State<SignInScreen> {
                                             horizontal: 20.w, vertical: 2.h),
                                         hintText: AppLocalizations.of(context)!
                                             .translate('username'),
-                                        labelText: AppLocalizations.of(context)!
-                                            .translate('username'),
-                                        floatingLabelStyle: TextStyle(
-                                          color: AppColor.deepYellow,
-                                          fontSize: 24.sp,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        // labelText: AppLocalizations.of(context)!
+                                        //     .translate('username'),
+                                        // floatingLabelStyle: TextStyle(
+                                        //   color: AppColor.deepYellow,
+                                        //   fontSize: 24.sp,
+                                        //   fontWeight: FontWeight.bold,
+                                        // ),
                                         hintStyle: TextStyle(
                                           color: Colors.grey,
                                           fontSize: 19.sp,
@@ -157,7 +173,23 @@ class _SignInScreenState extends State<SignInScreen> {
                                     ),
                                   ),
                                   SizedBox(
-                                    height: 30.h,
+                                    height: 20.h,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        AppLocalizations.of(context)!
+                                            .translate('password'),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 19.sp,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   SizedBox(
                                     width: 350.w,
@@ -194,13 +226,13 @@ class _SignInScreenState extends State<SignInScreen> {
                                             horizontal: 20.w, vertical: 2.h),
                                         hintText: AppLocalizations.of(context)!
                                             .translate('password'),
-                                        labelText: AppLocalizations.of(context)!
-                                            .translate('password'),
-                                        floatingLabelStyle: TextStyle(
-                                          color: AppColor.deepYellow,
-                                          fontSize: 24.sp,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        // labelText: AppLocalizations.of(context)!
+                                        //     .translate('password'),
+                                        // floatingLabelStyle: TextStyle(
+                                        //   color: AppColor.deepYellow,
+                                        //   fontSize: 24.sp,
+                                        //   fontWeight: FontWeight.bold,
+                                        // ),
                                         hintStyle: TextStyle(
                                           color: Colors.grey,
                                           fontSize: 19.sp,

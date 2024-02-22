@@ -9,6 +9,7 @@ class OrderTruckEvent extends Equatable {
 
 class OrderTruckButtonPressed extends OrderTruckEvent {
   final int driver;
+  final int shipment;
 
-  OrderTruckButtonPressed(this.driver);
+  OrderTruckButtonPressed(this.shipment, this.driver);
 }

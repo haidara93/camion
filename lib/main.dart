@@ -1,14 +1,18 @@
 import 'dart:io';
 
 import 'package:camion/Localization/app_localizations_setup.dart';
-import 'package:camion/business_logic/bloc/auth_bloc.dart';
+import 'package:camion/business_logic/bloc/core/auth_bloc.dart';
+import 'package:camion/business_logic/bloc/driver_shipments/driver_active_shipment_bloc.dart';
+import 'package:camion/business_logic/bloc/driver_shipments/incoming_shipments_bloc.dart';
+import 'package:camion/business_logic/bloc/driver_shipments/inprogress_shipments_bloc.dart';
 import 'package:camion/business_logic/bloc/instructions/instruction_create_bloc.dart';
 import 'package:camion/business_logic/bloc/instructions/payment_create_bloc.dart';
-import 'package:camion/business_logic/bloc/notification_bloc.dart';
+import 'package:camion/business_logic/bloc/core/notification_bloc.dart';
 import 'package:camion/business_logic/bloc/order_truck_bloc.dart';
 import 'package:camion/business_logic/bloc/package_type_bloc.dart';
 import 'package:camion/business_logic/bloc/post_bloc.dart';
-import 'package:camion/business_logic/bloc/draw_route_bloc.dart';
+import 'package:camion/business_logic/bloc/core/draw_route_bloc.dart';
+import 'package:camion/business_logic/bloc/driver_shipments/shipment_update_status_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/active_shipment_list_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_complete_list_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_details_bloc.dart';
@@ -19,6 +23,7 @@ import 'package:camion/business_logic/bloc/truck/truck_type_bloc.dart';
 import 'package:camion/business_logic/bloc/truck/trucks_list_bloc.dart';
 import 'package:camion/business_logic/bloc/truck_papers/create_truck_paper_bloc.dart';
 import 'package:camion/business_logic/bloc/truck_papers/truck_papers_bloc.dart';
+import 'package:camion/business_logic/bloc/driver_shipments/unassigned_shipment_list_bloc.dart';
 import 'package:camion/business_logic/cubit/bottom_nav_bar_cubit.dart';
 import 'package:camion/business_logic/cubit/internet_cubit.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
@@ -76,7 +81,7 @@ void main() async {
   );
 
   HttpOverrides.global = MyHttpOverrides();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(MyApp(
     lang: lang,
@@ -202,8 +207,38 @@ class MyApp extends StatelessWidget {
                                 context)),
                   ),
                   BlocProvider(
+                    create: (context) => IncomingShipmentsBloc(
+                        shippmentRerository:
+                            RepositoryProvider.of<ShippmentRerository>(
+                                context)),
+                  ),
+                  BlocProvider(
+                    create: (context) => InprogressShipmentsBloc(
+                        shippmentRerository:
+                            RepositoryProvider.of<ShippmentRerository>(
+                                context)),
+                  ),
+                  BlocProvider(
                     create: (context) => ActiveShipmentListBloc(
                         shippmentRerository:
+                            RepositoryProvider.of<ShippmentRerository>(
+                                context)),
+                  ),
+                  BlocProvider(
+                    create: (context) => DriverActiveShipmentBloc(
+                        shippmentRerository:
+                            RepositoryProvider.of<ShippmentRerository>(
+                                context)),
+                  ),
+                  BlocProvider(
+                    create: (context) => UnassignedShipmentListBloc(
+                        shippmentRepository:
+                            RepositoryProvider.of<ShippmentRerository>(
+                                context)),
+                  ),
+                  BlocProvider(
+                    create: (context) => ShipmentUpdateStatusBloc(
+                        shippmentRepository:
                             RepositoryProvider.of<ShippmentRerository>(
                                 context)),
                   ),
