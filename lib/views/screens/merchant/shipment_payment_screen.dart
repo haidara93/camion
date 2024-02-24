@@ -279,7 +279,7 @@ class _ShipmentPaymentScreenState extends State<ShipmentPaymentScreen> {
                           ),
                           widget.shipment.shipmentpayment == null
                               ? SizedBox(
-                                  width: MediaQuery.of(context).size.width * .8,
+                                  width: MediaQuery.of(context).size.width * .9,
                                   child: CustomButton(
                                     title: _loading
                                         ? const LoadingIndicator()

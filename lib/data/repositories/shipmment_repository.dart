@@ -192,8 +192,9 @@ class ShippmentRerository {
     request.fields['truck_weight'] = shipment.truckWeight.toString();
     request.fields['final_weight'] = shipment.finalWeight.toString();
     request.fields['commodity_items'] = jsonEncode(commodity_items);
-    print(jsonEncode(commodity_items));
     var response = await request.send();
+    print(jsonEncode(commodity_items));
+    print(response.statusCode);
     if (response.statusCode == 201) {
       final respStr = await response.stream.bytesToString();
       return 1;

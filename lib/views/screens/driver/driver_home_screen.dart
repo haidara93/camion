@@ -113,7 +113,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
   @override
   void initState() {
     super.initState();
-    _getLocation();
+    // _getLocation();
     _listenLocation();
     getUserData();
     BlocProvider.of<PostBloc>(context).add(PostLoadEvent());
