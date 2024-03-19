@@ -70,12 +70,20 @@ class _ChargesLogScreenState extends State<ChargesLogScreen> {
                                       child: Padding(
                                         padding:
                                             EdgeInsets.symmetric(vertical: 5.h),
-                                        child: Column(
+                                        child: Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                              MainAxisAlignment.spaceBetween,
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
-                                          children: [],
+                                          children: [
+                                            Text(
+                                              '${AppLocalizations.of(context)!.translate('shipment_number')}: SA-${state.charges[index].shipment!}',
+                                              style: TextStyle(
+                                                  // color: AppColor.lightBlue,
+                                                  fontSize: 18.sp,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),

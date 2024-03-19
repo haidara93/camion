@@ -350,7 +350,9 @@ class _AddChargesScreenState extends State<AddChargesScreen> {
                                 CheckPointListState>(
                               listener: (context, state2) {
                                 if (state2 is CheckPointListLoadedSuccess) {
-                                  pathpoints = state2.pathpoints;
+                                  setState(() {
+                                    pathpoints = state2.pathpoints;
+                                  });
                                 }
                               },
                               child: const SizedBox(

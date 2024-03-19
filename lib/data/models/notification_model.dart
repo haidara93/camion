@@ -31,7 +31,7 @@ class NotificationModel {
     dateCreated = json['date_created'];
     noteficationType = json['notefication_type'];
     isread = json['isread'];
-    user = json['user'];
+    user = json['receiver'];
     sender = json['sender'];
     shipment = json['shipment'];
   }
@@ -44,7 +44,7 @@ class NotificationModel {
     data['date_created'] = dateCreated;
     data['notefication_type'] = noteficationType;
     data['isread'] = isread;
-    data['user'] = user;
+    data['receiver'] = user;
     data['sender'] = sender;
     return data;
   }

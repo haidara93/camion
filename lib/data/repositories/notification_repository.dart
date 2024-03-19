@@ -14,7 +14,7 @@ class NotificationRepository {
     prefs = await SharedPreferences.getInstance();
     var jwt = prefs.getString("token");
 
-    var rs = await HttpHelper.get(NOTIFICATIONS_ENDPOINT, apiToken: jwt);
+    var rs = await HttpHelper.get(KNOTIFICATIONS_ENDPOINT, apiToken: jwt);
     notifications = [];
     if (rs.statusCode == 200) {
       var myDataString = utf8.decode(rs.bodyBytes);
@@ -32,7 +32,7 @@ class NotificationRepository {
     var jwt = prefs.getString("token");
 
     var rs = await HttpHelper.patch(
-      NOTIFICATIONS_ENDPOINT + id.toString(),
+      KNOTIFICATIONS_ENDPOINT + id.toString(),
       {"isread": true},
       apiToken: jwt,
     );

@@ -3,6 +3,7 @@ import 'package:camion/business_logic/bloc/managment/permissions_list_bloc.dart'
 import 'package:camion/business_logic/bloc/managment/price_request_bloc.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/helpers/color_constants.dart';
+import 'package:camion/views/screens/check_point/permission_details_screen.dart';
 import 'package:camion/views/screens/managment/add_new_price_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -85,7 +86,9 @@ class _PermissionLogScreenState extends State<PermissionLogScreen> {
                                   // Duration diff = now
                                   //     .difference(state.offers[index].createdDate!);
                                   return GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      // Navigator.push(context, MaterialPageRoute(builder: (context) => PermissionDetailsScreen(shipment: state.perm),))
+                                    },
                                     child: Card(
                                       shape: const RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(

@@ -35,6 +35,7 @@ const SHIPPMENTS_PAYMENT_ENDPOINT = '${DOMAIN}camion/shipmentpayment/';
 const SHIPPMENTS_INSTRUCTION_ENDPOINT =
     '${DOMAIN}camion/shippmentinstructions/';
 const NOTIFICATIONS_ENDPOINT = '${DOMAIN}camion/notifecations/';
+const KNOTIFICATIONS_ENDPOINT = '${DOMAIN}camion/knotifecations/';
 
 class HttpHelper {
   static Future<http.Response> post(String url, Map<String, dynamic> body,

@@ -97,6 +97,10 @@ class _ShipmentOpsScreenState extends State<ShipmentOpsScreen> {
                     GestureDetector(
                       onTap: () {
                         if (widget.shipment.passpermession == null) {
+                          BlocProvider.of<ChargeTypesListBloc>(context)
+                              .add(ChargeTypesListLoadEvent());
+                          BlocProvider.of<CheckPointListBloc>(context)
+                              .add(CheckPointListLoadEvent());
                           Navigator.push(
                               context,
                               MaterialPageRoute(

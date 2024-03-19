@@ -7,6 +7,7 @@ import 'package:camion/views/widgets/custom_botton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart' as intel;
 
 class CheckPointShipmentDetailsScreen extends StatefulWidget {
@@ -124,6 +125,28 @@ class _CheckPointShipmentDetailsScreenState
                         const SizedBox(
                           height: 5,
                         ),
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: SvgPicture.asset(
+                                  "assets/icons/Merchant_information.svg"),
+                            ),
+                            const SizedBox(
+                              width: 7,
+                            ),
+                            Text(
+                              AppLocalizations.of(context)!
+                                  .translate('merchent'),
+                              style: TextStyle(
+                                // color: AppColor.lightBlue,
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                         Text(
                           'اسم التاجر: ${widget.shipment.merchant!.user!.firstName!} ${widget.shipment.merchant!.user!.lastName!}',
                           style: TextStyle(
@@ -139,6 +162,27 @@ class _CheckPointShipmentDetailsScreenState
                               fontWeight: FontWeight.bold),
                         ),
                         Divider(color: Colors.grey[200]),
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: SvgPicture.asset(
+                                  "assets/icons/truck_black.svg"),
+                            ),
+                            const SizedBox(
+                              width: 7,
+                            ),
+                            Text(
+                              AppLocalizations.of(context)!.translate('driver'),
+                              style: TextStyle(
+                                // color: AppColor.lightBlue,
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                         Text(
                           'اسم السائق: ${widget.shipment.merchant!.user!.firstName!} ${widget.shipment.merchant!.user!.lastName!}',
                           style: TextStyle(
@@ -161,6 +205,27 @@ class _CheckPointShipmentDetailsScreenState
                               fontWeight: FontWeight.bold),
                         ),
                         Divider(color: Colors.grey[200]),
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: SvgPicture.asset("assets/icons/goods.svg"),
+                            ),
+                            const SizedBox(
+                              width: 7,
+                            ),
+                            Text(
+                              AppLocalizations.of(context)!
+                                  .translate('commodity_name'),
+                              style: TextStyle(
+                                // color: AppColor.lightBlue,
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                         Text(
                           'البضاعة',
                           style: TextStyle(
@@ -209,6 +274,27 @@ class _CheckPointShipmentDetailsScreenState
                           },
                         ),
                         Divider(color: Colors.grey[200]),
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: SvgPicture.asset(
+                                  "assets/icons/location_black.svg"),
+                            ),
+                            const SizedBox(
+                              width: 7,
+                            ),
+                            Text(
+                              AppLocalizations.of(context)!.translate('path'),
+                              style: TextStyle(
+                                // color: AppColor.lightBlue,
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                         Text(
                           'المسار',
                           style: TextStyle(
@@ -236,36 +322,6 @@ class _CheckPointShipmentDetailsScreenState
                             fontSize: 18.sp,
                           ),
                         ),
-                        Divider(color: Colors.grey[200]),
-                        Text(
-                          'التكلفة',
-                          style: TextStyle(
-                              // color: AppColor.lightBlue,
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          'رسم عبور البضاعة: 3,500,000 ل.س',
-                          style: TextStyle(
-                            // color: AppColor.lightBlue,
-                            fontSize: 18.sp,
-                          ),
-                        ),
-                        Text(
-                          'رسم تفتيش الساحة: 1,000,000 ل.س',
-                          style: TextStyle(
-                            // color: AppColor.lightBlue,
-                            fontSize: 18.sp,
-                          ),
-                        ),
-                        Text(
-                          'الإجمالي: 4,500,000 ل.س',
-                          style: TextStyle(
-                            // color: AppColor.lightBlue,
-                            fontSize: 18.sp,
-                          ),
-                        ),
-                        Divider(color: Colors.grey[200]),
                       ],
                     ),
                   ),

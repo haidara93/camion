@@ -89,7 +89,7 @@ class CheckPointRepository {
     prefs = await SharedPreferences.getInstance();
     var jwt = prefs.getString("token");
 
-    var rs = await HttpHelper.get(PERMISSIONS_ENDPOINT + id.toString(),
+    var rs = await HttpHelper.get("$PERMISSIONS_ENDPOINT$id/get_details/",
         apiToken: jwt);
     permissions = [];
     if (rs.statusCode == 200) {
@@ -143,8 +143,8 @@ class CheckPointRepository {
     prefs = await SharedPreferences.getInstance();
     var jwt = prefs.getString("token");
 
-    var rs =
-        await HttpHelper.get(CHARGES_ENDPOINT + id.toString(), apiToken: jwt);
+    var rs = await HttpHelper.get("$CHARGES_ENDPOINT$id/get_details/",
+        apiToken: jwt);
     if (rs.statusCode == 200) {
       var myDataString = utf8.decode(rs.bodyBytes);
 

@@ -63,24 +63,19 @@ class PassChargesDetail {
   int? id;
   String? note;
   int? charges_type;
-  int? check_point;
-  int? checkPoint;
+  CheckPathPoint? check_point;
   ManagmentShipment? shipment;
 
   PassChargesDetail(
-      {this.id,
-      this.note,
-      this.check_point,
-      this.charges_type,
-      this.checkPoint,
-      this.shipment});
+      {this.id, this.note, this.check_point, this.charges_type, this.shipment});
 
   PassChargesDetail.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    check_point = json['check_point'];
+    check_point = json['check_point'] != null
+        ? CheckPathPoint.fromJson(json['check_point'])
+        : null;
     charges_type = json['charges_type'];
     note = json['note'];
-    checkPoint = json['check_point'];
     shipment = json['shipment'] != null
         ? ManagmentShipment.fromJson(json['shipment'])
         : null;
@@ -89,12 +84,13 @@ class PassChargesDetail {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
-    data['check_point'] = check_point;
     data['charges_type'] = charges_type;
     data['note'] = note;
-    data['check_point'] = checkPoint;
     if (shipment != null) {
       data['shipment'] = shipment!.toJson();
+    }
+    if (check_point != null) {
+      data['check_point'] = check_point!.toJson();
     }
     return data;
   }

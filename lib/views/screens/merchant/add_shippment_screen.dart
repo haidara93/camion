@@ -119,6 +119,19 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
     }
   }
 
+  String weightLabel(String unit) {
+    switch (unit) {
+      case "طن":
+        return "وزن البضاعة";
+      case "كغ":
+        return "وزن البضاعة";
+      case "تنكة":
+        return "العدد";
+      default:
+        return "وزن البضاعة";
+    }
+  }
+
   String getEnTruckType(int type) {
     switch (type) {
       case 1:
@@ -833,11 +846,11 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                                                               contentPadding: EdgeInsets.all(8.h),
                                                                                               children: [
                                                                                                 Padding(
-                                                                                                  padding: EdgeInsets.symmetric(vertical: 7.h, horizontal: 15.w),
+                                                                                                  padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 15.w),
                                                                                                   child: TextField(
                                                                                                     controller: _requestNameController,
                                                                                                     decoration: InputDecoration(
-                                                                                                      isDense: true,
+                                                                                                      // isDense: true,
                                                                                                       contentPadding: const EdgeInsets.symmetric(
                                                                                                         horizontal: 10,
                                                                                                         vertical: 8,
@@ -1085,7 +1098,6 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                               textInputAction:
                                                                   TextInputAction
                                                                       .done,
-
                                                               keyboardType:
                                                                   const TextInputType
                                                                       .numberWithOptions(
@@ -1102,15 +1114,25 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                                           20),
                                                               decoration:
                                                                   InputDecoration(
-                                                                labelText: AppLocalizations.of(
-                                                                        context)!
-                                                                    .translate(
-                                                                        'commodity_weight'),
+                                                                labelText: weightLabel(
+                                                                    shipmentProvider
+                                                                        .commodityCategoriesObjects[
+                                                                            index]!
+                                                                        .unit_type!),
+                                                                suffix:
+                                                                    shipmentProvider.commodityCategoriesObjects[index] !=
+                                                                            null
+                                                                        ? Text(
+                                                                            shipmentProvider.commodityCategoriesObjects[index]!.unit_type!,
+                                                                            style:
+                                                                                TextStyle(
+                                                                              color: Colors.black,
+                                                                            ),
+                                                                          )
+                                                                        : null,
                                                                 contentPadding:
                                                                     const EdgeInsets
                                                                         .symmetric(
-                                                                        vertical:
-                                                                            11.0,
                                                                         horizontal:
                                                                             9.0),
                                                               ),
@@ -2947,7 +2969,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                   ),
                                 ),
                                 Text(
-                                  "رسم تفتيش ساحة: ${f.format(200000)} ل.س",
+                                  "رسم تفتيش ساحة: ${f.format(1000000)} ل.س",
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 17.sp,

@@ -14,18 +14,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart' as intel;
 
-class ManagmentShipmentDetailsScreen extends StatefulWidget {
+class CompleteManagmentShipmentDetailsScreen extends StatefulWidget {
   final ManagmentShipment shipment;
-  ManagmentShipmentDetailsScreen({Key? key, required this.shipment})
+  CompleteManagmentShipmentDetailsScreen({Key? key, required this.shipment})
       : super(key: key);
 
   @override
-  State<ManagmentShipmentDetailsScreen> createState() =>
-      _ManagmentShipmentDetailsScreenState();
+  State<CompleteManagmentShipmentDetailsScreen> createState() =>
+      _CompleteManagmentShipmentDetailsScreenState();
 }
 
-class _ManagmentShipmentDetailsScreenState
-    extends State<ManagmentShipmentDetailsScreen> {
+class _CompleteManagmentShipmentDetailsScreenState
+    extends State<CompleteManagmentShipmentDetailsScreen> {
   var f = intel.NumberFormat("#,###", "en_US");
 
   @override
@@ -283,86 +283,6 @@ class _ManagmentShipmentDetailsScreenState
                             // color: AppColor.lightBlue,
                             fontSize: 18.sp,
                           ),
-                        ),
-                        Divider(color: Colors.grey[200]),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            BlocConsumer<ShipmentUpdateStatusBloc,
-                                ShipmentUpdateStatusState>(
-                              listener: (context, state) {
-                                if (state
-                                    is ShipmentUpdateStatusLoadedSuccess) {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ControlView(),
-                                      ));
-                                }
-                              },
-                              builder: (context, state) {
-                                if (state
-                                    is ShipmentUpdateStatusLoadingProgress) {
-                                  return CustomButton(
-                                    title: SizedBox(
-                                        width: 90.w, child: LoadingIndicator()),
-                                    onTap: () {},
-                                  );
-                                } else {
-                                  return CustomButton(
-                                    title: SizedBox(
-                                        width: 90.w,
-                                        child: const Center(
-                                            child: Text("موافقة"))),
-                                    onTap: () {
-                                      BlocProvider.of<ShipmentUpdateStatusBloc>(
-                                              context)
-                                          .add(ShipmentStatusUpdateEvent(
-                                              widget.shipment.id!, "C"));
-                                    },
-                                  );
-                                }
-                              },
-                            ),
-                            BlocConsumer<ManagmentShipmentUpdateStatusBloc,
-                                ManagmentShipmentUpdateStatusState>(
-                              listener: (context, state) {
-                                if (state
-                                    is ManagmentShipmentUpdateStatusLoadedSuccess) {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ControlView(),
-                                      ));
-                                }
-                              },
-                              builder: (context, state) {
-                                if (state
-                                    is ManagmentShipmentUpdateStatusLoadingProgress) {
-                                  return CustomButton(
-                                    title: SizedBox(
-                                        width: 90.w, child: LoadingIndicator()),
-                                    onTap: () {},
-                                  );
-                                } else {
-                                  return CustomButton(
-                                    title: SizedBox(
-                                        width: 90.w,
-                                        child:
-                                            const Center(child: Text("رفض"))),
-                                    onTap: () {
-                                      BlocProvider.of<
-                                                  ManagmentShipmentUpdateStatusBloc>(
-                                              context)
-                                          .add(
-                                              UpdateStatusManagmentShipmentEvent(
-                                                  widget.shipment.id!, "F"));
-                                    },
-                                  );
-                                }
-                              },
-                            ),
-                          ],
                         ),
                       ],
                     ),

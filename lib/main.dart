@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:camion/Localization/app_localizations_setup.dart';
 import 'package:camion/business_logic/bloc/check_point/charge_types_list_bloc.dart';
 import 'package:camion/business_logic/bloc/check_point/check_point_list_bloc.dart';
+import 'package:camion/business_logic/bloc/check_point/pass_charge_details_bloc.dart';
+import 'package:camion/business_logic/bloc/check_point/permission_details_bloc.dart';
 import 'package:camion/business_logic/bloc/core/auth_bloc.dart';
 import 'package:camion/business_logic/bloc/core/commodity_category_bloc.dart';
 import 'package:camion/business_logic/bloc/core/k_commodity_category_bloc.dart';
@@ -19,6 +21,7 @@ import 'package:camion/business_logic/bloc/managment/create_category_bloc.dart';
 import 'package:camion/business_logic/bloc/check_point/create_pass_charges_bloc.dart';
 import 'package:camion/business_logic/bloc/managment/create_permission_bloc.dart';
 import 'package:camion/business_logic/bloc/managment/managment_shipment_list_bloc.dart';
+import 'package:camion/business_logic/bloc/managment/managment_shipment_update_status_bloc.dart';
 import 'package:camion/business_logic/bloc/managment/passcharges_list_bloc.dart';
 import 'package:camion/business_logic/bloc/managment/permissions_list_bloc.dart';
 import 'package:camion/business_logic/bloc/managment/price_request_bloc.dart';
@@ -210,6 +213,18 @@ class MyApp extends StatelessWidget {
                                 context)),
                   ),
                   BlocProvider(
+                    create: (context) => PassChargeDetailsBloc(
+                        checkPointRepository:
+                            RepositoryProvider.of<CheckPointRepository>(
+                                context)),
+                  ),
+                  BlocProvider(
+                    create: (context) => PermissionDetailsBloc(
+                        checkPointRepository:
+                            RepositoryProvider.of<CheckPointRepository>(
+                                context)),
+                  ),
+                  BlocProvider(
                     create: (context) => TrucksListBloc(
                         truckRepository:
                             RepositoryProvider.of<TruckRepository>(context)),
@@ -264,6 +279,12 @@ class MyApp extends StatelessWidget {
                   ),
                   BlocProvider(
                     create: (context) => ShipmentUpdateStatusBloc(
+                        shippmentRerository:
+                            RepositoryProvider.of<ShippmentRerository>(
+                                context)),
+                  ),
+                  BlocProvider(
+                    create: (context) => ManagmentShipmentUpdateStatusBloc(
                         shippmentRerository:
                             RepositoryProvider.of<ShippmentRerository>(
                                 context)),

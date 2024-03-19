@@ -16,15 +16,16 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/cupertino.dart' as cupertino;
 
-class AddPermissionScreen extends StatefulWidget {
-  final ManagmentShipment shipment;
-  AddPermissionScreen({Key? key, required this.shipment}) : super(key: key);
+class PermissionDetailsScreen extends StatefulWidget {
+  final PermissionDetail shipment;
+  PermissionDetailsScreen({Key? key, required this.shipment}) : super(key: key);
 
   @override
-  State<AddPermissionScreen> createState() => _AddPermissionScreenState();
+  State<PermissionDetailsScreen> createState() =>
+      _PermissionDetailsScreenState();
 }
 
-class _AddPermissionScreenState extends State<AddPermissionScreen> {
+class _PermissionDetailsScreenState extends State<PermissionDetailsScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   TextEditingController _drivernameController = TextEditingController();
@@ -44,16 +45,16 @@ class _AddPermissionScreenState extends State<AddPermissionScreen> {
   void initState() {
     super.initState();
     _drivernameController.text =
-        "${widget.shipment.truck!.truckuser!.usertruck!.firstName!} ${widget.shipment.truck!.truckuser!.usertruck!.lastName!}";
+        "${widget.shipment.shipment!.truck!.truckuser!.usertruck!.firstName!} ${widget.shipment.shipment!.truck!.truckuser!.usertruck!.lastName!}";
     _idnumberController.text =
-        widget.shipment.truck!.truckuser!.usertruck!.id_number!;
-    _truckTypeController.text = widget.shipment.truckType!.nameAr!;
+        widget.shipment.shipment!.truck!.truckuser!.usertruck!.id_number!;
+    _truckTypeController.text = widget.shipment.shipment!.truckType!.nameAr!;
     _truckNumberController.text =
-        widget.shipment.truck!.truck_number!.toString();
-    _deliveryLocationController.text = widget.shipment.pathPoints!
+        widget.shipment.shipment!.truck!.truck_number!.toString();
+    _deliveryLocationController.text = widget.shipment.shipment!.pathPoints!
         .singleWhere((element) => element.pointType == "D")
         .name!;
-    for (var element in widget.shipment.shipmentItems!) {
+    for (var element in widget.shipment.shipment!.shipmentItems!) {
       _commodityNameController.add(
           TextEditingController(text: element.commodityCategory!.name_ar!));
       _commodityWeightController.add(
@@ -335,8 +336,8 @@ class _AddPermissionScreenState extends State<AddPermissionScreen> {
                                     padding: const EdgeInsets.all(10.0),
                                     child: ListView.builder(
                                       shrinkWrap: true,
-                                      itemCount:
-                                          widget.shipment.shipmentItems!.length,
+                                      itemCount: widget.shipment.shipment!
+                                          .shipmentItems!.length,
                                       itemBuilder: (context, index) {
                                         return Column(
                                           children: [
@@ -568,84 +569,6 @@ class _AddPermissionScreenState extends State<AddPermissionScreen> {
                                 ),
                                 const SizedBox(
                                   height: 12,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0, vertical: 2.5),
-                                  child: BlocConsumer<CreatePermissionBloc,
-                                      CreatePermissionState>(
-                                    listener: (context, state) {
-                                      print(state);
-                                      if (state
-                                          is CreatePermissionLoadedSuccess) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                          backgroundColor: AppColor.deepGreen,
-                                          dismissDirection: DismissDirection.up,
-                                          behavior: SnackBarBehavior.floating,
-                                          margin: EdgeInsets.only(
-                                              bottom: MediaQuery.of(context)
-                                                      .size
-                                                      .height -
-                                                  150,
-                                              left: 10,
-                                              right: 10),
-                                          content: Text(AppLocalizations.of(
-                                                  context)!
-                                              .translate(
-                                                  'shipment_created_success')),
-                                          duration: const Duration(seconds: 3),
-                                        ));
-                                        Navigator.pushAndRemoveUntil(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const ControlView(),
-                                            ),
-                                            (route) => false);
-                                      }
-                                      if (state
-                                          is CreatePermissionLoadedFailed) {
-                                        print(state.error);
-                                      }
-                                    },
-                                    builder: (context, state) {
-                                      if (state
-                                          is CreatePermissionLoadingProgress) {
-                                        return CustomButton(
-                                          title: const LoadingIndicator(),
-                                          onTap: () {},
-                                        );
-                                      } else {
-                                        return CustomButton(
-                                          title: Text(
-                                            "إنشاء أمر مرور إداري",
-                                            style: TextStyle(
-                                              fontSize: 20.sp,
-                                            ),
-                                          ),
-                                          onTap: () {
-                                            Permission permission =
-                                                Permission();
-                                            permission.shipment =
-                                                widget.shipment.id!;
-                                            permission.checkPoint =
-                                                checkpooint!.id!;
-                                            permission.passdate = loadDate;
-                                            permission.passDuration = int.parse(
-                                                _durationController.text);
-                                            BlocProvider.of<
-                                                        CreatePermissionBloc>(
-                                                    context)
-                                                .add(
-                                              CreatePermissionButtonPressedEvent(
-                                                  permission: permission),
-                                            );
-                                          },
-                                        );
-                                      }
-                                    },
-                                  ),
                                 ),
                               ],
                             ),
