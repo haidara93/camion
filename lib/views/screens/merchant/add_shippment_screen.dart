@@ -5,39 +5,38 @@ import 'dart:convert';
 
 import 'package:camion/Localization/app_localizations.dart';
 import 'package:camion/business_logic/bloc/core/draw_route_bloc.dart';
+import 'package:camion/business_logic/bloc/core/k_commodity_category_bloc.dart';
+import 'package:camion/business_logic/bloc/core/search_category_list_bloc.dart';
+import 'package:camion/business_logic/bloc/create_price_request_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shippment_create_bloc.dart';
-import 'package:camion/business_logic/bloc/truck/truck_type_bloc.dart';
 import 'package:camion/business_logic/bloc/truck/trucks_list_bloc.dart';
 import 'package:camion/business_logic/cubit/bottom_nav_bar_cubit.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
-import 'package:camion/data/models/co2_report.dart';
+import 'package:camion/data/models/commodity_category_model.dart';
+import 'package:camion/data/models/kshipment_model.dart';
 import 'package:camion/data/models/place_model.dart';
 import 'package:camion/data/models/truck_type_model.dart';
 import 'package:camion/data/providers/add_shippment_provider.dart';
-import 'package:camion/data/services/co2_service.dart';
 import 'package:camion/data/services/places_service.dart';
 import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/helpers/formatter.dart';
+import 'package:camion/views/screens/control_view.dart';
 import 'package:camion/views/screens/merchant/add_shippment_pickup_map.dart';
+import 'package:camion/views/screens/merchant/select_truck_widget.dart';
 import 'package:camion/views/screens/merchant/shipment_map_preview.dart';
-import 'package:camion/views/screens/select_truck_screen.dart';
 import 'package:camion/views/widgets/custom_botton.dart';
 import 'package:camion/views/widgets/loading_indicator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ensure_visible_when_focused/ensure_visible_when_focused.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:flutter/cupertino.dart' as cupertino;
-import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart' as intel;
 
@@ -49,47 +48,18 @@ class AddShippmentScreen extends StatefulWidget {
 }
 
 class _AddShippmentScreenState extends State<AddShippmentScreen> {
-  List<Widget> _children = [];
-  List<PlaceSearch> searchResults = [];
-
-  bool pickupLoading = false;
-  bool deliveryLoading = false;
-
-  bool pickupPosition = false;
-  bool deliveryPosition = false;
-
-  List<TextEditingController> commodityName_controllers = [];
-  List<TextEditingController> commodityWeight_controllers = [];
-  int truckType = 0;
-  // List<TextEditingController> commodityQuantity_controllers = [];
-  // List<PackageType?> commodityPackageTypes = [];
-  List<TruckType?> truckTypes = [];
-  List<int> trucknum = [];
-  List<TextEditingController> truckNumControllers = [];
-  //the controllers list
-  int _count = 0;
-
-  int previousIndex = 0;
-  final ScrollController _scrollController = ScrollController();
-
   final FocusNode _commodity_node = FocusNode();
   final FocusNode _truck_node = FocusNode();
-  bool truckError = false;
-  bool pathError = false;
-  bool dateError = false;
-  bool co2Loading = false;
-  bool co2error = false;
-
   var key1 = GlobalKey();
   var key2 = GlobalKey();
-
-  DateTime loadDate = DateTime.now();
-  DateTime loadTime = DateTime.now();
+  var key3 = GlobalKey();
 
   final GlobalKey<FormState> _addShipmentformKey = GlobalKey<FormState>();
-  AddShippmentProvider? addShippmentProvider;
+  AddShippmentProvider? addShipmentProvider;
   String _mapStyle = "";
   String _darkmapStyle = "";
+
+  TextEditingController _requestNameController = TextEditingController();
 
   late BitmapDescriptor pickupicon;
   late BitmapDescriptor deliveryicon;
@@ -103,27 +73,17 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
   }
 
   var f = intel.NumberFormat("#,###", "en_US");
+  final TextEditingController _searchController = TextEditingController();
+  bool isSearch = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      addShippmentProvider =
+      addShipmentProvider =
           Provider.of<AddShippmentProvider>(context, listen: false);
       createMarkerIcons();
-    });
-    TextEditingController commodityName_controller = TextEditingController();
-    TextEditingController commodityWeight_controller = TextEditingController();
-    // TextEditingController commodityQuantity_controller =
-    //     TextEditingController();
-
-    commodityName_controllers.add(commodityName_controller);
-    commodityWeight_controllers.add(commodityWeight_controller);
-    // commodityQuantity_controllers.add(commodityQuantity_controller);
-    // commodityPackageTypes.add(null);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      setState(() => _count++);
     });
 
     rootBundle.loadString('assets/style/normal_style.json').then((string) {
@@ -134,141 +94,48 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
     });
   }
 
-  void _add() {
-    TextEditingController commodityName_controller = TextEditingController();
-    TextEditingController commodityWeight_controller = TextEditingController();
-    // TextEditingController commodityQuantity_controller =
-    //     TextEditingController();
-
-    commodityName_controllers.add(commodityName_controller);
-    commodityWeight_controllers.add(commodityWeight_controller);
-
-    setState(() => _count++);
-    print(_count);
-  }
-
   @override
   void dispose() {
-    addShippmentProvider!.dispose();
+    addShipmentProvider!.dispose();
     super.dispose();
   }
 
-  void remove(int index) {
-    commodityName_controllers.removeAt(index);
-    commodityWeight_controllers.removeAt(index);
-    setState(() => _count--);
+  String getTruckType(int type) {
+    switch (type) {
+      case 1:
+        return "سطحة";
+      case 2:
+        return "براد";
+      case 3:
+        return "حاوية";
+      case 4:
+        return "شحن";
+      case 5:
+        return "قاطرة ومقطورة";
+      case 6:
+        return "tier";
+      default:
+        return "سطحة";
+    }
   }
 
-  _showDatePicker() {
-    cupertino.showCupertinoModalPopup(
-      context: context,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-            color: Colors.white,
-            border:
-                Border(top: BorderSide(color: AppColor.deepYellow, width: 2))),
-        height: MediaQuery.of(context).size.height * .4,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextButton(
-                onPressed: () {
-                  addShippmentProvider!.setLoadDate(loadDate);
-
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  AppLocalizations.of(context)!.translate('ok'),
-                  style: TextStyle(
-                    color: AppColor.darkGrey,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )),
-            Expanded(
-              child: Localizations(
-                locale: const Locale('en', ''),
-                delegates: const [
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                child: cupertino.CupertinoDatePicker(
-                  backgroundColor: Colors.white10,
-                  initialDateTime: loadDate,
-                  mode: cupertino.CupertinoDatePickerMode.date,
-                  minimumYear: DateTime.now().year,
-                  minimumDate: DateTime.now().subtract(const Duration(days: 1)),
-                  maximumYear: DateTime.now().year + 1,
-                  onDateTimeChanged: (value) {
-                    loadDate = value;
-                    addShippmentProvider!.setLoadDate(value);
-                    // order_brokerProvider!.setProductDate(value);
-                    // order_brokerProvider!.setDateError(false);
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  _showTimePicker() {
-    cupertino.showCupertinoModalPopup(
-      context: context,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-            color: Colors.white,
-            border:
-                Border(top: BorderSide(color: AppColor.deepYellow, width: 2))),
-        height: MediaQuery.of(context).size.height * .4,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextButton(
-                onPressed: () {
-                  addShippmentProvider!.setLoadTime(loadTime);
-
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  AppLocalizations.of(context)!.translate('ok'),
-                  style: TextStyle(
-                    color: AppColor.darkGrey,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )),
-            Expanded(
-              child: Localizations(
-                locale: const Locale('en', ''),
-                delegates: const [
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                child: cupertino.CupertinoDatePicker(
-                  backgroundColor: Colors.white10,
-                  initialDateTime: loadTime,
-                  mode: cupertino.CupertinoDatePickerMode.time,
-                  onDateTimeChanged: (value) {
-                    loadTime = value;
-                    addShippmentProvider!.setLoadTime(value);
-
-                    // order_brokerProvider!.setProductDate(value);
-                    // order_brokerProvider!.setDateError(false);
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  String getEnTruckType(int type) {
+    switch (type) {
+      case 1:
+        return "Flatbed";
+      case 2:
+        return "Refrigerated";
+      case 3:
+        return "Container";
+      case 4:
+        return "Semi Trailer";
+      case 5:
+        return "Jumbo Trailer";
+      case 6:
+        return "tier";
+      default:
+        return "FlatBed";
+    }
   }
 
   bool evaluateCo2() {
@@ -282,8 +149,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
     //     return false;
     //   }
     // }
-    if (addShippmentProvider!.delivery_location_name.isNotEmpty &&
-        addShippmentProvider!.pickup_location_name.isNotEmpty) {
+    if (addShipmentProvider!.delivery_controller.text.isNotEmpty &&
+        addShipmentProvider!.pickup_controller.text.isNotEmpty) {
       return true;
     } else {
       return false;
@@ -291,7 +158,112 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
   }
 
   final FocusNode _nodeCommodityName = FocusNode();
+  final FocusNode _orderTypenode = FocusNode();
+
   final FocusNode _nodeCommodityWeight = FocusNode();
+
+  buildSubCategoriesTiles(List<KCommodityCategory>? subCategories, int index) {
+    List<Widget> list = [];
+    list.add(Container(
+      color: Colors.white,
+      padding: const EdgeInsets.only(top: 0.0),
+      child: ListView.builder(
+        // key: Key('subchapterbuilder ${subchapterselected.toString()}'),
+        shrinkWrap: true,
+        itemCount: subCategories!.length,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index3) {
+          return Column(
+            children: [
+              index3 == 0
+                  ? Column(
+                      children: [
+                        Container(
+                          color: Colors.grey[100],
+                          // height: 30.h,
+                          width: double.infinity,
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'اسم البضاعة',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                                Text(
+                                  'قيمة العبور',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Divider(
+                          height: 1,
+                          color: AppColor.deepYellow,
+                        )
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+              GestureDetector(
+                onTap: () {
+                  addShipmentProvider!
+                      .setCommodityCategory(subCategories[index3], index);
+                  addShipmentProvider!.calculateCosts();
+                  Navigator.pop(context);
+                },
+                child: AbsorbPointer(
+                  absorbing: true,
+                  child: SizedBox(
+                    height: 55.h,
+                    width: double.infinity,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            subCategories[index3]!.nameAr!,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17,
+                            ),
+                          ),
+                          Text(
+                            "${f.format(subCategories[index3]!.price! / subCategories[index3]!.weight!)} ${subCategories[index3]!.unit_type!}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              subCategories.length - 1 == index3
+                  ? const SizedBox.shrink()
+                  : Divider(
+                      height: 1,
+                      color: AppColor.deepYellow,
+                    ),
+            ],
+          );
+        },
+      ),
+    ));
+
+    return list;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LocaleCubit, LocaleState>(
@@ -301,7 +273,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
               ? TextDirection.ltr
               : TextDirection.rtl,
           child: Consumer<AddShippmentProvider>(
-              builder: (context, shippmentProvider, child) {
+              builder: (context, shipmentProvider, child) {
             return Stack(
               alignment: Alignment.center,
               children: [
@@ -317,8 +289,147 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(
-                                height: 12,
+                              EnsureVisibleWhenFocused(
+                                focusNode: _orderTypenode,
+                                child: Card(
+                                  key: key3,
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 7),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.white,
+                                    ),
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                              AppLocalizations.of(context)!
+                                                  .translate(
+                                                      'select_operation_type'),
+                                              style: const TextStyle(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                              )),
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                .28,
+                                            child: RadioListTile(
+                                              contentPadding: EdgeInsets.zero,
+                                              value: "I",
+                                              groupValue: shipmentProvider
+                                                  .selectedRadioTile,
+                                              title: FittedBox(
+                                                fit: BoxFit.scaleDown,
+                                                child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .translate('import'),
+                                                  overflow: TextOverflow.fade,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                              // subtitle: Text("Radio 1 Subtitle"),
+                                              onChanged: (val) {
+                                                // print("Radio Tile pressed $val");
+                                                shipmentProvider
+                                                    .setSelectedRadioTile(val!);
+                                              },
+                                              activeColor: AppColor.deepYellow,
+                                              selected: shipmentProvider
+                                                      .selectedRadioTile ==
+                                                  "I",
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                .28,
+                                            child: RadioListTile(
+                                              value: "E",
+                                              contentPadding: EdgeInsets.zero,
+
+                                              groupValue: shipmentProvider
+                                                  .selectedRadioTile,
+                                              title: FittedBox(
+                                                fit: BoxFit.scaleDown,
+                                                child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .translate('export'),
+                                                  overflow: TextOverflow.fade,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                              // subtitle: Text("Radio 2 Subtitle"),
+                                              onChanged: (val) {
+                                                shipmentProvider
+                                                    .setSelectedRadioTile(val!);
+                                              },
+                                              activeColor: AppColor.deepYellow,
+
+                                              selected: shipmentProvider
+                                                      .selectedRadioTile ==
+                                                  "E",
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                .28,
+                                            child: RadioListTile(
+                                              value: "T",
+                                              contentPadding: EdgeInsets.zero,
+
+                                              groupValue: shipmentProvider
+                                                  .selectedRadioTile,
+                                              title: FittedBox(
+                                                fit: BoxFit.scaleDown,
+                                                child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .translate('transsit'),
+                                                  overflow: TextOverflow.fade,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                              // subtitle: Text("Radio 2 Subtitle"),
+                                              onChanged: (val) {
+                                                shipmentProvider
+                                                    .setSelectedRadioTile(val!);
+                                              },
+                                              activeColor: AppColor.deepYellow,
+
+                                              selected: shipmentProvider
+                                                      .selectedRadioTile ==
+                                                  "T",
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ]),
+                                  ),
+                                ),
                               ),
                               EnsureVisibleWhenFocused(
                                 focusNode: _commodity_node,
@@ -333,7 +444,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                             shrinkWrap: true,
                                             physics:
                                                 const NeverScrollableScrollPhysics(),
-                                            itemCount: _count,
+                                            itemCount: shipmentProvider
+                                                .commodityCategories.length,
                                             itemBuilder: (context, index) {
                                               return Stack(
                                                 children: [
@@ -354,11 +466,12 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                                       MainAxisAlignment
                                                                           .start,
                                                                   children: [
-                                                                      _count > 1
+                                                                      shipmentProvider.count >
+                                                                              1
                                                                           ? SizedBox(
                                                                               width: 35.w,
                                                                             )
-                                                                          : SizedBox
+                                                                          : const SizedBox
                                                                               .shrink(),
                                                                       Text(
                                                                         AppLocalizations.of(context)!
@@ -387,132 +500,534 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                           const SizedBox(
                                                             height: 7,
                                                           ),
-                                                          Focus(
-                                                            focusNode:
-                                                                _nodeCommodityName,
-                                                            onFocusChange:
-                                                                (bool focus) {
-                                                              if (!focus) {
-                                                                FocusManager
-                                                                    .instance
-                                                                    .primaryFocus
-                                                                    ?.unfocus();
-                                                                BlocProvider.of<
-                                                                            BottomNavBarCubit>(
-                                                                        context)
-                                                                    .emitShow();
-                                                              } else {
-                                                                BlocProvider.of<
-                                                                            BottomNavBarCubit>(
-                                                                        context)
-                                                                    .emitHide();
-                                                              }
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              showModalBottomSheet(
+                                                                context:
+                                                                    context,
+                                                                isScrollControlled:
+                                                                    true,
+                                                                useSafeArea:
+                                                                    true,
+                                                                builder: (context) =>
+                                                                    Consumer<
+                                                                        AddShippmentProvider>(
+                                                                  builder: (context,
+                                                                      valueProvider,
+                                                                      child) {
+                                                                    return Container(
+                                                                      constraints:
+                                                                          BoxConstraints(
+                                                                        maxHeight: MediaQuery.of(context)
+                                                                            .size
+                                                                            .height,
+                                                                        minHeight: MediaQuery.of(context)
+                                                                            .size
+                                                                            .height,
+                                                                      ),
+                                                                      width: double
+                                                                          .infinity,
+                                                                      child:
+                                                                          Stack(
+                                                                        alignment:
+                                                                            Alignment.topCenter,
+                                                                        children: [
+                                                                          Padding(
+                                                                            padding:
+                                                                                const EdgeInsets.all(8.0),
+                                                                            child:
+                                                                                SingleChildScrollView(
+                                                                              child: Column(
+                                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                children: [
+                                                                                  const SizedBox(
+                                                                                    height: 160,
+                                                                                  ),
+                                                                                  valueProvider.isSearch
+                                                                                      ? BlocBuilder<SearchCategoryListBloc, SearchCategoryListState>(
+                                                                                          builder: (context, state) {
+                                                                                            if (state is SearchCategoryListLoadedSuccess) {
+                                                                                              return state.commodityCategories.isEmpty
+                                                                                                  ? Center(
+                                                                                                      child: Row(
+                                                                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                                                                        children: [
+                                                                                                          Text(
+                                                                                                            AppLocalizations.of(context)!.translate('no_result_found'),
+                                                                                                            maxLines: 2,
+                                                                                                            style: const TextStyle(color: Colors.grey),
+                                                                                                          ),
+                                                                                                          const Icon(
+                                                                                                            Icons.warning_rounded,
+                                                                                                            color: Colors.grey,
+                                                                                                          )
+                                                                                                        ],
+                                                                                                      ),
+                                                                                                    )
+                                                                                                  : Card(
+                                                                                                      clipBehavior: Clip.antiAlias,
+                                                                                                      elevation: 1,
+                                                                                                      color: Colors.grey[200],
+                                                                                                      shape: RoundedRectangleBorder(
+                                                                                                        borderRadius: BorderRadius.circular(10),
+                                                                                                        side: BorderSide(color: Colors.grey, width: 2),
+                                                                                                      ),
+                                                                                                      child: ListView.builder(
+                                                                                                        shrinkWrap: true,
+                                                                                                        physics: const NeverScrollableScrollPhysics(),
+                                                                                                        itemCount: state.commodityCategories.length,
+                                                                                                        itemBuilder: (context, index4) {
+                                                                                                          return Column(
+                                                                                                            children: [
+                                                                                                              GestureDetector(
+                                                                                                                onTap: () {
+                                                                                                                  addShipmentProvider!.setCommodityCategory(state.commodityCategories[index4], index);
+                                                                                                                  addShipmentProvider!.calculateCosts();
+                                                                                                                  addShipmentProvider!.setIsSearch(false);
+                                                                                                                  Navigator.pop(context);
+                                                                                                                  _searchController.text = "";
+                                                                                                                },
+                                                                                                                child: AbsorbPointer(
+                                                                                                                  absorbing: true,
+                                                                                                                  child: SizedBox(
+                                                                                                                    height: 55.h,
+                                                                                                                    width: double.infinity,
+                                                                                                                    child: Padding(
+                                                                                                                      padding: const EdgeInsets.all(8.0),
+                                                                                                                      child: Row(
+                                                                                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                                                        children: [
+                                                                                                                          Text(
+                                                                                                                            state.commodityCategories[index4]!.nameAr!,
+                                                                                                                            style: const TextStyle(
+                                                                                                                              fontWeight: FontWeight.bold,
+                                                                                                                              fontSize: 17,
+                                                                                                                            ),
+                                                                                                                          ),
+                                                                                                                          Text(
+                                                                                                                            "${f.format(state.commodityCategories[index4]!.price! / state.commodityCategories[index4]!.weight!)} ${state.commodityCategories[index4]!.unit_type!}",
+                                                                                                                            style: const TextStyle(
+                                                                                                                              fontWeight: FontWeight.bold,
+                                                                                                                              fontSize: 17,
+                                                                                                                            ),
+                                                                                                                          ),
+                                                                                                                        ],
+                                                                                                                      ),
+                                                                                                                    ),
+                                                                                                                  ),
+                                                                                                                ),
+                                                                                                              ),
+                                                                                                              state.commodityCategories.length - 1 == index4
+                                                                                                                  ? const SizedBox.shrink()
+                                                                                                                  : Divider(
+                                                                                                                      height: 1,
+                                                                                                                      color: AppColor.deepYellow,
+                                                                                                                    ),
+                                                                                                            ],
+                                                                                                          );
+                                                                                                        },
+                                                                                                      ),
+                                                                                                    );
+                                                                                            } else if (state is SearchCategoryListLoadingProgress) {
+                                                                                              return Shimmer.fromColors(
+                                                                                                baseColor: (Colors.grey[300])!,
+                                                                                                highlightColor: (Colors.grey[100])!,
+                                                                                                enabled: true,
+                                                                                                child: ListView.builder(
+                                                                                                  shrinkWrap: true,
+                                                                                                  itemBuilder: (_, __) => Container(
+                                                                                                    margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 3),
+                                                                                                    clipBehavior: Clip.antiAlias,
+                                                                                                    decoration: BoxDecoration(
+                                                                                                      color: Colors.white,
+                                                                                                      borderRadius: BorderRadius.circular(10),
+                                                                                                    ),
+                                                                                                    child: SizedBox(
+                                                                                                      height: 90.h,
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                  itemCount: 10,
+                                                                                                ),
+                                                                                              );
+                                                                                            } else {
+                                                                                              return Center(
+                                                                                                child: GestureDetector(
+                                                                                                  onTap: () {
+                                                                                                    // BlocProvider.of<SectionBloc>(context)
+                                                                                                    //     .add(SectionLoadEvent());
+                                                                                                  },
+                                                                                                  child: Row(
+                                                                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                                                                    children: [
+                                                                                                      Text(
+                                                                                                        AppLocalizations.of(context)!.translate('list_error'),
+                                                                                                        style: const TextStyle(color: Colors.red),
+                                                                                                      ),
+                                                                                                      const Icon(
+                                                                                                        Icons.refresh,
+                                                                                                        color: Colors.grey,
+                                                                                                      )
+                                                                                                    ],
+                                                                                                  ),
+                                                                                                ),
+                                                                                              );
+                                                                                            }
+                                                                                          },
+                                                                                        )
+                                                                                      : BlocConsumer<KCommodityCategoryBloc, KCommodityCategoryState>(
+                                                                                          listener: (context, state) {
+                                                                                            if (state is KCommodityCategoryLoadedSuccess) {
+                                                                                              // Future.delayed(const Duration(milliseconds: 400))
+                                                                                              //     .then((value) => Scrollable.ensureVisible(
+                                                                                              //           sectionKeys[selected!].currentContext!,
+                                                                                              //           duration: const Duration(
+                                                                                              //             milliseconds: 500,
+                                                                                              //           ),
+                                                                                              //         ));
+                                                                                            }
+                                                                                          },
+                                                                                          builder: (context, state) {
+                                                                                            if (state is KCommodityCategoryLoadedSuccess) {
+                                                                                              return Container(
+                                                                                                color: Colors.grey[200],
+                                                                                                padding: const EdgeInsets.only(top: 3.0),
+                                                                                                child: ListView.builder(
+                                                                                                  // key: Key('chapterbuilder ${chapterselected.toString()}'),
+                                                                                                  shrinkWrap: true,
+                                                                                                  itemCount: state.commodityCategories.length,
+                                                                                                  physics: const NeverScrollableScrollPhysics(),
+                                                                                                  itemBuilder: (context, index2) {
+                                                                                                    return Card(
+                                                                                                      margin: const EdgeInsets.all(2),
+                                                                                                      clipBehavior: Clip.antiAlias,
+                                                                                                      elevation: 1,
+                                                                                                      color: Colors.grey[200],
+                                                                                                      shape: RoundedRectangleBorder(
+                                                                                                        borderRadius: BorderRadius.circular(10),
+                                                                                                        side: BorderSide(color: Colors.grey, width: 2),
+                                                                                                      ),
+                                                                                                      child: ListTileTheme(
+                                                                                                        contentPadding: const EdgeInsets.all(0),
+                                                                                                        dense: true,
+                                                                                                        horizontalTitleGap: 0.0,
+                                                                                                        minLeadingWidth: 0,
+                                                                                                        child: ExpansionTile(
+                                                                                                          // tilePadding: EdgeInsets.zero,
+                                                                                                          controlAffinity: ListTileControlAffinity.trailing,
+                                                                                                          childrenPadding: EdgeInsets.zero,
+                                                                                                          // leading: const SizedBox.shrink(),
+
+                                                                                                          title: Row(
+                                                                                                            // key: chapterKeys[index2],
+                                                                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                                                                            children: [
+                                                                                                              SizedBox(
+                                                                                                                width: 17.w,
+                                                                                                              ),
+                                                                                                              Flexible(
+                                                                                                                child: Row(
+                                                                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                                                  children: [
+                                                                                                                    Text(
+                                                                                                                      state.commodityCategories[index2].nameAr!,
+                                                                                                                      style: const TextStyle(
+                                                                                                                        fontWeight: FontWeight.bold,
+                                                                                                                        fontSize: 18,
+                                                                                                                      ),
+                                                                                                                    ),
+                                                                                                                    SizedBox(
+                                                                                                                      width: 5.w,
+                                                                                                                    ),
+                                                                                                                  ],
+                                                                                                                ),
+                                                                                                              ),
+                                                                                                            ],
+                                                                                                          ),
+                                                                                                          key: Key(index2.toString()), //attention
+                                                                                                          // initiallyExpanded: false,
+
+                                                                                                          onExpansionChanged: (value) {},
+                                                                                                          children: buildSubCategoriesTiles(state.commodityCategories[index2].subCategories!, index),
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                    );
+                                                                                                  },
+                                                                                                ),
+                                                                                              );
+                                                                                            } else {
+                                                                                              return Row(
+                                                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                                                children: [
+                                                                                                  Shimmer.fromColors(
+                                                                                                    baseColor: (Colors.grey[300])!,
+                                                                                                    highlightColor: (Colors.grey[100])!,
+                                                                                                    enabled: true,
+                                                                                                    child: SizedBox(
+                                                                                                      width: MediaQuery.of(context).size.width * .85,
+                                                                                                      child: ListView.builder(
+                                                                                                        shrinkWrap: true,
+                                                                                                        itemBuilder: (_, __) => Container(
+                                                                                                          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 3),
+                                                                                                          clipBehavior: Clip.antiAlias,
+                                                                                                          decoration: BoxDecoration(
+                                                                                                            color: Colors.white,
+                                                                                                            borderRadius: BorderRadius.circular(10),
+                                                                                                          ),
+                                                                                                          child: SizedBox(
+                                                                                                            height: 40.h,
+                                                                                                          ),
+                                                                                                        ),
+                                                                                                        itemCount: 4,
+                                                                                                      ),
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                ],
+                                                                                              );
+                                                                                            }
+                                                                                          },
+                                                                                        ),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          Container(
+                                                                            height:
+                                                                                156,
+                                                                            padding:
+                                                                                const EdgeInsets.all(8.0),
+                                                                            color:
+                                                                                Colors.white,
+                                                                            child:
+                                                                                Column(
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              children: [
+                                                                                const SizedBox(
+                                                                                  height: 15,
+                                                                                ),
+                                                                                Row(
+                                                                                  children: [
+                                                                                    GestureDetector(
+                                                                                      onTap: () {
+                                                                                        Navigator.pop(context);
+                                                                                      },
+                                                                                      child: const Padding(
+                                                                                        padding: EdgeInsets.all(8.0),
+                                                                                        child: Icon(Icons.arrow_back),
+                                                                                      ),
+                                                                                    ),
+                                                                                    const Text('اختر نوع البضاعة', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                                                                                    const Spacer(),
+                                                                                    GestureDetector(
+                                                                                      onTap: () {
+                                                                                        Navigator.pop(context);
+                                                                                        showDialog(
+                                                                                          context: context,
+                                                                                          builder: (context) => StatefulBuilder(builder: (context, StateSetter setState2) {
+                                                                                            return SimpleDialog(
+                                                                                              backgroundColor: Colors.white,
+                                                                                              title: const Text('طلب تسعير'),
+                                                                                              shape: RoundedRectangleBorder(
+                                                                                                borderRadius: BorderRadius.circular(15),
+                                                                                              ),
+                                                                                              contentPadding: EdgeInsets.all(8.h),
+                                                                                              children: [
+                                                                                                Padding(
+                                                                                                  padding: EdgeInsets.symmetric(vertical: 7.h, horizontal: 15.w),
+                                                                                                  child: TextField(
+                                                                                                    controller: _requestNameController,
+                                                                                                    decoration: InputDecoration(
+                                                                                                      isDense: true,
+                                                                                                      contentPadding: const EdgeInsets.symmetric(
+                                                                                                        horizontal: 10,
+                                                                                                        vertical: 8,
+                                                                                                      ),
+                                                                                                      labelText: "أدخل اسم البضاعة",
+                                                                                                      border: OutlineInputBorder(
+                                                                                                        borderRadius: BorderRadius.circular(8),
+                                                                                                      ),
+                                                                                                    ),
+                                                                                                    style: const TextStyle(fontSize: 18),
+                                                                                                  ),
+                                                                                                ),
+                                                                                                BlocConsumer<CreatePriceRequestBloc, CreatePriceRequestState>(
+                                                                                                  listener: (context, state) {
+                                                                                                    if (state is CreatePriceRequestLoadedSuccess) {
+                                                                                                      Navigator.pop(context);
+                                                                                                    }
+                                                                                                  },
+                                                                                                  builder: (context, state) {
+                                                                                                    if (state is CreatePriceRequestLoadingProgress) {
+                                                                                                      return const Row(
+                                                                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                                                                        children: [
+                                                                                                          Center(child: CircularProgressIndicator()),
+                                                                                                        ],
+                                                                                                      );
+                                                                                                    } else {
+                                                                                                      return Row(
+                                                                                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                                                                        children: [
+                                                                                                          CustomButton(
+                                                                                                              title: SizedBox(
+                                                                                                                width: 90,
+                                                                                                                child: Center(child: Text("تراجع")),
+                                                                                                              ),
+                                                                                                              onTap: () {
+                                                                                                                Navigator.pop(context);
+                                                                                                              }),
+                                                                                                          CustomButton(
+                                                                                                              title: const SizedBox(width: 90, child: Center(child: Text("إرسال"))),
+                                                                                                              onTap: () {
+                                                                                                                BlocProvider.of<CreatePriceRequestBloc>(context).add(CreatePriceRequestButtonPressedEvent(
+                                                                                                                  name: _requestNameController.text,
+                                                                                                                ));
+                                                                                                              }),
+                                                                                                        ],
+                                                                                                      );
+                                                                                                    }
+                                                                                                  },
+                                                                                                )
+                                                                                              ],
+                                                                                            );
+                                                                                          }),
+                                                                                        );
+                                                                                      },
+                                                                                      child: const AbsorbPointer(
+                                                                                        absorbing: true,
+                                                                                        child: Padding(
+                                                                                          padding: EdgeInsets.all(8.0),
+                                                                                          child: Row(
+                                                                                            children: [
+                                                                                              Text("أرسل طلب تسعير",
+                                                                                                  style: TextStyle(
+                                                                                                    fontSize: 18,
+                                                                                                  )),
+                                                                                              SizedBox(width: 7),
+                                                                                              Icon(
+                                                                                                Icons.add_circle_outline,
+                                                                                                color: Colors.green,
+                                                                                              ),
+                                                                                            ],
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                                const SizedBox(
+                                                                                  height: 5,
+                                                                                ),
+                                                                                Padding(
+                                                                                  padding: const EdgeInsets.all(8.0),
+                                                                                  child: BlocListener<SearchCategoryListBloc, SearchCategoryListState>(
+                                                                                    listener: (context, state) {
+                                                                                      if (state is SearchCategoryListLoadedSuccess) {
+                                                                                        // print(jsonEncode(state.sections));
+                                                                                      }
+                                                                                      if (state is SearchCategoryListLoadedFailed) {}
+                                                                                    },
+                                                                                    child: TextFormField(
+                                                                                      controller: _searchController,
+                                                                                      onTap: () {
+                                                                                        _searchController.selection = TextSelection(baseOffset: 0, extentOffset: _searchController.value.text.length);
+                                                                                      },
+                                                                                      style: TextStyle(fontSize: 18.sp),
+                                                                                      scrollPadding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom + 50),
+                                                                                      decoration: InputDecoration(
+                                                                                        labelText: AppLocalizations.of(context)!.translate('search'),
+                                                                                        hintText: AppLocalizations.of(context)!.translate('search'),
+                                                                                        hintStyle: TextStyle(fontSize: 18.sp),
+                                                                                        suffixIcon: InkWell(
+                                                                                          onTap: () {
+                                                                                            FocusManager.instance.primaryFocus?.unfocus();
+
+                                                                                            if (_searchController.text.isNotEmpty) {
+                                                                                              BlocProvider.of<SearchCategoryListBloc>(context).add(SearchKCommodityCategoryEvent(query: _searchController.text));
+                                                                                              valueProvider.setIsSearch(true);
+                                                                                            }
+                                                                                          },
+                                                                                          child: const Icon(
+                                                                                            Icons.search,
+                                                                                            color: Colors.grey,
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                      onChanged: (value) {
+                                                                                        if (value.isEmpty) {
+                                                                                          valueProvider.setIsSearch(false);
+                                                                                        }
+                                                                                      },
+                                                                                      onFieldSubmitted: (value) {
+                                                                                        BlocProvider.of<BottomNavBarCubit>(context).emitShow();
+                                                                                        _searchController.text = value;
+                                                                                        if (value.isNotEmpty) {
+                                                                                          BlocProvider.of<SearchCategoryListBloc>(context).add(SearchKCommodityCategoryEvent(query: value));
+                                                                                          valueProvider.setIsSearch(true);
+                                                                                        }
+                                                                                      },
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                                const SizedBox(
+                                                                                  height: 5,
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          )
+                                                                        ],
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                ),
+                                                              );
                                                             },
                                                             child:
                                                                 TextFormField(
                                                               controller:
-                                                                  commodityName_controllers[
+                                                                  shipmentProvider
+                                                                          .commodityCategory_controller[
                                                                       index],
-                                                              onTap: () {
-                                                                BlocProvider.of<
-                                                                            BottomNavBarCubit>(
-                                                                        context)
-                                                                    .emitHide();
-                                                                commodityName_controllers[
-                                                                            index]
-                                                                        .selection =
-                                                                    TextSelection(
-                                                                        baseOffset:
-                                                                            0,
-                                                                        extentOffset: commodityName_controllers[index]
-                                                                            .value
-                                                                            .text
-                                                                            .length);
-                                                              },
-                                                              // focusNode: _nodeWeight,
-                                                              // enabled: !valueEnabled,
-                                                              scrollPadding: EdgeInsets.only(
-                                                                  bottom: MediaQuery.of(
-                                                                              context)
-                                                                          .viewInsets
-                                                                          .bottom +
-                                                                      50),
-                                                              textInputAction:
-                                                                  TextInputAction
-                                                                      .done,
-                                                              // keyboardType:
-                                                              //     const TextInputType.numberWithOptions(
-                                                              //         decimal: true, signed: true),
-                                                              // inputFormatters: [
-                                                              //   DecimalFormatter(),
-                                                              // ],
+                                                              enabled: false,
+                                                              maxLines: null,
                                                               style:
                                                                   const TextStyle(
-                                                                      fontSize:
-                                                                          20),
+                                                                fontSize: 18,
+                                                                color: Colors
+                                                                    .black,
+                                                              ),
                                                               decoration:
                                                                   InputDecoration(
                                                                 labelText: AppLocalizations.of(
                                                                         context)!
                                                                     .translate(
                                                                         'commodity_name'),
+                                                                suffixIcon: shipmentProvider
+                                                                        .commodityCategory_controller[
+                                                                            index]!
+                                                                        .text
+                                                                        .isEmpty
+                                                                    ? Icon(
+                                                                        Icons
+                                                                            .arrow_forward_ios,
+                                                                        color: AppColor
+                                                                            .deepYellow,
+                                                                      )
+                                                                    : Icon(
+                                                                        Icons
+                                                                            .edit,
+                                                                        color: AppColor
+                                                                            .deepYellow,
+                                                                      ),
                                                                 contentPadding:
                                                                     const EdgeInsets
                                                                         .symmetric(
-                                                                        vertical:
-                                                                            11.0,
-                                                                        horizontal:
-                                                                            9.0),
+                                                                  horizontal:
+                                                                      9.0,
+                                                                  vertical:
+                                                                      11.0,
+                                                                ),
                                                               ),
-
-                                                              onEditingComplete:
-                                                                  () {
-                                                                if (evaluateCo2()) {
-                                                                  calculateCo2Report();
-                                                                }
-                                                                // evaluatePrice();
-                                                              },
-                                                              onChanged:
-                                                                  (value) {
-                                                                if (evaluateCo2()) {
-                                                                  calculateCo2Report();
-                                                                }
-                                                              },
-                                                              autovalidateMode:
-                                                                  AutovalidateMode
-                                                                      .onUserInteraction,
-                                                              validator:
-                                                                  (value) {
-                                                                if (value!
-                                                                    .isEmpty) {
-                                                                  return AppLocalizations.of(
-                                                                          context)!
-                                                                      .translate(
-                                                                          'insert_value_validate');
-                                                                }
-                                                                return null;
-                                                              },
-                                                              onSaved:
-                                                                  (newValue) {
-                                                                commodityName_controllers[
-                                                                            index]
-                                                                        .text =
-                                                                    newValue!;
-                                                              },
-                                                              onFieldSubmitted:
-                                                                  (value) {
-                                                                if (evaluateCo2()) {
-                                                                  calculateCo2Report();
-                                                                }
-                                                                FocusManager
-                                                                    .instance
-                                                                    .primaryFocus
-                                                                    ?.unfocus();
-                                                                BlocProvider.of<
-                                                                            BottomNavBarCubit>(
-                                                                        context)
-                                                                    .emitShow();
-                                                              },
                                                             ),
                                                           ),
                                                           const SizedBox(
@@ -537,23 +1052,27 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                             child:
                                                                 TextFormField(
                                                               controller:
-                                                                  commodityWeight_controllers[
+                                                                  shipmentProvider
+                                                                          .commodityWeight_controllers[
                                                                       index],
                                                               onTap: () {
                                                                 BlocProvider.of<
                                                                             BottomNavBarCubit>(
                                                                         context)
                                                                     .emitHide();
-                                                                commodityWeight_controllers[
+                                                                shipmentProvider
+                                                                        .commodityWeight_controllers[
                                                                             index]
                                                                         .selection =
                                                                     TextSelection(
-                                                                        baseOffset:
-                                                                            0,
-                                                                        extentOffset: commodityWeight_controllers[index]
-                                                                            .value
-                                                                            .text
-                                                                            .length);
+                                                                  baseOffset: 0,
+                                                                  extentOffset: shipmentProvider
+                                                                      .commodityWeight_controllers[
+                                                                          index]
+                                                                      .value
+                                                                      .text
+                                                                      .length,
+                                                                );
                                                               },
                                                               // focusNode: _nodeWeight,
                                                               // enabled: !valueEnabled,
@@ -566,6 +1085,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                               textInputAction:
                                                                   TextInputAction
                                                                       .done,
+
                                                               keyboardType:
                                                                   const TextInputType
                                                                       .numberWithOptions(
@@ -598,15 +1118,13 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                                   (event) {},
                                                               onEditingComplete:
                                                                   () {
-                                                                if (evaluateCo2()) {
-                                                                  calculateCo2Report();
-                                                                }
+                                                                addShipmentProvider!
+                                                                    .calculateCosts();
                                                               },
                                                               onChanged:
                                                                   (value) {
-                                                                if (evaluateCo2()) {
-                                                                  calculateCo2Report();
-                                                                }
+                                                                addShipmentProvider!
+                                                                    .calculateCosts();
                                                               },
                                                               autovalidateMode:
                                                                   AutovalidateMode
@@ -624,16 +1142,16 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                               },
                                                               onSaved:
                                                                   (newValue) {
-                                                                commodityWeight_controllers[
-                                                                            index]
-                                                                        .text =
-                                                                    newValue!;
+                                                                shipmentProvider
+                                                                    .commodityWeight_controllers[
+                                                                        index]
+                                                                    .text = newValue!;
                                                               },
                                                               onFieldSubmitted:
                                                                   (value) {
-                                                                if (evaluateCo2()) {
-                                                                  calculateCo2Report();
-                                                                }
+                                                                addShipmentProvider!
+                                                                    .calculateCosts();
+
                                                                 FocusManager
                                                                     .instance
                                                                     .primaryFocus
@@ -652,20 +1170,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                       ),
                                                     ),
                                                   ),
-                                                  (_count > 1)
+                                                  (shipmentProvider.count > 1)
                                                       ? Positioned(
-                                                          left: localeState
-                                                                      .value
-                                                                      .languageCode ==
-                                                                  'en'
-                                                              ? 5
-                                                              : null,
-                                                          right: localeState
-                                                                      .value
-                                                                      .languageCode ==
-                                                                  'en'
-                                                              ? null
-                                                              : 5,
+                                                          left: 5,
                                                           top: 5,
                                                           child: Container(
                                                             height: 30,
@@ -675,36 +1182,21 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                               color: AppColor
                                                                   .deepYellow,
                                                               borderRadius:
-                                                                  BorderRadius
+                                                                  const BorderRadius
                                                                       .only(
-                                                                topLeft: localeState
-                                                                            .value
-                                                                            .languageCode ==
-                                                                        'en'
-                                                                    ? const Radius
-                                                                        .circular(
-                                                                        12)
-                                                                    : const Radius
-                                                                        .circular(
+                                                                topLeft: Radius
+                                                                    .circular(
+                                                                        12),
+                                                                topRight: Radius
+                                                                    .circular(
                                                                         5),
-                                                                topRight: localeState
-                                                                            .value
-                                                                            .languageCode ==
-                                                                        'en'
-                                                                    ? const Radius
-                                                                        .circular(
-                                                                        5)
-                                                                    : const Radius
-                                                                        .circular(
-                                                                        15),
-                                                                bottomLeft:
-                                                                    const Radius
-                                                                        .circular(
+                                                                bottomLeft: Radius
+                                                                    .circular(
                                                                         5),
                                                                 bottomRight:
-                                                                    const Radius
+                                                                    Radius
                                                                         .circular(
-                                                                        5),
+                                                                            5),
                                                               ),
                                                             ),
                                                             child: Center(
@@ -724,25 +1216,17 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                           ),
                                                         )
                                                       : const SizedBox.shrink(),
-                                                  (_count > 1) && (index != 0)
+                                                  (shipmentProvider.count >
+                                                              1) &&
+                                                          (index != 0)
                                                       ? Positioned(
-                                                          right: localeState
-                                                                      .value
-                                                                      .languageCode ==
-                                                                  'en'
-                                                              ? 0
-                                                              : null,
-                                                          left: localeState
-                                                                      .value
-                                                                      .languageCode ==
-                                                                  'en'
-                                                              ? null
-                                                              : 0,
+                                                          right: 0,
                                                           child:
                                                               GestureDetector(
                                                             onTap: () {
-                                                              remove(index);
-                                                              // _showAlertDialog(index);
+                                                              shipmentProvider
+                                                                  .removeitem(
+                                                                      index);
                                                             },
                                                             child: Container(
                                                               height: 30,
@@ -775,8 +1259,9 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                     ),
                                     Positioned(
                                       bottom: -18,
+                                      left: 0,
                                       child: GestureDetector(
-                                        onTap: _add,
+                                        onTap: shipmentProvider.additem,
                                         child: AbsorbPointer(
                                           absorbing: true,
                                           child: Padding(
@@ -810,411 +1295,154 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                               color: Colors.white,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 1.0, vertical: 7.5),
+                                    horizontal: 10.0, vertical: 7.5),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Text(
-                                        AppLocalizations.of(context)!
-                                            .translate('select_truck_type'),
-                                        style: TextStyle(
-                                          // color: AppColor.lightBlue,
-                                          fontSize: 19.sp,
-                                          fontWeight: FontWeight.bold,
+                                    GestureDetector(
+                                      onTap: () {
+                                        // BlocProvider.of<TrucksListBloc>(context)
+                                        //     .add(TrucksListLoadEvent(1));
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                SelectTruckWidget(),
+                                          ),
+                                        );
+                                      },
+                                      child: AbsorbPointer(
+                                        absorbing: true,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(4.0),
+                                              child: Text(
+                                                "اختر شاحنة",
+                                                style: TextStyle(
+                                                  // color: AppColor.lightBlue,
+                                                  fontSize: 19.sp,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                            shipmentProvider.truck != null
+                                                ? Icon(Icons.edit,
+                                                    color: AppColor.deepYellow)
+                                                : Icon(
+                                                    Icons.arrow_forward_ios,
+                                                    color: AppColor.deepYellow,
+                                                  ),
+                                          ],
                                         ),
                                       ),
                                     ),
                                     SizedBox(
                                       height: 5.h,
                                     ),
-                                    SizedBox(
-                                      height: 185.h,
-                                      child: BlocBuilder<TruckTypeBloc,
-                                          TruckTypeState>(
-                                        builder: (context, state) {
-                                          if (state is TruckTypeLoadedSuccess) {
-                                            truckTypes = [];
-                                            truckTypes = state.truckTypes;
-                                            for (var element in truckTypes) {
-                                              trucknum.add(0);
-                                              truckNumControllers
-                                                  .add(TextEditingController());
-                                            }
-                                            return Scrollbar(
-                                              controller: _scrollController,
-                                              thumbVisibility: true,
-                                              thickness: 2.0,
-                                              child: Padding(
-                                                padding: EdgeInsets.all(2.h),
-                                                child: ListView.builder(
-                                                  controller: _scrollController,
-                                                  itemCount:
-                                                      state.truckTypes.length,
-                                                  scrollDirection:
-                                                      Axis.horizontal,
-                                                  shrinkWrap: true,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    return Padding(
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                              horizontal: 5.w,
-                                                              vertical: 15.h),
-                                                      child: GestureDetector(
-                                                        onTap: () {
-                                                          FocusManager.instance
-                                                              .primaryFocus
-                                                              ?.unfocus();
-                                                          setState(() {
-                                                            truckError = false;
-                                                            truckNumControllers[
-                                                                    previousIndex]
-                                                                .text = "";
-                                                            trucknum[
-                                                                previousIndex] = 0;
-                                                            truckNumControllers[
-                                                                    index]
-                                                                .text = "1";
-                                                            trucknum[index] = 1;
-                                                            truckType = state
-                                                                .truckTypes[
-                                                                    index]
-                                                                .id!;
-                                                            previousIndex =
-                                                                index;
-                                                          });
-                                                        },
-                                                        child: Stack(
-                                                          clipBehavior:
-                                                              Clip.none,
-                                                          children: [
-                                                            Container(
-                                                              width: 175.w,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            7),
-                                                                border:
-                                                                    Border.all(
-                                                                  color: truckType ==
-                                                                          state
-                                                                              .truckTypes[
-                                                                                  index]
-                                                                              .id!
-                                                                      ? AppColor
-                                                                          .deepYellow
-                                                                      : AppColor
-                                                                          .darkGrey,
-                                                                  width: 2.w,
-                                                                ),
-                                                              ),
-                                                              child: Column(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                children: [
-                                                                  Image.network(
-                                                                    state
-                                                                        .truckTypes[
-                                                                            index]
-                                                                        .image!,
-                                                                    height:
-                                                                        50.h,
-                                                                    errorBuilder:
-                                                                        (context,
-                                                                            error,
-                                                                            stackTrace) {
-                                                                      return Container(
-                                                                        height:
-                                                                            50.h,
-                                                                        width:
-                                                                            175.w,
-                                                                        color: Colors
-                                                                            .grey[300],
-                                                                        child:
-                                                                            Center(
-                                                                          child:
-                                                                              Text(AppLocalizations.of(context)!.translate('image_load_error')),
-                                                                        ),
-                                                                      );
-                                                                    },
-                                                                    loadingBuilder:
-                                                                        (context,
-                                                                            child,
-                                                                            loadingProgress) {
-                                                                      if (loadingProgress ==
-                                                                          null) {
-                                                                        return child;
-                                                                      }
+                                    shipmentProvider.truck != null
+                                        ? Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Image.network(
+                                                shipmentProvider
+                                                    .truck!.truckType!.image!,
+                                                height: 75.h,
+                                                width: 150.w,
+                                                fit: BoxFit.contain,
+                                                errorBuilder: (context, error,
+                                                    stackTrace) {
+                                                  return Container(
+                                                    height: 75.h,
+                                                    width: 150.w,
+                                                    color: Colors.grey[300],
+                                                    child: const Center(
+                                                      child: Text(
+                                                          "error on loading "),
+                                                    ),
+                                                  );
+                                                },
+                                                loadingBuilder: (context, child,
+                                                    loadingProgress) {
+                                                  if (loadingProgress == null) {
+                                                    return child;
+                                                  }
 
-                                                                      return Shimmer
-                                                                          .fromColors(
-                                                                        baseColor:
-                                                                            (Colors.grey[300])!,
-                                                                        highlightColor:
-                                                                            (Colors.grey[100])!,
-                                                                        enabled:
-                                                                            true,
-                                                                        child:
-                                                                            Container(
-                                                                          height:
-                                                                              50.h,
-                                                                          width:
-                                                                              175.w,
-                                                                          color:
-                                                                              Colors.white,
-                                                                        ),
-                                                                      );
-                                                                    },
-                                                                    // placeholder:
-                                                                    //     Container(
-                                                                    //   color: Colors
-                                                                    //       .white,
-                                                                    //   height:
-                                                                    //       50.h,
-                                                                    //   width: 50.h,
-                                                                    // ),
-                                                                  ),
-                                                                  SizedBox(
-                                                                    height: 7.h,
-                                                                  ),
-                                                                  Text(
-                                                                    localeState.value.languageCode ==
-                                                                            'en'
-                                                                        ? state
-                                                                            .truckTypes[
-                                                                                index]
-                                                                            .name!
-                                                                        : state
-                                                                            .truckTypes[index]
-                                                                            .nameAr!,
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontSize:
-                                                                          17.sp,
-                                                                      color: AppColor
-                                                                          .deepBlack,
-                                                                    ),
-                                                                  ),
-                                                                  SizedBox(
-                                                                    height: 7.h,
-                                                                  ),
-                                                                  Padding(
-                                                                    padding: EdgeInsets.symmetric(
-                                                                        horizontal:
-                                                                            5.w),
-                                                                    child: Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceBetween,
-                                                                      children: [
-                                                                        GestureDetector(
-                                                                          onTap:
-                                                                              () {
-                                                                            if (truckType ==
-                                                                                state.truckTypes[index].id!) {
-                                                                              setState(() {
-                                                                                trucknum[index]++;
-                                                                                truckNumControllers[index].text = trucknum[index].toString();
-                                                                              });
-                                                                            } else {
-                                                                              setState(() {
-                                                                                truckError = false;
-                                                                                truckNumControllers[previousIndex].text = "";
-                                                                                trucknum[previousIndex] = 0;
-                                                                                truckNumControllers[index].text = "1";
-                                                                                trucknum[index] = 1;
-                                                                                truckType = state.truckTypes[index].id!;
-                                                                                previousIndex = index;
-                                                                              });
-                                                                            }
-                                                                          },
-                                                                          child:
-                                                                              Container(
-                                                                            padding:
-                                                                                const EdgeInsets.all(3),
-                                                                            decoration:
-                                                                                BoxDecoration(
-                                                                              border: Border.all(
-                                                                                color: Colors.grey[600]!,
-                                                                                width: 1,
-                                                                              ),
-                                                                              borderRadius: BorderRadius.circular(45),
-                                                                            ),
-                                                                            child: Icon(Icons.add,
-                                                                                size: 25.w,
-                                                                                color: Colors.blue[200]!),
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(
-                                                                          width:
-                                                                              70.w,
-                                                                          height:
-                                                                              38.h,
-                                                                          child:
-                                                                              TextField(
-                                                                            controller:
-                                                                                truckNumControllers[index],
-                                                                            // focusNode:
-                                                                            //     _nodeTabaleh,
-                                                                            enabled:
-                                                                                false,
-
-                                                                            textAlign:
-                                                                                TextAlign.center,
-                                                                            style:
-                                                                                const TextStyle(fontSize: 18),
-                                                                            textInputAction:
-                                                                                TextInputAction.done,
-                                                                            keyboardType:
-                                                                                const TextInputType.numberWithOptions(decimal: true, signed: true),
-                                                                            inputFormatters: [
-                                                                              DecimalFormatter(),
-                                                                            ],
-
-                                                                            decoration:
-                                                                                const InputDecoration(
-                                                                              labelText: "",
-                                                                              alignLabelWithHint: true,
-                                                                              contentPadding: EdgeInsets.zero,
-                                                                            ),
-                                                                            scrollPadding:
-                                                                                EdgeInsets.only(
-                                                                              bottom: MediaQuery.of(context).viewInsets.bottom + 50,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        // Text(
-                                                                        //   tabalehNum.toString(),
-                                                                        //   style: const TextStyle(fontSize: 30),
-                                                                        // ),
-                                                                        GestureDetector(
-                                                                          onTap:
-                                                                              () {
-                                                                            if (truckType ==
-                                                                                state.truckTypes[index].id!) {
-                                                                              setState(() {
-                                                                                if (trucknum[index] > 0) {
-                                                                                  trucknum[index]--;
-                                                                                  truckNumControllers[index].text = trucknum[index].toString();
-                                                                                }
-                                                                              });
-                                                                            }
-                                                                          },
-                                                                          child:
-                                                                              Container(
-                                                                            padding:
-                                                                                const EdgeInsets.all(3),
-                                                                            decoration:
-                                                                                BoxDecoration(
-                                                                              border: Border.all(
-                                                                                color: Colors.grey[600]!,
-                                                                                width: 1,
-                                                                              ),
-                                                                              borderRadius: BorderRadius.circular(45),
-                                                                            ),
-                                                                            child: trucknum[index] > 1
-                                                                                ? Icon(
-                                                                                    Icons.remove,
-                                                                                    size: 25.w,
-                                                                                    color: Colors.blue[200]!,
-                                                                                  )
-                                                                                : Icon(
-                                                                                    Icons.remove,
-                                                                                    size: 25.w,
-                                                                                    color: Colors.grey[600]!,
-                                                                                  ),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            truckType ==
-                                                                    state
-                                                                        .truckTypes[
-                                                                            index]
-                                                                        .id!
-                                                                ? Positioned(
-                                                                    right: -7.w,
-                                                                    top: -10.h,
-                                                                    child:
-                                                                        Container(
-                                                                      padding:
-                                                                          const EdgeInsets
-                                                                              .all(
-                                                                              2),
-                                                                      decoration:
-                                                                          BoxDecoration(
-                                                                        color: AppColor
-                                                                            .deepYellow,
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(45),
-                                                                      ),
-                                                                      child: Icon(
-                                                                          Icons
-                                                                              .check,
-                                                                          size: 16
-                                                                              .w,
-                                                                          color:
-                                                                              Colors.white),
-                                                                    ),
-                                                                  )
-                                                                : const SizedBox
-                                                                    .shrink()
-                                                          ],
-                                                        ),
+                                                  return SizedBox(
+                                                    height: 75.h,
+                                                    width: 150.w,
+                                                    child: Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        value: loadingProgress
+                                                                    .expectedTotalBytes !=
+                                                                null
+                                                            ? loadingProgress
+                                                                    .cumulativeBytesLoaded /
+                                                                loadingProgress
+                                                                    .expectedTotalBytes!
+                                                            : null,
                                                       ),
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                            );
-                                          } else {
-                                            return Shimmer.fromColors(
-                                              baseColor: (Colors.grey[300])!,
-                                              highlightColor:
-                                                  (Colors.grey[100])!,
-                                              enabled: true,
-                                              direction: ShimmerDirection.rtl,
-                                              child: ListView.builder(
-                                                shrinkWrap: true,
-                                                scrollDirection:
-                                                    Axis.horizontal,
-                                                itemBuilder: (_, __) => Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal: 5.w,
-                                                      vertical: 15.h),
-                                                  child: Container(
-                                                    clipBehavior:
-                                                        Clip.antiAlias,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
                                                     ),
-                                                    child: SizedBox(
-                                                      width: 175.w,
-                                                      height: 70.h,
-                                                    ),
-                                                  ),
-                                                ),
-                                                itemCount: 6,
+                                                  );
+                                                },
                                               ),
-                                            );
-                                          }
-                                        },
-                                      ),
-                                    ),
+                                              SizedBox(
+                                                height: 7.h,
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      '${AppLocalizations.of(context)!.translate('truck_type')}: ${localeState.value.languageCode == 'en' ? shipmentProvider.truck!.truckType!.name : shipmentProvider.truck!.truckType!.nameAr}',
+                                                      style: TextStyle(
+                                                          // color: AppColor.lightBlue,
+                                                          fontSize: 18.sp,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 7.h,
+                                                    ),
+                                                    Text(
+                                                      'اسم السائق: ${shipmentProvider.truck!.truckuser!.usertruck!.firstName} ${shipmentProvider.truck!.truckuser!.usertruck!.lastName}',
+                                                      style: TextStyle(
+                                                          // color: AppColor.lightBlue,
+                                                          fontSize: 18.sp,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 7.h,
+                                                    ),
+                                                    Text(
+                                                      '${AppLocalizations.of(context)!.translate('truck_number')}: ${shipmentProvider.truck!.truckNumber}',
+                                                      style: TextStyle(
+                                                          // color: AppColor.lightBlue,
+                                                          fontSize: 18.sp,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          )
+                                        : const SizedBox.shrink(),
                                     Visibility(
-                                      visible: truckError,
+                                      visible: shipmentProvider.truckError,
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -1234,9 +1462,6 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                         ],
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: 7.h,
-                                    ),
                                   ],
                                 ),
                               ),
@@ -1254,475 +1479,1167 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        AppLocalizations.of(context)!
-                                            .translate('choose_shippment_path'),
-                                        style: TextStyle(
-                                          // color: AppColor.lightBlue,
-                                          fontSize: 19.sp,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 7.h,
-                                  ),
-                                  TypeAheadField(
-                                    textFieldConfiguration:
-                                        TextFieldConfiguration(
-                                      // autofocus: true,
-                                      keyboardType: TextInputType.multiline,
-                                      maxLines: null,
-                                      controller:
-                                          shippmentProvider!.pickup_controller,
-                                      scrollPadding: EdgeInsets.only(
-                                          bottom: MediaQuery.of(context)
-                                                  .viewInsets
-                                                  .bottom +
-                                              150),
-                                      onTap: () {
-                                        shippmentProvider!
-                                                .pickup_controller!.selection =
-                                            TextSelection(
-                                                baseOffset: 0,
-                                                extentOffset: shippmentProvider!
-                                                    .pickup_controller!
-                                                    .value
-                                                    .text
-                                                    .length);
-                                      },
-
-                                      style: const TextStyle(fontSize: 18),
-                                      decoration: InputDecoration(
-                                        hintText: AppLocalizations.of(context)!
-                                            .translate('enter_pickup_address'),
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                          horizontal: 9.0,
-                                          vertical: 11.0,
-                                        ),
-                                        suffixIcon: GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ShippmentPickUpMapScreen(
-                                                        type: 0,
-                                                        location: shippmentProvider
-                                                                .pickup_latlng ??
-                                                            null),
-                                              ),
-                                            ).then((value) => FocusManager
-                                                .instance.primaryFocus
-                                                ?.unfocus());
-                                            Future.delayed(const Duration(
-                                                    milliseconds: 1500))
-                                                .then((value) {
-                                              if (evaluateCo2()) {
-                                                calculateCo2Report();
-                                              }
-                                            });
-                                            // Get.to(SearchFilterView());
-                                          },
-                                          child: Container(
-                                            margin: const EdgeInsets.all(7),
-                                            width: 55.0,
-                                            height: 15.0,
-                                            child: Icon(
-                                              Icons.map,
-                                              color: AppColor.deepYellow,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      onSubmitted: (value) {
-                                        // BlocProvider.of<StopScrollCubit>(context)
-                                        //     .emitEnable();
-                                        FocusManager.instance.primaryFocus
-                                            ?.unfocus();
-                                      },
-                                    ),
-                                    loadingBuilder: (context) {
-                                      return Container(
-                                        color: Colors.white,
-                                        child: const Center(
-                                          child: LoadingIndicator(),
-                                        ),
-                                      );
-                                    },
-                                    errorBuilder: (context, error) {
-                                      return Container(
-                                        color: Colors.white,
-                                      );
-                                    },
-                                    noItemsFoundBuilder: (value) {
-                                      var localizedMessage =
-                                          AppLocalizations.of(context)!
-                                              .translate('no_result_found');
-                                      return Container(
-                                        width: double.infinity,
-                                        color: Colors.white,
-                                        child: Center(
-                                          child: Text(
-                                            localizedMessage,
-                                            style: TextStyle(fontSize: 18.sp),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    suggestionsCallback: (pattern) async {
-                                      // if (pattern.isNotEmpty) {
-                                      //   BlocProvider.of<StopScrollCubit>(context)
-                                      //       .emitDisable();
-                                      // }
-                                      return pattern.isEmpty
-                                          ? []
-                                          : await PlaceService.getAutocomplete(
-                                              pattern);
-                                    },
-                                    itemBuilder: (context, suggestion) {
-                                      return Container(
-                                        color: Colors.white,
-                                        child: Column(
-                                          children: [
-                                            ListTile(
-                                              // leading: Icon(Icons.shopping_cart),
-                                              tileColor: Colors.white,
-                                              title:
-                                                  Text(suggestion.description!),
-                                              // subtitle: Text('\$${suggestion['price']}'),
-                                            ),
-                                            Divider(
-                                              color: Colors.grey[300],
-                                              height: 3,
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                    onSuggestionSelected: (suggestion) async {
-                                      var sLocation =
-                                          await PlaceService.getPlace(
-                                              suggestion.placeId);
-                                      setState(() {
-                                        shippmentProvider
-                                            .setPickUpPlace(sLocation);
-                                        shippmentProvider.setPickupLatLang(
-                                            sLocation.geometry.location.lat,
-                                            sLocation.geometry.location.lng);
-                                        shippmentProvider.setPickupName(
-                                            suggestion.description);
-                                        shippmentProvider!.pickup_controller!
-                                            .text = suggestion.description;
-                                      });
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
-                                      if (evaluateCo2()) {
-                                        calculateCo2Report();
-                                      }
-                                    },
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Visibility(
-                                    visible: !deliveryPosition,
-                                    child: !pickupLoading
-                                        ? GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                pickupLoading = true;
-                                                pickupPosition = true;
-                                              });
-                                              _getCurrentPositionForPickup();
-                                            },
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                Icon(
-                                                  Icons.location_on,
-                                                  color: AppColor.deepYellow,
-                                                ),
-                                                SizedBox(
-                                                  width: 5.w,
-                                                ),
-                                                Text(
-                                                  AppLocalizations.of(context)!
-                                                      .translate(
-                                                          'pick_my_location'),
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                        : const Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              SizedBox(
-                                                height: 25,
-                                                width: 25,
-                                                child: LoadingIndicator(),
-                                              ),
-                                            ],
-                                          ),
-                                  ),
-                                  const SizedBox(
-                                    height: 12,
-                                  ),
-                                  Visibility(
-                                    visible: shippmentProvider
-                                        .pickup_controller!.text.isNotEmpty,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        TypeAheadField(
-                                          textFieldConfiguration:
-                                              TextFieldConfiguration(
-                                            // autofocus: true,
-                                            keyboardType:
-                                                TextInputType.multiline,
-                                            maxLines: null,
-                                            controller: shippmentProvider!
-                                                .delivery_controller,
-                                            scrollPadding: EdgeInsets.only(
-                                                bottom: MediaQuery.of(context)
-                                                        .viewInsets
-                                                        .bottom +
-                                                    150),
-                                            onTap: () {
-                                              shippmentProvider!
-                                                  .delivery_controller!
-                                                  .selection = TextSelection(
-                                                baseOffset: 0,
-                                                extentOffset: shippmentProvider!
-                                                    .delivery_controller!
-                                                    .value
-                                                    .text
-                                                    .length,
-                                              );
-                                            },
-
-                                            style:
-                                                const TextStyle(fontSize: 18),
-                                            decoration: InputDecoration(
-                                              hintText: AppLocalizations.of(
-                                                      context)!
-                                                  .translate(
-                                                      'enter_delivery_address'),
-                                              contentPadding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 9.0,
-                                                vertical: 11.0,
-                                              ),
-                                              suffixIcon: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ShippmentPickUpMapScreen(
-                                                              type: 1,
-                                                              location:
-                                                                  shippmentProvider
-                                                                          .delivery_latlng ??
-                                                                      null),
-                                                    ),
-                                                  ).then((value) => FocusManager
-                                                      .instance.primaryFocus
-                                                      ?.unfocus());
-
-                                                  print(
-                                                      "delivry address co2 evaluation");
-                                                  // Get.to(SearchFilterView());
-                                                  Future.delayed(const Duration(
-                                                          milliseconds: 1500))
-                                                      .then((value) {
-                                                    if (evaluateCo2()) {
-                                                      calculateCo2Report();
-                                                    }
-                                                  });
-                                                },
-                                                child: Container(
-                                                  margin:
-                                                      const EdgeInsets.all(7),
-                                                  width: 55.0,
-                                                  height: 15.0,
-                                                  // decoration: new BoxDecoration(
-                                                  //   borderRadius: BorderRadius.circular(10),
-                                                  //   border: Border.all(
-                                                  //       color: Colors.black87, width: 1),
-                                                  // ),
-                                                  child: Icon(
-                                                    Icons.map,
-                                                    color: AppColor.deepYellow,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            onSubmitted: (value) {
-                                              // BlocProvider.of<StopScrollCubit>(context)
-                                              //     .emitEnable();
-                                              FocusManager.instance.primaryFocus
-                                                  ?.unfocus();
-                                            },
-                                          ),
-                                          loadingBuilder: (context) {
+                                  GestureDetector(
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        useSafeArea: true,
+                                        builder: (context) =>
+                                            Consumer<AddShippmentProvider>(
+                                          builder:
+                                              (context, valueProvider, child) {
                                             return Container(
-                                              color: Colors.white,
-                                              child: const Center(
-                                                child: LoadingIndicator(),
-                                              ),
-                                            );
-                                          },
-                                          errorBuilder: (context, error) {
-                                            return Container(
-                                              color: Colors.white,
-                                            );
-                                          },
-                                          noItemsFoundBuilder: (value) {
-                                            var localizedMessage =
-                                                AppLocalizations.of(context)!
-                                                    .translate(
-                                                        'no_result_found');
-                                            return Container(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              constraints: BoxConstraints(
+                                                  maxHeight:
+                                                      MediaQuery.of(context)
+                                                          .size
+                                                          .height),
                                               width: double.infinity,
-                                              color: Colors.white,
-                                              child: Center(
-                                                child: Text(
-                                                  localizedMessage,
-                                                  style: TextStyle(
-                                                      fontSize: 18.sp),
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                          suggestionsCallback: (pattern) async {
-                                            // if (pattern.isNotEmpty) {
-                                            //   BlocProvider.of<StopScrollCubit>(context)
-                                            //       .emitDisable();
-                                            // }
-                                            return pattern.isEmpty
-                                                ? []
-                                                : await PlaceService
-                                                    .getAutocomplete(pattern);
-                                          },
-                                          itemBuilder: (context, suggestion) {
-                                            return Container(
-                                              color: Colors.white,
                                               child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  ListTile(
-                                                    // leading: Icon(Icons.shopping_cart),
-                                                    tileColor: Colors.white,
-                                                    title: Text(suggestion
-                                                        .description!),
-                                                    // subtitle: Text('\$${suggestion['price']}'),
+                                                  SizedBox(
+                                                    height: 15.h,
                                                   ),
-                                                  Divider(
-                                                    color: Colors.grey[300],
-                                                    height: 3,
+                                                  Visibility(
+                                                    visible: shipmentProvider
+                                                            .selectedRadioTile !=
+                                                        "E",
+                                                    child: TypeAheadField(
+                                                      textFieldConfiguration:
+                                                          TextFieldConfiguration(
+                                                        // autofocus: true,
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .multiline,
+                                                        maxLines: null,
+                                                        controller: valueProvider
+                                                            .pickup_controller,
+                                                        scrollPadding: EdgeInsets.only(
+                                                            bottom: MediaQuery.of(
+                                                                        context)
+                                                                    .viewInsets
+                                                                    .bottom +
+                                                                150),
+                                                        onTap: () {
+                                                          valueProvider
+                                                                  .pickup_controller
+                                                                  .selection =
+                                                              TextSelection(
+                                                                  baseOffset: 0,
+                                                                  extentOffset:
+                                                                      valueProvider
+                                                                          .pickup_controller
+                                                                          .value
+                                                                          .text
+                                                                          .length);
+                                                        },
+                                                        style: const TextStyle(
+                                                            fontSize: 18),
+                                                        decoration:
+                                                            InputDecoration(
+                                                          hintText: AppLocalizations
+                                                                  .of(context)!
+                                                              .translate(
+                                                                  'enter_pickup_address'),
+                                                          contentPadding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                            horizontal: 9.0,
+                                                            vertical: 11.0,
+                                                          ),
+                                                          suffixIcon:
+                                                              GestureDetector(
+                                                            onTap: () {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          ShippmentPickUpMapScreen(
+                                                                    type: 0,
+                                                                    location:
+                                                                        valueProvider
+                                                                            .pickup_latlng,
+                                                                  ),
+                                                                ),
+                                                              ).then((value) =>
+                                                                  FocusManager
+                                                                      .instance
+                                                                      .primaryFocus
+                                                                      ?.unfocus());
+                                                              Future.delayed(const Duration(
+                                                                      milliseconds:
+                                                                          1500))
+                                                                  .then(
+                                                                      (value) {
+                                                                // if (evaluateCo2()) {
+                                                                //   calculateCo2Report();
+                                                                // }
+                                                              });
+                                                            },
+                                                            child: Container(
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .all(7),
+                                                              width: 55.0,
+                                                              height: 15.0,
+                                                              child: Icon(
+                                                                Icons.map,
+                                                                color: AppColor
+                                                                    .deepYellow,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        onSubmitted: (value) {
+                                                          // BlocProvider.of<StopScrollCubit>(context)
+                                                          //     .emitEnable();
+                                                          FocusManager.instance
+                                                              .primaryFocus
+                                                              ?.unfocus();
+                                                        },
+                                                      ),
+                                                      loadingBuilder:
+                                                          (context) {
+                                                        return Container(
+                                                          color: Colors.white,
+                                                          child: const Center(
+                                                            child:
+                                                                LoadingIndicator(),
+                                                          ),
+                                                        );
+                                                      },
+                                                      errorBuilder:
+                                                          (context, error) {
+                                                        return Container(
+                                                          color: Colors.white,
+                                                        );
+                                                      },
+                                                      noItemsFoundBuilder:
+                                                          (value) {
+                                                        var localizedMessage =
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .translate(
+                                                                    'no_result_found');
+                                                        return Container(
+                                                          width:
+                                                              double.infinity,
+                                                          color: Colors.white,
+                                                          child: Center(
+                                                            child: Text(
+                                                              localizedMessage,
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                      18.sp),
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                                      suggestionsCallback:
+                                                          (pattern) async {
+                                                        // if (pattern.isNotEmpty) {
+                                                        //   BlocProvider.of<StopScrollCubit>(context)
+                                                        //       .emitDisable();
+                                                        // }
+                                                        return pattern.isEmpty
+                                                            ? []
+                                                            : await PlaceService
+                                                                .getAutocomplete(
+                                                                    pattern);
+                                                      },
+                                                      itemBuilder: (context,
+                                                          suggestion) {
+                                                        return Container(
+                                                          color: Colors.white,
+                                                          child: Column(
+                                                            children: [
+                                                              ListTile(
+                                                                // leading: Icon(Icons.shopping_cart),
+                                                                tileColor:
+                                                                    Colors
+                                                                        .white,
+                                                                title: Text(
+                                                                    suggestion
+                                                                        .description!),
+                                                                // subtitle: Text('\$${suggestion['price']}'),
+                                                              ),
+                                                              Divider(
+                                                                color: Colors
+                                                                    .grey[300],
+                                                                height: 3,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        );
+                                                      },
+                                                      onSuggestionSelected:
+                                                          (suggestion) async {
+                                                        valueProvider
+                                                            .setPickupInfo(
+                                                                suggestion);
+
+                                                        FocusManager.instance
+                                                            .primaryFocus
+                                                            ?.unfocus();
+                                                        // if (evaluateCo2()) {
+                                                        //   calculateCo2Report();
+                                                        // }
+                                                      },
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  Visibility(
+                                                    visible: !valueProvider
+                                                            .deliveryPosition &&
+                                                        shipmentProvider
+                                                                .selectedRadioTile !=
+                                                            "E",
+                                                    child: !valueProvider
+                                                            .pickupLoading
+                                                        ? GestureDetector(
+                                                            onTap: () {
+                                                              // _(() {
+                                                              //   pickupPosition = true;
+                                                              //   pickupLoading = true;
+                                                              // });
+                                                              valueProvider
+                                                                  .setPickupLoading(
+                                                                      true);
+                                                              valueProvider
+                                                                  .setPickupPositionClick(
+                                                                      true);
+
+                                                              valueProvider
+                                                                  .getCurrentPositionForPickup(
+                                                                      context)
+                                                                  .then(
+                                                                (value) {
+                                                                  valueProvider
+                                                                      .setPickupLoading(
+                                                                          false);
+                                                                  valueProvider
+                                                                      .setPickupPositionClick(
+                                                                          false);
+                                                                },
+                                                              );
+                                                            },
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Icon(
+                                                                  Icons
+                                                                      .location_on,
+                                                                  color: AppColor
+                                                                      .deepYellow,
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 5.w,
+                                                                ),
+                                                                Text(
+                                                                  AppLocalizations.of(
+                                                                          context)!
+                                                                      .translate(
+                                                                          'pick_my_location'),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          )
+                                                        : const Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              SizedBox(
+                                                                height: 25,
+                                                                width: 25,
+                                                                child:
+                                                                    LoadingIndicator(),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 12,
+                                                  ),
+                                                  Visibility(
+                                                    visible: (valueProvider
+                                                                .pickup_controller
+                                                                .text
+                                                                .isNotEmpty &&
+                                                            valueProvider
+                                                                .delivery_controller
+                                                                .text
+                                                                .isNotEmpty) &&
+                                                        shipmentProvider
+                                                                .selectedRadioTile !=
+                                                            "E",
+                                                    child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          ListView.builder(
+                                                            shrinkWrap: true,
+                                                            physics:
+                                                                NeverScrollableScrollPhysics(),
+                                                            itemCount: valueProvider
+                                                                .stoppoints_controller
+                                                                .length,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index2) {
+                                                              return Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  const SizedBox(
+                                                                    height: 5,
+                                                                  ),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      SizedBox(
+                                                                        width: MediaQuery.of(context).size.width *
+                                                                            .85,
+                                                                        child:
+                                                                            TypeAheadField(
+                                                                          textFieldConfiguration:
+                                                                              TextFieldConfiguration(
+                                                                            // autofocus: true,
+                                                                            keyboardType:
+                                                                                TextInputType.multiline,
+                                                                            maxLines:
+                                                                                null,
+                                                                            controller:
+                                                                                valueProvider.stoppoints_controller[index2],
+                                                                            scrollPadding:
+                                                                                EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom + 150),
+                                                                            onTap:
+                                                                                () {
+                                                                              valueProvider.stoppoints_controller[index2].selection = TextSelection(
+                                                                                baseOffset: 0,
+                                                                                extentOffset: valueProvider.stoppoints_controller[index2].value.text.length,
+                                                                              );
+                                                                            },
+
+                                                                            style:
+                                                                                const TextStyle(fontSize: 18),
+                                                                            decoration:
+                                                                                InputDecoration(
+                                                                              hintText: AppLocalizations.of(context)!.translate('enter_load\\unload_address'),
+                                                                              contentPadding: const EdgeInsets.symmetric(
+                                                                                horizontal: 9.0,
+                                                                                vertical: 11.0,
+                                                                              ),
+                                                                              suffixIcon: GestureDetector(
+                                                                                onTap: () {
+                                                                                  Navigator.push(
+                                                                                    context,
+                                                                                    MaterialPageRoute(
+                                                                                      builder: (context) => ShippmentPickUpMapScreen(
+                                                                                        type: 2,
+                                                                                        index: index2,
+                                                                                        location: valueProvider.delivery_latlng,
+                                                                                      ),
+                                                                                    ),
+                                                                                  ).then((value) => FocusManager.instance.primaryFocus?.unfocus());
+
+                                                                                  print("delivry address co2 evaluation");
+                                                                                  // Get.to(SearchFilterView());
+                                                                                  Future.delayed(const Duration(milliseconds: 1500)).then((value) {
+                                                                                    // if (evaluateCo2()) {
+                                                                                    //   calculateCo2Report();
+                                                                                    // }
+                                                                                  });
+                                                                                },
+                                                                                child: Container(
+                                                                                  margin: const EdgeInsets.all(7),
+                                                                                  width: 55.0,
+                                                                                  height: 15.0,
+                                                                                  // decoration: new BoxDecoration(
+                                                                                  //   borderRadius: BorderRadius.circular(10),
+                                                                                  //   border: Border.all(
+                                                                                  //       color: Colors.black87, width: 1),
+                                                                                  // ),
+                                                                                  child: Icon(
+                                                                                    Icons.map,
+                                                                                    color: AppColor.deepYellow,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                            onSubmitted:
+                                                                                (value) {
+                                                                              // BlocProvider.of<StopScrollCubit>(context)
+                                                                              //     .emitEnable();
+                                                                              FocusManager.instance.primaryFocus?.unfocus();
+                                                                            },
+                                                                          ),
+                                                                          loadingBuilder:
+                                                                              (context) {
+                                                                            return Container(
+                                                                              color: Colors.white,
+                                                                              child: const Center(
+                                                                                child: LoadingIndicator(),
+                                                                              ),
+                                                                            );
+                                                                          },
+                                                                          errorBuilder:
+                                                                              (context, error) {
+                                                                            return Container(
+                                                                              color: Colors.white,
+                                                                            );
+                                                                          },
+                                                                          noItemsFoundBuilder:
+                                                                              (value) {
+                                                                            var localizedMessage =
+                                                                                AppLocalizations.of(context)!.translate('no_result_found');
+                                                                            return Container(
+                                                                              width: double.infinity,
+                                                                              color: Colors.white,
+                                                                              child: Center(
+                                                                                child: Text(
+                                                                                  localizedMessage,
+                                                                                  style: TextStyle(fontSize: 18.sp),
+                                                                                ),
+                                                                              ),
+                                                                            );
+                                                                          },
+                                                                          suggestionsCallback:
+                                                                              (pattern) async {
+                                                                            // if (pattern.isNotEmpty) {
+                                                                            //   BlocProvider.of<StopScrollCubit>(context)
+                                                                            //       .emitDisable();
+                                                                            // }
+                                                                            return pattern.isEmpty
+                                                                                ? []
+                                                                                : await PlaceService.getAutocomplete(pattern);
+                                                                          },
+                                                                          itemBuilder:
+                                                                              (context, suggestion) {
+                                                                            return Container(
+                                                                              color: Colors.white,
+                                                                              child: Column(
+                                                                                children: [
+                                                                                  ListTile(
+                                                                                    // leading: Icon(Icons.shopping_cart),
+                                                                                    tileColor: Colors.white,
+                                                                                    title: Text(suggestion.description!),
+                                                                                    // subtitle: Text('\$${suggestion['price']}'),
+                                                                                  ),
+                                                                                  Divider(
+                                                                                    color: Colors.grey[300],
+                                                                                    height: 3,
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                            );
+                                                                          },
+                                                                          onSuggestionSelected:
+                                                                              (suggestion) async {
+                                                                            valueProvider.setStopPointInfo(suggestion,
+                                                                                index2);
+
+                                                                            FocusManager.instance.primaryFocus?.unfocus();
+                                                                            // if (evaluateCo2()) {
+                                                                            //   calculateCo2Report();
+                                                                            // }
+                                                                          },
+                                                                        ),
+                                                                      ),
+                                                                      GestureDetector(
+                                                                        onTap:
+                                                                            () {
+                                                                          valueProvider
+                                                                              .removestoppoint(index2);
+                                                                          // _showAlertDialog(index);
+                                                                        },
+                                                                        child:
+                                                                            Container(
+                                                                          height:
+                                                                              30,
+                                                                          width:
+                                                                              30,
+                                                                          decoration:
+                                                                              BoxDecoration(
+                                                                            color:
+                                                                                Colors.red,
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(45),
+                                                                          ),
+                                                                          child:
+                                                                              const Center(
+                                                                            child:
+                                                                                Icon(
+                                                                              Icons.close,
+                                                                              color: Colors.white,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    height: 5,
+                                                                  ),
+                                                                  GestureDetector(
+                                                                    onTap: () {
+                                                                      valueProvider.setStopPointLoading(
+                                                                          true,
+                                                                          index2);
+                                                                      valueProvider.setStopPointPositionClick(
+                                                                          true,
+                                                                          index2);
+
+                                                                      valueProvider.getCurrentPositionForStop(
+                                                                          context,
+                                                                          index2);
+
+                                                                      // _getCurrentPositionForDelivery();
+                                                                    },
+                                                                    child: Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Icon(
+                                                                          Icons
+                                                                              .location_on,
+                                                                          color:
+                                                                              AppColor.deepYellow,
+                                                                        ),
+                                                                        SizedBox(
+                                                                          width:
+                                                                              5.w,
+                                                                        ),
+                                                                        Text(
+                                                                          AppLocalizations.of(context)!
+                                                                              .translate('pick_my_location'),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  // const SizedBox(
+                                                                  //   height: 12,
+                                                                  // ),
+                                                                ],
+                                                              );
+                                                            },
+                                                          ),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              valueProvider
+                                                                  .addstoppoint();
+                                                            },
+                                                            child:
+                                                                AbsorbPointer(
+                                                              absorbing: true,
+                                                              child: Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Padding(
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                            .all(
+                                                                            8.0),
+                                                                    child:
+                                                                        SizedBox(
+                                                                      height:
+                                                                          32.h,
+                                                                      width:
+                                                                          32.w,
+                                                                      child: SvgPicture
+                                                                          .asset(
+                                                                              "assets/icons/add.svg"),
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    width: 7,
+                                                                  ),
+                                                                  const Text(
+                                                                      "add check point")
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ]),
+                                                  ),
+                                                  Visibility(
+                                                    visible: valueProvider
+                                                            .pickup_controller
+                                                            .text
+                                                            .isNotEmpty ||
+                                                        shipmentProvider
+                                                                .selectedRadioTile ==
+                                                            "E",
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        const SizedBox(
+                                                          height: 5,
+                                                        ),
+                                                        TypeAheadField(
+                                                          textFieldConfiguration:
+                                                              TextFieldConfiguration(
+                                                            // autofocus: true,
+                                                            keyboardType:
+                                                                TextInputType
+                                                                    .multiline,
+                                                            maxLines: null,
+                                                            controller:
+                                                                valueProvider
+                                                                    .delivery_controller,
+                                                            scrollPadding: EdgeInsets.only(
+                                                                bottom: MediaQuery.of(
+                                                                            context)
+                                                                        .viewInsets
+                                                                        .bottom +
+                                                                    150),
+                                                            onTap: () {
+                                                              valueProvider
+                                                                      .delivery_controller
+                                                                      .selection =
+                                                                  TextSelection(
+                                                                baseOffset: 0,
+                                                                extentOffset:
+                                                                    valueProvider
+                                                                        .delivery_controller
+                                                                        .value
+                                                                        .text
+                                                                        .length,
+                                                              );
+                                                            },
+
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        18),
+                                                            decoration:
+                                                                InputDecoration(
+                                                              hintText: AppLocalizations
+                                                                      .of(
+                                                                          context)!
+                                                                  .translate(
+                                                                      'enter_delivery_address'),
+                                                              contentPadding:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
+                                                                horizontal: 9.0,
+                                                                vertical: 11.0,
+                                                              ),
+                                                              suffixIcon:
+                                                                  GestureDetector(
+                                                                onTap: () {
+                                                                  Navigator
+                                                                      .push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                      builder:
+                                                                          (context) =>
+                                                                              ShippmentPickUpMapScreen(
+                                                                        type: 1,
+                                                                        location:
+                                                                            valueProvider.delivery_latlng,
+                                                                      ),
+                                                                    ),
+                                                                  ).then((value) => FocusManager
+                                                                      .instance
+                                                                      .primaryFocus
+                                                                      ?.unfocus());
+
+                                                                  print(
+                                                                      "delivry address co2 evaluation");
+                                                                  // Get.to(SearchFilterView());
+                                                                  Future.delayed(const Duration(
+                                                                          milliseconds:
+                                                                              1500))
+                                                                      .then(
+                                                                          (value) {
+                                                                    // if (evaluateCo2()) {
+                                                                    //   calculateCo2Report();
+                                                                    // }
+                                                                  });
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                  margin:
+                                                                      const EdgeInsets
+                                                                          .all(
+                                                                          7),
+                                                                  width: 55.0,
+                                                                  height: 15.0,
+                                                                  // decoration: new BoxDecoration(
+                                                                  //   borderRadius: BorderRadius.circular(10),
+                                                                  //   border: Border.all(
+                                                                  //       color: Colors.black87, width: 1),
+                                                                  // ),
+                                                                  child: Icon(
+                                                                    Icons.map,
+                                                                    color: AppColor
+                                                                        .deepYellow,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            onSubmitted:
+                                                                (value) {
+                                                              // BlocProvider.of<StopScrollCubit>(context)
+                                                              //     .emitEnable();
+                                                              FocusManager
+                                                                  .instance
+                                                                  .primaryFocus
+                                                                  ?.unfocus();
+                                                            },
+                                                          ),
+                                                          loadingBuilder:
+                                                              (context) {
+                                                            return Container(
+                                                              color:
+                                                                  Colors.white,
+                                                              child:
+                                                                  const Center(
+                                                                child:
+                                                                    LoadingIndicator(),
+                                                              ),
+                                                            );
+                                                          },
+                                                          errorBuilder:
+                                                              (context, error) {
+                                                            return Container(
+                                                              color:
+                                                                  Colors.white,
+                                                            );
+                                                          },
+                                                          noItemsFoundBuilder:
+                                                              (value) {
+                                                            var localizedMessage =
+                                                                AppLocalizations.of(
+                                                                        context)!
+                                                                    .translate(
+                                                                        'no_result_found');
+                                                            return Container(
+                                                              width: double
+                                                                  .infinity,
+                                                              color:
+                                                                  Colors.white,
+                                                              child: Center(
+                                                                child: Text(
+                                                                  localizedMessage,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          18.sp),
+                                                                ),
+                                                              ),
+                                                            );
+                                                          },
+                                                          suggestionsCallback:
+                                                              (pattern) async {
+                                                            // if (pattern.isNotEmpty) {
+                                                            //   BlocProvider.of<StopScrollCubit>(context)
+                                                            //       .emitDisable();
+                                                            // }
+                                                            return pattern
+                                                                    .isEmpty
+                                                                ? []
+                                                                : await PlaceService
+                                                                    .getAutocomplete(
+                                                                        pattern);
+                                                          },
+                                                          itemBuilder: (context,
+                                                              suggestion) {
+                                                            return Container(
+                                                              color:
+                                                                  Colors.white,
+                                                              child: Column(
+                                                                children: [
+                                                                  ListTile(
+                                                                    // leading: Icon(Icons.shopping_cart),
+                                                                    tileColor:
+                                                                        Colors
+                                                                            .white,
+                                                                    title: Text(
+                                                                        suggestion
+                                                                            .description!),
+                                                                    // subtitle: Text('\$${suggestion['price']}'),
+                                                                  ),
+                                                                  Divider(
+                                                                    color: Colors
+                                                                            .grey[
+                                                                        300],
+                                                                    height: 3,
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            );
+                                                          },
+                                                          onSuggestionSelected:
+                                                              (suggestion) async {
+                                                            valueProvider
+                                                                .setDeliveryInfo(
+                                                                    suggestion);
+
+                                                            FocusManager
+                                                                .instance
+                                                                .primaryFocus
+                                                                ?.unfocus();
+                                                            // if (evaluateCo2()) {
+                                                            //   calculateCo2Report();
+                                                            // }
+                                                          },
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 5,
+                                                        ),
+                                                        Visibility(
+                                                          visible: !valueProvider
+                                                              .pickupPosition,
+                                                          child: !valueProvider
+                                                                  .deliveryLoading
+                                                              ? GestureDetector(
+                                                                  onTap: () {
+                                                                    valueProvider
+                                                                        .setDeliveryLoading(
+                                                                            true);
+                                                                    valueProvider
+                                                                        .setDeliveryPositionClick(
+                                                                            true);
+
+                                                                    valueProvider
+                                                                        .getCurrentPositionForDelivery(
+                                                                            context);
+
+                                                                    // _getCurrentPositionForDelivery();
+                                                                  },
+                                                                  child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      Icon(
+                                                                        Icons
+                                                                            .location_on,
+                                                                        color: AppColor
+                                                                            .deepYellow,
+                                                                      ),
+                                                                      SizedBox(
+                                                                        width:
+                                                                            5.w,
+                                                                      ),
+                                                                      Text(
+                                                                        AppLocalizations.of(context)!
+                                                                            .translate('pick_my_location'),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                )
+                                                              : const Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    SizedBox(
+                                                                      height:
+                                                                          25,
+                                                                      width: 25,
+                                                                      child:
+                                                                          LoadingIndicator(),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                        ),
+                                                        // const SizedBox(
+                                                        //   height: 12,
+                                                        // ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Spacer(),
+                                                  BlocListener<DrawRouteBloc,
+                                                      DrawRouteState>(
+                                                    listener: (context, state) {
+                                                      if (state
+                                                          is DrawRouteSuccess) {
+                                                        Future.delayed(
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        400))
+                                                            .then((value) {
+                                                          if (shipmentProvider
+                                                              .delivery_controller
+                                                              .text
+                                                              .isNotEmpty) {
+                                                            // getPolyPoints();
+                                                            shipmentProvider
+                                                                .initMapbounds();
+                                                          }
+                                                        });
+                                                      }
+                                                    },
+                                                    child: SizedBox(
+                                                      height: 300.h,
+                                                      child: AbsorbPointer(
+                                                        absorbing: false,
+                                                        child: GoogleMap(
+                                                          onMapCreated:
+                                                              (controller) {
+                                                            shipmentProvider
+                                                                .onMap2Created(
+                                                                    controller,
+                                                                    _mapStyle);
+                                                          },
+                                                          myLocationButtonEnabled:
+                                                              false,
+                                                          zoomGesturesEnabled:
+                                                              false,
+                                                          scrollGesturesEnabled:
+                                                              false,
+                                                          tiltGesturesEnabled:
+                                                              false,
+                                                          rotateGesturesEnabled:
+                                                              false,
+                                                          // zoomControlsEnabled: false,
+                                                          initialCameraPosition:
+                                                              CameraPosition(
+                                                            target:
+                                                                shipmentProvider
+                                                                    .center,
+                                                            zoom:
+                                                                shipmentProvider
+                                                                    .zoom,
+                                                          ),
+                                                          gestureRecognizers: {},
+                                                          markers: (shipmentProvider
+                                                                          .pickup_latlng !=
+                                                                      null ||
+                                                                  shipmentProvider
+                                                                          .delivery_latlng !=
+                                                                      null)
+                                                              ? {
+                                                                  shipmentProvider
+                                                                              .pickup_latlng !=
+                                                                          null
+                                                                      ? Marker(
+                                                                          markerId:
+                                                                              const MarkerId("pickup"),
+                                                                          position: LatLng(
+                                                                              double.parse(shipmentProvider.pickup_location.split(",")[0]),
+                                                                              double.parse(shipmentProvider.pickup_location.split(",")[1])),
+                                                                          icon:
+                                                                              pickupicon,
+                                                                        )
+                                                                      : const Marker(
+                                                                          markerId:
+                                                                              MarkerId("pickup"),
+                                                                        ),
+                                                                  shipmentProvider
+                                                                              .delivery_latlng !=
+                                                                          null
+                                                                      ? Marker(
+                                                                          markerId:
+                                                                              const MarkerId("delivery"),
+                                                                          position: LatLng(
+                                                                              double.parse(shipmentProvider.delivery_location.split(",")[0]),
+                                                                              double.parse(shipmentProvider.delivery_location.split(",")[1])),
+                                                                          icon:
+                                                                              deliveryicon,
+                                                                        )
+                                                                      : const Marker(
+                                                                          markerId:
+                                                                              MarkerId("delivery"),
+                                                                        ),
+                                                                }
+                                                              : {},
+                                                          polylines:
+                                                              shipmentProvider
+                                                                      .polylineCoordinates
+                                                                      .isNotEmpty
+                                                                  ? {
+                                                                      Polyline(
+                                                                        polylineId:
+                                                                            const PolylineId("route"),
+                                                                        points:
+                                                                            shipmentProvider.polylineCoordinates,
+                                                                        color: AppColor
+                                                                            .deepYellow,
+                                                                        width:
+                                                                            5,
+                                                                      ),
+                                                                    }
+                                                                  : {},
+                                                          mapType:
+                                                              shipmentProvider
+                                                                  .mapType,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 20,
                                                   ),
                                                 ],
                                               ),
                                             );
                                           },
-                                          onSuggestionSelected:
-                                              (suggestion) async {
-                                            var sLocation =
-                                                await PlaceService.getPlace(
-                                                    suggestion.placeId);
-                                            setState(() {
-                                              shippmentProvider
-                                                  .setDeliveryPlace(sLocation);
-                                              shippmentProvider
-                                                  .setDeliveryLatLang(
-                                                      sLocation.geometry
-                                                          .location.lat,
-                                                      sLocation.geometry
-                                                          .location.lng);
-                                              shippmentProvider.setDeliveryName(
-                                                  suggestion.description);
-                                              shippmentProvider!
-                                                      .delivery_controller!
-                                                      .text =
-                                                  suggestion.description;
-                                            });
-
-                                            FocusManager.instance.primaryFocus
-                                                ?.unfocus();
-                                            if (evaluateCo2()) {
-                                              calculateCo2Report();
-                                            }
-                                          },
                                         ),
+                                      );
+                                    },
+                                    child: AbsorbPointer(
+                                      absorbing: true,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            AppLocalizations.of(context)!
+                                                .translate(
+                                                    'choose_shippment_path'),
+                                            style: TextStyle(
+                                              // color: AppColor.lightBlue,
+                                              fontSize: 19.sp,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          shipmentProvider.pickup_controller
+                                                      .text.isNotEmpty ||
+                                                  shipmentProvider
+                                                      .delivery_controller
+                                                      .text
+                                                      .isNotEmpty
+                                              ? Icon(Icons.edit,
+                                                  color: AppColor.deepYellow)
+                                              : Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  color: AppColor.deepYellow,
+                                                ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 7.h,
+                                  ),
+                                  Visibility(
+                                    visible: shipmentProvider.pickup_controller
+                                            .text.isNotEmpty ||
+                                        shipmentProvider.delivery_controller
+                                            .text.isNotEmpty,
+                                    child: Column(
+                                      children: [
                                         const SizedBox(
                                           height: 5,
                                         ),
                                         Visibility(
-                                          visible: !pickupPosition,
-                                          child: !deliveryLoading
-                                              ? GestureDetector(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      deliveryLoading = true;
-                                                      deliveryPosition = true;
-                                                    });
-                                                    _getCurrentPositionForDelivery();
-                                                  },
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      Icon(
-                                                        Icons.location_on,
-                                                        color:
-                                                            AppColor.deepYellow,
-                                                      ),
-                                                      SizedBox(
-                                                        width: 5.w,
-                                                      ),
-                                                      Text(
-                                                        AppLocalizations.of(
-                                                                context)!
-                                                            .translate(
-                                                                'pick_my_location'),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )
-                                              : const Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    SizedBox(
-                                                      height: 25,
-                                                      width: 25,
-                                                      child: LoadingIndicator(),
-                                                    ),
-                                                  ],
-                                                ),
+                                          visible: shipmentProvider
+                                                  .selectedRadioTile !=
+                                              "E",
+                                          child: TextFormField(
+                                            controller: shipmentProvider
+                                                .pickup_controller,
+                                            enabled: false,
+                                            maxLines: null,
+                                            style:
+                                                const TextStyle(fontSize: 18),
+                                            decoration: InputDecoration(
+                                              labelText: AppLocalizations.of(
+                                                      context)!
+                                                  .translate('pickup_address'),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 9.0,
+                                                vertical: 11.0,
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                        // const SizedBox(
-                                        //   height: 12,
-                                        // ),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        Visibility(
+                                          visible: shipmentProvider
+                                                  .selectedRadioTile !=
+                                              "E",
+                                          child: ListView.builder(
+                                            shrinkWrap: true,
+                                            itemCount: shipmentProvider
+                                                .stoppoints_controller.length,
+                                            itemBuilder: (context, index2) {
+                                              return Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  TextFormField(
+                                                    controller: shipmentProvider
+                                                            .stoppoints_controller[
+                                                        index2],
+                                                    enabled: false,
+                                                    maxLines: null,
+                                                    style: const TextStyle(
+                                                        fontSize: 18),
+                                                    decoration: InputDecoration(
+                                                      labelText: AppLocalizations
+                                                                  .of(context)!
+                                                              .translate(
+                                                                  'load\\unload_address') +
+                                                          (index2 + 1)
+                                                              .toString(),
+                                                      contentPadding:
+                                                          const EdgeInsets
+                                                              .symmetric(
+                                                        horizontal: 9.0,
+                                                        vertical: 11.0,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 12,
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        TextFormField(
+                                          controller: shipmentProvider
+                                              .delivery_controller,
+                                          enabled: false,
+                                          maxLines: null,
+                                          style: const TextStyle(fontSize: 18),
+                                          decoration: InputDecoration(
+                                            labelText: AppLocalizations.of(
+                                                    context)!
+                                                .translate('delivery_address'),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                              horizontal: 9.0,
+                                              vertical: 11.0,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
                                   Visibility(
-                                    visible: pathError,
+                                    visible: shipmentProvider.pathError,
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -1746,238 +2663,323 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                             ),
                           ),
                         ),
-                        Container(
-                          color: AppColor.darkGrey,
-                          height: 50,
-                          child: Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  print("normal");
-                                  shippmentProvider.setMapMode(MapType.normal);
-                                  shippmentProvider.setMapStyle(_mapStyle);
-                                },
-                                child: SizedBox(
-                                  height: 50,
-                                  width: 70,
-                                  child: Center(
-                                    child: Text(
-                                      AppLocalizations.of(context)!
-                                          .translate('normal'),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18.sp,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  print("dark");
-                                  shippmentProvider.setMapMode(MapType.normal);
-                                  shippmentProvider.setMapStyle(_darkmapStyle);
-                                },
-                                child: SizedBox(
-                                  height: 50,
-                                  width: 70,
-                                  child: Center(
-                                    child: Text(
-                                      AppLocalizations.of(context)!
-                                          .translate('dark'),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18.sp,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  shippmentProvider.setMapMode(MapType.hybrid);
-                                },
-                                child: SizedBox(
-                                  height: 50,
-                                  width: 70,
-                                  child: Center(
-                                    child: Text(
-                                      AppLocalizations.of(context)!
-                                          .translate('satellite'),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18.sp,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const Spacer(),
-                              (shippmentProvider
-                                          .pickup_location_name.isNotEmpty &&
-                                      shippmentProvider
-                                          .delivery_location_name.isNotEmpty)
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          PageRouteBuilder(
-                                            pageBuilder: (context, animation,
-                                                    secondaryAnimation) =>
-                                                ShipmentMapPreview(
-                                              pickup: shippmentProvider
-                                                  .pickup_latlng!,
-                                              delivery: shippmentProvider
-                                                  .delivery_latlng!,
-                                            ),
-                                            transitionDuration: const Duration(
-                                                milliseconds: 1000),
-                                            transitionsBuilder: (context,
-                                                animation,
-                                                secondaryAnimation,
-                                                child) {
-                                              var begin =
-                                                  const Offset(0.0, -1.0);
-                                              var end = Offset.zero;
-                                              var curve = Curves.ease;
-
-                                              var tween = Tween(
-                                                      begin: begin, end: end)
-                                                  .chain(
-                                                      CurveTween(curve: curve));
-
-                                              return SlideTransition(
-                                                position:
-                                                    animation.drive(tween),
-                                                child: child,
-                                              );
-                                            },
-                                          ),
-                                        ).then((value) {
-                                          if (shippmentProvider
-                                              .delivery_location_name
-                                              .isNotEmpty) {
-                                            // getPolyPoints();
-                                            shippmentProvider.initMapbounds();
-                                          }
-                                        });
-                                        // shippmentProvider.setMapMode(MapType.satellite);
-                                      },
-                                      child: const SizedBox(
-                                        height: 50,
-                                        width: 70,
-                                        child: Center(
-                                          child: Icon(
-                                            Icons.zoom_out_map,
-                                            color: Colors.white,
-                                            size: 35,
-                                          ),
+                        Visibility(
+                          visible: shipmentProvider.selectedRadioTile == "I",
+                          child: Container(
+                            color: AppColor.darkGrey,
+                            height: 50,
+                            child: Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    print("normal");
+                                    shipmentProvider.setMapMode(MapType.normal);
+                                    shipmentProvider.setMapStyle(_mapStyle);
+                                  },
+                                  child: SizedBox(
+                                    height: 50,
+                                    width: 70,
+                                    child: Center(
+                                      child: Text(
+                                        AppLocalizations.of(context)!
+                                            .translate('normal'),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18.sp,
                                         ),
                                       ),
-                                    )
-                                  : const SizedBox.shrink(),
-                            ],
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    print("dark");
+                                    shipmentProvider.setMapMode(MapType.normal);
+                                    shipmentProvider.setMapStyle(_darkmapStyle);
+                                  },
+                                  child: SizedBox(
+                                    height: 50,
+                                    width: 70,
+                                    child: Center(
+                                      child: Text(
+                                        AppLocalizations.of(context)!
+                                            .translate('dark'),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18.sp,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    shipmentProvider.setMapMode(MapType.hybrid);
+                                  },
+                                  child: SizedBox(
+                                    height: 50,
+                                    width: 70,
+                                    child: Center(
+                                      child: Text(
+                                        AppLocalizations.of(context)!
+                                            .translate('satellite'),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18.sp,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const Spacer(),
+                                (shipmentProvider.pickup_controller.text
+                                            .isNotEmpty &&
+                                        shipmentProvider.delivery_controller
+                                            .text.isNotEmpty)
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            PageRouteBuilder(
+                                              pageBuilder: (context, animation,
+                                                      secondaryAnimation) =>
+                                                  ShipmentMapPreview(
+                                                pickup: shipmentProvider
+                                                    .pickup_latlng!,
+                                                delivery: shipmentProvider
+                                                    .delivery_latlng!,
+                                              ),
+                                              transitionDuration:
+                                                  const Duration(
+                                                      milliseconds: 1000),
+                                              transitionsBuilder: (context,
+                                                  animation,
+                                                  secondaryAnimation,
+                                                  child) {
+                                                var begin =
+                                                    const Offset(0.0, -1.0);
+                                                var end = Offset.zero;
+                                                var curve = Curves.ease;
+
+                                                var tween = Tween(
+                                                        begin: begin, end: end)
+                                                    .chain(CurveTween(
+                                                        curve: curve));
+
+                                                return SlideTransition(
+                                                  position:
+                                                      animation.drive(tween),
+                                                  child: child,
+                                                );
+                                              },
+                                            ),
+                                          ).then((value) {
+                                            if (shipmentProvider
+                                                .delivery_controller
+                                                .text
+                                                .isNotEmpty) {
+                                              // getPolyPoints();
+                                              shipmentProvider.initMapbounds();
+                                            }
+                                          });
+                                          // shipmentProvider.setMapMode(MapType.satellite);
+                                        },
+                                        child: const SizedBox(
+                                          height: 50,
+                                          width: 70,
+                                          child: Center(
+                                            child: Icon(
+                                              Icons.zoom_out_map,
+                                              color: Colors.white,
+                                              size: 35,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : const SizedBox.shrink(),
+                              ],
+                            ),
                           ),
                         ),
-                        BlocListener<DrawRouteBloc, DrawRouteState>(
-                          listener: (context, state) {
-                            if (state is DrawRouteSuccess) {
-                              Future.delayed(const Duration(milliseconds: 400))
-                                  .then((value) {
-                                if (shippmentProvider
-                                    .delivery_location_name.isNotEmpty) {
-                                  // getPolyPoints();
-                                  shippmentProvider.initMapbounds();
-                                }
-                              });
-                            }
-                          },
-                          child: SizedBox(
-                            height: 300.h,
-                            child: AbsorbPointer(
-                              absorbing: false,
-                              child: GoogleMap(
-                                onMapCreated: (controller) {
-                                  shippmentProvider.onMapCreated(
-                                      controller, _mapStyle);
-                                },
-                                myLocationButtonEnabled: false,
-                                zoomGesturesEnabled: false,
-                                scrollGesturesEnabled: false,
-                                tiltGesturesEnabled: false,
-                                rotateGesturesEnabled: false,
-                                // zoomControlsEnabled: false,
-                                initialCameraPosition: CameraPosition(
-                                  target: shippmentProvider.center,
-                                  zoom: shippmentProvider.zoom,
+                        Visibility(
+                          visible: shipmentProvider.selectedRadioTile != "E",
+                          child: BlocListener<DrawRouteBloc, DrawRouteState>(
+                            listener: (context, state) {
+                              if (state is DrawRouteSuccess) {
+                                Future.delayed(
+                                        const Duration(milliseconds: 400))
+                                    .then((value) {
+                                  if (shipmentProvider
+                                      .delivery_controller.text.isNotEmpty) {
+                                    // getPolyPoints();
+                                    shipmentProvider.initMapbounds();
+                                  }
+                                });
+                              }
+                            },
+                            child: SizedBox(
+                              height: 300.h,
+                              child: AbsorbPointer(
+                                absorbing: false,
+                                child: GoogleMap(
+                                  onMapCreated: (controller) {
+                                    shipmentProvider.onMapCreated(
+                                        controller, _mapStyle);
+                                  },
+                                  myLocationButtonEnabled: false,
+                                  zoomGesturesEnabled: false,
+                                  scrollGesturesEnabled: false,
+                                  tiltGesturesEnabled: false,
+                                  rotateGesturesEnabled: false,
+                                  // zoomControlsEnabled: false,
+                                  initialCameraPosition: CameraPosition(
+                                    target: shipmentProvider.center,
+                                    zoom: shipmentProvider.zoom,
+                                  ),
+                                  gestureRecognizers: {},
+                                  markers: (shipmentProvider.pickup_latlng !=
+                                              null ||
+                                          shipmentProvider.delivery_latlng !=
+                                              null)
+                                      ? {
+                                          shipmentProvider.pickup_latlng != null
+                                              ? Marker(
+                                                  markerId:
+                                                      const MarkerId("pickup"),
+                                                  position: LatLng(
+                                                      double.parse(
+                                                          shipmentProvider
+                                                              .pickup_location
+                                                              .split(",")[0]),
+                                                      double.parse(
+                                                          shipmentProvider
+                                                              .pickup_location
+                                                              .split(",")[1])),
+                                                  icon: pickupicon,
+                                                )
+                                              : const Marker(
+                                                  markerId: MarkerId("pickup"),
+                                                ),
+                                          shipmentProvider.delivery_latlng !=
+                                                  null
+                                              ? Marker(
+                                                  markerId: const MarkerId(
+                                                      "delivery"),
+                                                  position: LatLng(
+                                                      double.parse(
+                                                          shipmentProvider
+                                                              .delivery_location
+                                                              .split(",")[0]),
+                                                      double.parse(
+                                                          shipmentProvider
+                                                              .delivery_location
+                                                              .split(",")[1])),
+                                                  icon: deliveryicon,
+                                                )
+                                              : const Marker(
+                                                  markerId:
+                                                      MarkerId("delivery"),
+                                                ),
+                                        }
+                                      : {},
+                                  polylines: shipmentProvider
+                                          .polylineCoordinates.isNotEmpty
+                                      ? {
+                                          Polyline(
+                                            polylineId:
+                                                const PolylineId("route"),
+                                            points: shipmentProvider
+                                                .polylineCoordinates,
+                                            color: AppColor.deepYellow,
+                                            width: 5,
+                                          ),
+                                        }
+                                      : {},
+                                  mapType: shipmentProvider.mapType,
                                 ),
-                                gestureRecognizers: {},
-                                markers: (shippmentProvider.pickup_latlng !=
-                                            null ||
-                                        shippmentProvider.delivery_latlng !=
-                                            null)
-                                    ? {
-                                        shippmentProvider.pickup_latlng != null
-                                            ? Marker(
-                                                markerId:
-                                                    const MarkerId("pickup"),
-                                                position: LatLng(
-                                                    shippmentProvider
-                                                        .pickup_lat,
-                                                    shippmentProvider
-                                                        .pickup_lang),
-                                                icon: pickupicon,
-                                              )
-                                            : const Marker(
-                                                markerId: MarkerId("pickup"),
-                                              ),
-                                        shippmentProvider.delivery_latlng !=
-                                                null
-                                            ? Marker(
-                                                markerId:
-                                                    const MarkerId("delivery"),
-                                                position: LatLng(
-                                                    shippmentProvider
-                                                        .delivery_lat,
-                                                    shippmentProvider
-                                                        .delivery_lang),
-                                                icon: deliveryicon,
-                                              )
-                                            : const Marker(
-                                                markerId: MarkerId("delivery"),
-                                              ),
-                                      }
-                                    : {},
-                                polylines: shippmentProvider
-                                        .polylineCoordinates.isNotEmpty
-                                    ? {
-                                        Polyline(
-                                          polylineId: const PolylineId("route"),
-                                          points: shippmentProvider
-                                              .polylineCoordinates,
-                                          color: AppColor.deepYellow,
-                                          width: 5,
-                                        ),
-                                      }
-                                    : {},
-                                mapType: shippmentProvider.mapType,
                               ),
                             ),
                           ),
                         ),
                         Visibility(
-                          visible: co2error,
+                          visible: false,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(AppLocalizations.of(context)!
                                 .translate('shipment_load_complete_error')),
                           ),
                         ),
+                        const SizedBox(
+                          height: 7,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 15.0, vertical: 2.5),
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: localeState.value.languageCode == 'en'
+                                    ? [
+                                        AppColor.lightYellow,
+                                        AppColor.deepYellow,
+                                      ]
+                                    : [
+                                        AppColor.deepYellow,
+                                        AppColor.lightYellow,
+                                      ],
+                                begin: Alignment.centerRight,
+                                end: Alignment.centerLeft,
+                              ),
+                              border:
+                                  Border.all(color: Colors.black26, width: 1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.all(15.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "رسم عبور البضاعة: ${f.format(shipmentProvider.totalPassFeeValue)} ل.س",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 17.sp,
+                                  ),
+                                ),
+                                Text(
+                                  "رسم تفتيش ساحة: ${f.format(200000)} ل.س",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 17.sp,
+                                  ),
+                                ),
+                                Text(
+                                  "أجار شاحنة: ${f.format(shipmentProvider.truck != null ? shipmentProvider.truck!.fees! : 0)} ل.س",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 17.sp,
+                                  ),
+                                ),
+                                const Divider(color: Colors.grey),
+                                Text(
+                                  "اجمالي التكاليف: ${f.format(shipmentProvider.totalCosts)} ل.س",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 17.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 7,
+                        ),
                         Visibility(
-                          visible: shippmentProvider
-                                  .delivery_location_name.isNotEmpty &&
-                              shippmentProvider.co2report != null,
-                          child: co2Loading
+                          visible: shipmentProvider
+                                  .delivery_controller.text.isNotEmpty &&
+                              shipmentProvider.co2report != null,
+                          child: true
                               ? SizedBox(
                                   height: 10,
                                   child: LinearProgressIndicator(
@@ -1986,141 +2988,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                 )
                               : shipmentStatistics(),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 2.5),
-                          child: Card(
-                            color: Colors.white,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 7.5),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    AppLocalizations.of(context)!
-                                        .translate('loading_time'),
-                                    style: TextStyle(
-                                      // color: AppColor.lightBlue,
-                                      fontSize: 19.sp,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                .43,
-                                        child: GestureDetector(
-                                          onTap: _showDatePicker,
-                                          child: TextFormField(
-                                            controller: shippmentProvider
-                                                .date_controller,
-                                            enabled: false,
-                                            style:
-                                                const TextStyle(fontSize: 18),
-                                            decoration: InputDecoration(
-                                              labelText:
-                                                  AppLocalizations.of(context)!
-                                                      .translate('date'),
-                                              contentPadding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 11.0,
-                                                      horizontal: 9.0),
-                                              suffixIcon: const Icon(
-                                                  Icons.calendar_month),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                .43,
-                                        child: GestureDetector(
-                                          onTap: _showTimePicker,
-                                          child: TextFormField(
-                                            controller: shippmentProvider
-                                                .time_controller,
-                                            enabled: false,
-                                            style:
-                                                const TextStyle(fontSize: 18),
-                                            decoration: InputDecoration(
-                                              labelText:
-                                                  AppLocalizations.of(context)!
-                                                      .translate('time'),
-                                              contentPadding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 11.0,
-                                                      horizontal: 9.0),
-                                              suffixIcon: const Icon(
-                                                  Icons.timer_outlined),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Visibility(
-                                    visible: dateError,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            AppLocalizations.of(context)!
-                                                .translate('pick_date_error'),
-                                            style: const TextStyle(
-                                              color: Colors.red,
-                                              fontSize: 17,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Visibility(
-                                    visible:
-                                        shippmentProvider.isThereARouteError,
-                                    child: const Column(
-                                      children: [
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text(
-                                                "there is no available route change destination.",
-                                                style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 17,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                        const SizedBox(
+                          height: 7,
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
@@ -2130,12 +2999,28 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                             listener: (context, state) {
                               print(state);
                               if (state is ShippmentCreateSuccessState) {
-                                // ScaffoldMessenger.of(context)
-                                //     .showSnackBar(SnackBar(
-                                //   content: Text(AppLocalizations.of(context)!
-                                //       .translate('shipment_created_success')),
-                                //   duration: const Duration(seconds: 3),
-                                // ));
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  backgroundColor: AppColor.deepGreen,
+                                  dismissDirection: DismissDirection.up,
+                                  behavior: SnackBarBehavior.floating,
+                                  margin: EdgeInsets.only(
+                                      bottom:
+                                          MediaQuery.of(context).size.height -
+                                              150,
+                                      left: 10,
+                                      right: 10),
+                                  content: Text(AppLocalizations.of(context)!
+                                      .translate('shipment_created_success')),
+                                  duration: const Duration(seconds: 3),
+                                ));
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const ControlView(),
+                                    ),
+                                    (route) => false);
+                                shipmentProvider.initForm();
                               }
                               if (state is ShippmentCreateFailureState) {
                                 print(state.errorMessage);
@@ -2150,74 +3035,142 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                               } else {
                                 return CustomButton(
                                   title: Text(
-                                    AppLocalizations.of(context)!
-                                        .translate('search_truck'),
+                                    "أرسل طلب",
                                     style: TextStyle(
                                       fontSize: 20.sp,
                                     ),
                                   ),
                                   onTap: () {
-                                    if (shippmentProvider.thereARoute) {
+                                    if (shipmentProvider.thereARoute) {
                                       _addShipmentformKey.currentState?.save();
                                       if (_addShipmentformKey.currentState!
                                           .validate()) {
-                                        if (truckType != 0) {
+                                        if (shipmentProvider.truck != null) {
                                           setState(() {
-                                            truckError = false;
+                                            shipmentProvider
+                                                .setTruckError(false);
                                           });
-                                          if (shippmentProvider
-                                                  .pickup_controller
-                                                  .text
-                                                  .isNotEmpty &&
-                                              shippmentProvider
+                                          if (shipmentProvider.pickup_controller
+                                                  .text.isNotEmpty &&
+                                              shipmentProvider
                                                   .delivery_controller
                                                   .text
                                                   .isNotEmpty) {
                                             setState(() {
-                                              pathError = false;
+                                              shipmentProvider
+                                                  .setPathError(false);
                                             });
-                                            if (shippmentProvider
-                                                    .date_controller
-                                                    .text
-                                                    .isNotEmpty &&
-                                                shippmentProvider
-                                                    .time_controller
-                                                    .text
-                                                    .isNotEmpty) {
-                                              setState(() {
-                                                dateError = false;
-                                              });
+                                            KShipment shipment = KShipment();
 
-                                              BlocProvider.of<TrucksListBloc>(
-                                                      context)
-                                                  .add(TrucksListLoadEvent(
-                                                      truckType));
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      SelectTruckScreen(
-                                                    commodityName_controllers:
-                                                        commodityName_controllers,
-                                                    commodityWeight_controllers:
-                                                        commodityWeight_controllers,
-                                                    truckType: truckType,
-                                                  ),
-                                                ),
+                                            shipment.truckType =
+                                                shipmentProvider
+                                                    .truck!.truckType!;
+                                            shipment.shipmentType =
+                                                shipmentProvider
+                                                    .selectedRadioTile;
+                                            shipment.truck = Simpletruck(
+                                                id: shipmentProvider
+                                                    .truck!.id!);
+
+                                            var totalWeight = 0;
+                                            List<ShipmentItems> items = [];
+                                            for (var i = 0;
+                                                i <
+                                                    shipmentProvider
+                                                        .commodityWeight_controllers!
+                                                        .length;
+                                                i++) {
+                                              ShipmentItems item =
+                                                  ShipmentItems(
+                                                commodityCategory:
+                                                    shipmentProvider
+                                                        .commodityCategories[i]!,
+                                                commodityWeight: double.parse(
+                                                        shipmentProvider
+                                                            .commodityWeight_controllers[
+                                                                i]
+                                                            .text
+                                                            .replaceAll(
+                                                                ",", ""))
+                                                    .toInt(),
                                               );
-                                            } else {
-                                              setState(() {
-                                                dateError = true;
-                                              });
+                                              items.add(item);
+                                              totalWeight += double.parse(
+                                                      shipmentProvider
+                                                          .commodityWeight_controllers[
+                                                              i]
+                                                          .text
+                                                          .replaceAll(",", ""))
+                                                  .toInt();
                                             }
+
+                                            List<PathPoint> points = [];
+                                            if (shipmentProvider
+                                                    .pickup_latlng !=
+                                                null) {
+                                              points.add(PathPoint(
+                                                pointType: "P",
+                                                location:
+                                                    "${shipmentProvider.pickup_latlng!.latitude},${shipmentProvider.pickup_latlng!.longitude}",
+                                                name: shipmentProvider
+                                                    .pickup_controller.text,
+                                                number: 0,
+                                                city: 1,
+                                              ));
+                                            }
+                                            if (shipmentProvider
+                                                    .delivery_latlng !=
+                                                null) {
+                                              points.add(PathPoint(
+                                                pointType: "D",
+                                                location:
+                                                    "${shipmentProvider.delivery_latlng!.latitude},${shipmentProvider.delivery_latlng!.longitude}",
+                                                name: shipmentProvider
+                                                    .delivery_controller.text,
+                                                number: 0,
+                                                city: 1,
+                                              ));
+                                            }
+
+                                            for (var s = 0;
+                                                s <
+                                                    shipmentProvider
+                                                        .stoppoints_controller
+                                                        .length;
+                                                s++) {
+                                              points.add(PathPoint(
+                                                pointType: "S",
+                                                location:
+                                                    "${shipmentProvider.stoppoints_latlng[s]!.latitude},${shipmentProvider.stoppoints_latlng[s]!.longitude}",
+                                                name: shipmentProvider
+                                                    .stoppoints_controller[s]
+                                                    .text,
+                                                number: s,
+                                                city: 1,
+                                              ));
+                                            }
+                                            shipment.totalWeight = totalWeight;
+                                            shipment.shipmentItems = items;
+                                            shipment.pathPoints = points;
+                                            // shipment.pickupDate = DateTime.now();
+
+                                            print("sdf");
+                                            BlocProvider.of<
+                                                        ShippmentCreateBloc>(
+                                                    context)
+                                                .add(
+                                                    ShippmentCreateButtonPressed(
+                                                        shipment));
                                           } else {
                                             setState(() {
-                                              pathError = true;
+                                              shipmentProvider
+                                                  .setPathError(true);
                                             });
                                           }
                                         } else {
                                           setState(() {
-                                            truckError = true;
+                                            shipmentProvider
+                                                .setTruckError(true);
                                           });
                                           Scrollable.ensureVisible(
                                             key2.currentContext!,
@@ -2238,7 +3191,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                       FocusManager.instance.primaryFocus
                                           ?.unfocus();
                                     } else {
-                                      shippmentProvider
+                                      shipmentProvider
                                           .setIsThereRoutError(true);
                                     }
                                   },
@@ -2255,10 +3208,10 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                   ),
                 ),
                 Visibility(
-                  visible: !shippmentProvider.isThereARoute,
+                  visible: !shipmentProvider.isThereARoute,
                   child: GestureDetector(
                     onTap: () {
-                      shippmentProvider.setIsThereRout(true);
+                      shipmentProvider.setIsThereRout(true);
                     },
                     child: Stack(
                       alignment: Alignment.center,
@@ -2293,8 +3246,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                     children: [
                                       GestureDetector(
                                         onTap: () {
-                                          shippmentProvider
-                                              .setIsThereRout(true);
+                                          shipmentProvider.setIsThereRout(true);
                                         },
                                         child: AbsorbPointer(
                                           absorbing: true,
@@ -2330,8 +3282,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
   }
 
   Widget shipmentStatistics() {
-    return addShippmentProvider != null &&
-            addShippmentProvider!.co2report != null
+    return addShipmentProvider != null && addShipmentProvider!.co2report != null
         ? Padding(
             padding: const EdgeInsets.all(8.0),
             child: Card(
@@ -2364,8 +3315,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                 width: MediaQuery.of(context).size.width * .75,
                                 child: Text(
                                   localeState.value.languageCode == 'en'
-                                      ? "${addShippmentProvider!.co2report!.distance}"
-                                      : "${addShippmentProvider!.co2report!.distance!.replaceAll(RegExp('km'), 'كم')}",
+                                      ? "${addShipmentProvider!.co2report!.distance}"
+                                      : "${addShipmentProvider!.co2report!.distance!.replaceAll(RegExp('km'), 'كم')}",
                                   style: const TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.bold,
@@ -2396,8 +3347,8 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                 width: MediaQuery.of(context).size.width * .75,
                                 child: Text(
                                   localeState.value.languageCode == 'en'
-                                      ? "${addShippmentProvider!.co2report!.duration}"
-                                      : "${addShippmentProvider!.co2report!.duration!.replaceAll(RegExp('mins'), 'دقيقة').replaceAll(RegExp('hours'), 'ساعة')}",
+                                      ? "${addShipmentProvider!.co2report!.duration}"
+                                      : "${addShipmentProvider!.co2report!.duration!.replaceAll(RegExp('mins'), 'دقيقة').replaceAll(RegExp('hours'), 'ساعة')}",
                                   style: const TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.bold,
@@ -2427,7 +3378,7 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                               SizedBox(
                                 width: MediaQuery.of(context).size.width * .75,
                                 child: Text(
-                                  "${AppLocalizations.of(context)!.translate('total_co2')}: ${f.format(addShippmentProvider!.co2report!.et!.toInt())} ${localeState.value.languageCode == 'en' ? "kg" : "كغ"}",
+                                  "${AppLocalizations.of(context)!.translate('total_co2')}: ${f.format(addShipmentProvider!.co2report!.et!.toInt())} ${localeState.value.languageCode == 'en' ? "kg" : "كغ"}",
                                   style: const TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.bold,
@@ -2445,213 +3396,5 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
             ),
           )
         : const SizedBox.shrink();
-  }
-
-  void calculateCo2Report() {
-    setState(() {
-      co2Loading = true;
-    });
-    ShippmentDetail detail = ShippmentDetail();
-    detail.legs = [];
-    detail.load = [];
-    Legs leg = Legs();
-    leg.mode = "LTL";
-    print("report!.title!");
-    Origin origin = Origin();
-    leg.origin = origin;
-    Origin destination = Origin();
-    leg.destination = destination;
-
-    leg.origin!.latitude = addShippmentProvider!.pickup_lat;
-    leg.origin!.longitude = addShippmentProvider!.pickup_lang;
-    leg.destination!.latitude = addShippmentProvider!.delivery_lat;
-    leg.destination!.longitude = addShippmentProvider!.delivery_lang;
-
-    detail.legs!.add(leg);
-
-    // for (var i = 0; i < commodityWeight_controllers.length; i++) {
-    // }
-    Load load = Load();
-    load.unitWeightKg = 25000;
-    load.unitType = "pallets";
-    detail.load!.add(load);
-
-    // for (var i = 0; i < commodityWeight_controllers.length; i++) {
-    //   Load load = Load();
-    //   load.unitWeightKg =
-    //       double.parse(commodityWeight_controllers[i].text.replaceAll(",", ""));
-    //   load.unitType = "pallets";
-    //   detail.load!.add(load);
-    // }
-
-    Co2Service.getCo2Calculate(
-            detail,
-            LatLng(addShippmentProvider!.pickup_lat,
-                addShippmentProvider!.pickup_lang),
-            LatLng(addShippmentProvider!.delivery_lat,
-                addShippmentProvider!.delivery_lang))
-        .then((value) => addShippmentProvider!.setCo2Report(value!));
-    setState(() {
-      co2Loading = false;
-    });
-    print("calculation end");
-  }
-
-  Future<bool> _handleLocationPermission() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.orange,
-          dismissDirection: DismissDirection.up,
-          behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.only(
-              bottom: MediaQuery.of(context).size.height - 150,
-              left: 10,
-              right: 10),
-          content: const Text(
-            'Location services are disabled. Please enable the services',
-            style: TextStyle(
-              fontSize: 18,
-            ),
-          ),
-        ),
-      );
-      // setState(() {
-      //   pickupLoading = false;
-      // });
-      // return false;
-    }
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.orange,
-            dismissDirection: DismissDirection.up,
-            behavior: SnackBarBehavior.floating,
-            margin: EdgeInsets.only(
-                bottom: MediaQuery.of(context).size.height - 150,
-                left: 10,
-                right: 10),
-            content: const Text(
-              'Location permissions are denied',
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            ),
-          ),
-        );
-        setState(() {
-          pickupLoading = false;
-        });
-        return false;
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.orange,
-          dismissDirection: DismissDirection.up,
-          behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.only(
-              bottom: MediaQuery.of(context).size.height - 150,
-              left: 10,
-              right: 10),
-          content: const Text(
-            'Location permissions are permanently denied, we cannot request permissions.',
-            style: TextStyle(
-              fontSize: 18,
-            ),
-          ),
-        ),
-      );
-      setState(() {
-        pickupLoading = false;
-      });
-      return false;
-    }
-    return true;
-  }
-
-  Future<void> _getCurrentPositionForPickup() async {
-    final hasPermission = await _handleLocationPermission();
-    print(hasPermission);
-    if (!hasPermission) return;
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-        .then((Position position) {
-      print(position);
-      addShippmentProvider!
-          .setPickupLatLang(position.latitude, position.longitude);
-      addShippmentProvider!.setPickUpPosition(position);
-      _getAddressForPickupFromLatLng(position);
-    }).catchError((e) {
-      setState(() {
-        pickupLoading = false;
-      });
-      debugPrint(e);
-    });
-  }
-
-  Future<void> _getAddressForPickupFromLatLng(Position position) async {
-    var response = await http.get(
-      Uri.parse(
-          "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=AIzaSyADOoc8dgS4K4_qk9Hyp441jWtDSumfU7w"),
-    );
-    if (response.statusCode == 200) {
-      var result = jsonDecode(response.body);
-      addShippmentProvider!.setPickupName(
-          '${(result["results"][0]["address_components"][3]["long_name"]) ?? ""},${(result["results"][0]["address_components"][1]["long_name"]) ?? ""}');
-      addShippmentProvider!.pickup_controller.text =
-          '${(result["results"][0]["address_components"][3]["long_name"]) ?? ""},${(result["results"][0]["address_components"][1]["long_name"]) ?? ""}';
-    }
-    setState(() {
-      pickupLoading = false;
-    });
-    if (addShippmentProvider!.delivery_location_name.isNotEmpty) {
-      calculateCo2Report();
-    }
-  }
-
-  Future<void> _getCurrentPositionForDelivery() async {
-    final hasPermission = await _handleLocationPermission();
-    if (!hasPermission) return;
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-        .then((Position position) {
-      addShippmentProvider!
-          .setDeliveryLatLang(position.latitude, position.longitude);
-      addShippmentProvider!.setDeliveryPosition(position);
-      _getAddressForDeliveryFromLatLng(position);
-    }).catchError((e) {
-      setState(() {
-        deliveryLoading = false;
-      });
-      debugPrint(e);
-    });
-  }
-
-  Future<void> _getAddressForDeliveryFromLatLng(Position position) async {
-    var response = await http.get(
-      Uri.parse(
-          "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=AIzaSyADOoc8dgS4K4_qk9Hyp441jWtDSumfU7w"),
-    );
-    if (response.statusCode == 200) {
-      var result = jsonDecode(response.body);
-      addShippmentProvider!.setDeliveryName(
-          '${(result["results"][0]["address_components"][3]["long_name"]) ?? ""},${(result["results"][0]["address_components"][1]["long_name"]) ?? ""}');
-      addShippmentProvider!.delivery_controller.text =
-          '${(result["results"][0]["address_components"][3]["long_name"]) ?? ""},${(result["results"][0]["address_components"][1]["long_name"]) ?? ""}';
-    }
-    setState(() {
-      deliveryLoading = false;
-    });
-    calculateCo2Report();
-    if (evaluateCo2()) {
-      calculateCo2Report();
-    }
   }
 }

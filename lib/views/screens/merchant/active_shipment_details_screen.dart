@@ -5,11 +5,10 @@ import 'package:camion/Localization/app_localizations.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/constants/enums.dart';
 import 'package:camion/data/models/co2_report.dart';
-import 'package:camion/data/models/shipment_model.dart';
+import 'package:camion/data/models/kshipment_model.dart';
 import 'package:camion/data/providers/active_shipment_provider.dart';
 import 'package:camion/data/services/co2_service.dart';
 import 'package:camion/helpers/color_constants.dart';
-import 'package:camion/views/screens/merchant/shipment_task_details_screen.dart';
 import 'package:camion/views/widgets/custom_app_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +25,7 @@ import 'package:intl/intl.dart' as intel;
 
 class ActiveShipmentDetailsScreen extends StatefulWidget {
   final String user_id;
-  final Shipment shipment;
+  final KShipment shipment;
   final int index;
   ActiveShipmentDetailsScreen(
       {Key? key,
@@ -75,10 +74,22 @@ class _ActiveShipmentDetailsScreenState
     Origin destination = Origin();
     leg.destination = destination;
 
-    leg.origin!.latitude = widget.shipment!.pickupCityLat;
-    leg.origin!.longitude = widget.shipment!.pickupCityLang;
-    leg.destination!.latitude = widget.shipment!.deliveryCityLat;
-    leg.destination!.longitude = widget.shipment!.deliveryCityLang;
+    leg.origin!.latitude = double.parse(widget.shipment!.pathPoints!
+        .singleWhere((element) => element.pointType == "P")
+        .location!
+        .split(",")[0]);
+    leg.origin!.longitude = double.parse(widget.shipment!.pathPoints!
+        .singleWhere((element) => element.pointType == "P")
+        .location!
+        .split(",")[1]);
+    leg.destination!.latitude = double.parse(widget.shipment!.pathPoints!
+        .singleWhere((element) => element.pointType == "D")
+        .location!
+        .split(",")[0]);
+    leg.destination!.longitude = double.parse(widget.shipment!.pathPoints!
+        .singleWhere((element) => element.pointType == "D")
+        .location!
+        .split(",")[1]);
 
     detail.legs!.add(leg);
 
@@ -92,10 +103,24 @@ class _ActiveShipmentDetailsScreenState
 
     Co2Service.getCo2Calculate(
             detail,
-            LatLng(widget.shipment!.pickupCityLat!,
-                widget.shipment!.pickupCityLang!),
-            LatLng(widget.shipment!.deliveryCityLat!,
-                widget.shipment!.deliveryCityLang!))
+            LatLng(
+                double.parse(widget.shipment!.pathPoints!
+                    .singleWhere((element) => element.pointType == "P")
+                    .location!
+                    .split(",")[0]),
+                double.parse(widget.shipment!.pathPoints!
+                    .singleWhere((element) => element.pointType == "P")
+                    .location!
+                    .split(",")[1])),
+            LatLng(
+                double.parse(widget.shipment!.pathPoints!
+                    .singleWhere((element) => element.pointType == "D")
+                    .location!
+                    .split(",")[0]),
+                double.parse(widget.shipment!.pathPoints!
+                    .singleWhere((element) => element.pointType == "D")
+                    .location!
+                    .split(",")[1])))
         .then((value) {
       setState(() {
         _report = value!;
@@ -304,14 +329,32 @@ class _ActiveShipmentDetailsScreenState
                           ),
                           Marker(
                             markerId: const MarkerId("pickup"),
-                            position: LatLng(widget.shipment.pickupCityLat!,
-                                widget.shipment.pickupCityLang!),
+                            position: LatLng(
+                                double.parse(widget.shipment!.pathPoints!
+                                    .singleWhere(
+                                        (element) => element.pointType == "P")
+                                    .location!
+                                    .split(",")[0]),
+                                double.parse(widget.shipment!.pathPoints!
+                                    .singleWhere(
+                                        (element) => element.pointType == "P")
+                                    .location!
+                                    .split(",")[1])),
                             icon: pickupicon,
                           ),
                           Marker(
                             markerId: const MarkerId("delivery"),
-                            position: LatLng(widget.shipment.deliveryCityLat!,
-                                widget.shipment.deliveryCityLang!),
+                            position: LatLng(
+                                double.parse(widget.shipment!.pathPoints!
+                                    .singleWhere(
+                                        (element) => element.pointType == "D")
+                                    .location!
+                                    .split(",")[0]),
+                                double.parse(widget.shipment!.pathPoints!
+                                    .singleWhere(
+                                        (element) => element.pointType == "D")
+                                    .location!
+                                    .split(",")[1])),
                             icon: deliveryicon,
                           ),
                         },
@@ -370,26 +413,42 @@ class _ActiveShipmentDetailsScreenState
     );
   }
 
-  getpolylineCoordinates(Shipment shipment) async {
+  getpolylineCoordinates(KShipment shipment) async {
     print("asd");
     List<Marker> markers = [];
     markers.add(
       Marker(
         markerId: const MarkerId("pickup"),
-        position: LatLng(shipment.pickupCityLat!, shipment.pickupCityLang!),
+        position: LatLng(
+            double.parse(shipment!.pathPoints!
+                .singleWhere((element) => element.pointType == "P")
+                .location!
+                .split(",")[0]),
+            double.parse(shipment!.pathPoints!
+                .singleWhere((element) => element.pointType == "P")
+                .location!
+                .split(",")[1])),
       ),
     );
     markers.add(
       Marker(
         markerId: const MarkerId("delivery"),
-        position: LatLng(shipment.deliveryCityLat!, shipment.deliveryCityLang!),
+        position: LatLng(
+            double.parse(shipment!.pathPoints!
+                .singleWhere((element) => element.pointType == "D")
+                .location!
+                .split(",")[0]),
+            double.parse(shipment!.pathPoints!
+                .singleWhere((element) => element.pointType == "D")
+                .location!
+                .split(",")[1])),
       ),
     );
     calculateCo2Report();
     print("asd2");
 
     getBounds(markers, _controller);
-    setState(() {});
+    // setState(() {});
   }
 
   void getBounds(List<Marker> markers, GoogleMapController mapcontroller) {
@@ -409,7 +468,7 @@ class _ActiveShipmentDetailsScreenState
     mapcontroller.animateCamera(cameraUpdate);
     print("asd3");
 
-    setState(() {});
+    // setState(() {});
   }
 
   double? _getTopForPanel() {
@@ -499,12 +558,12 @@ class _ActiveShipmentDetailsScreenState
                         TimelineTile(
                           direction: Axis.horizontal,
                           oppositeContents: Text(
-                            setLoadDate(widget.shipment.pickupDate!),
+                            "",
                           ),
                           contents: SizedBox(
                             width: MediaQuery.of(context).size.width * .18,
                             child: Text(
-                              'Pickup: ${widget.shipment.pickupCityLocation!}',
+                              'Pickup: ${widget.shipment!.pathPoints!.singleWhere((element) => element.pointType == "P").name!}',
                               style: const TextStyle(),
                               maxLines: 2,
                             ),
@@ -533,12 +592,12 @@ class _ActiveShipmentDetailsScreenState
                         TimelineTile(
                           direction: Axis.horizontal,
                           oppositeContents: Text(
-                            setLoadDate(widget.shipment.pickupDate!),
+                            "",
                           ),
                           contents: SizedBox(
                             width: MediaQuery.of(context).size.width * .18,
                             child: Text(
-                              'Delivery:${widget.shipment.deliveryCityLocation!}',
+                              'Delivery:${widget.shipment!.pathPoints!.singleWhere((element) => element.pointType == "D").name!}',
                               style: const TextStyle(),
                               maxLines: 2,
                             ),
@@ -601,14 +660,14 @@ class _ActiveShipmentDetailsScreenState
                         // color: AppColor.deepYellow,
                       ),
                     ),
-                    Text(
-                      "${widget.shipment.driver!.user!.firstName!} ${widget.shipment.driver!.user!.lastName!}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.deepYellow,
-                        fontSize: 16,
-                      ),
-                    ),
+                    // Text(
+                    //   "${widget.shipment.truck!.truckuser!.firstName!} ${widget.shipment.truck!.truckuser!.lastName!}",
+                    //   style: TextStyle(
+                    //     fontWeight: FontWeight.bold,
+                    //     color: AppColor.deepYellow,
+                    //     fontSize: 16,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -738,7 +797,7 @@ class _ActiveShipmentDetailsScreenState
                             height: 5,
                           ),
                           Text(
-                            "${AppLocalizations.of(context)!.translate('commodity_name')}: ${widget.shipment.shipmentItems![0].commodityName!}",
+                            "${AppLocalizations.of(context)!.translate('commodity_name')}: ${widget.shipment.shipmentItems![0].commodityCategory!}",
                             style: TextStyle(
                               fontSize: 18.sp,
                             ),
@@ -797,7 +856,7 @@ class _ActiveShipmentDetailsScreenState
                     ),
                   ),
                   Text(
-                    "${widget.shipment.driver!.user!.firstName!} ${widget.shipment.driver!.user!.lastName!}",
+                    "${widget.shipment.truck!.truckuser!.usertruck!.firstName!} ${widget.shipment.truck!.truckuser!.usertruck!.lastName!}",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: AppColor.deepYellow,
@@ -852,14 +911,14 @@ class _ActiveShipmentDetailsScreenState
     );
   }
 
-  int getunfinishedTasks(Shipment shipment) {
+  int getunfinishedTasks(KShipment shipment) {
     var count = 0;
-    if (shipment.shipmentinstruction == null) {
-      count++;
-    }
-    if (shipment.shipmentpayment == null) {
-      count++;
-    }
+    // if (shipment.shipmentinstruction == null) {
+    //   count++;
+    // }
+    // if (shipment.shipmentpayment == null) {
+    //   count++;
+    // }
     return count;
   }
 
@@ -952,7 +1011,7 @@ class _ActiveShipmentDetailsScreenState
                               height: 5,
                             ),
                             Text(
-                              "${AppLocalizations.of(context)!.translate('commodity_name')}: ${widget.shipment.shipmentItems![index].commodityName!}",
+                              "${AppLocalizations.of(context)!.translate('commodity_name')}: ${widget.shipment.shipmentItems![index].commodityCategory!}",
                               style: TextStyle(
                                 fontSize: 17.sp,
                               ),

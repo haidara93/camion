@@ -2,6 +2,9 @@ import 'dart:convert';
 
 import 'package:camion/Localization/app_localizations.dart';
 import 'package:camion/business_logic/bloc/core/auth_bloc.dart';
+import 'package:camion/business_logic/bloc/core/commodity_category_bloc.dart';
+import 'package:camion/business_logic/bloc/core/k_commodity_category_bloc.dart';
+import 'package:camion/business_logic/bloc/managment/managment_shipment_list_bloc.dart';
 import 'package:camion/business_logic/bloc/post_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/active_shipment_list_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_list_bloc.dart';
@@ -12,7 +15,9 @@ import 'package:camion/data/providers/add_shippment_provider.dart';
 import 'package:camion/data/providers/task_num_provider.dart';
 import 'package:camion/data/services/fcm_service.dart';
 import 'package:camion/helpers/color_constants.dart';
+import 'package:camion/views/screens/managment/log_screen.dart';
 import 'package:camion/views/screens/merchant/active_shipment_screen.dart';
+import 'package:camion/views/screens/merchant/add_multi_shipment_screen.dart';
 import 'package:camion/views/screens/merchant/add_shippment_screen.dart';
 import 'package:camion/views/screens/main_screen.dart';
 import 'package:camion/views/screens/merchant/shipment_task_screen.dart';
@@ -61,6 +66,10 @@ class _HomeScreenState extends State<HomeScreen>
     super.initState();
 
     getUserData();
+    BlocProvider.of<CommodityCategoryBloc>(context)
+        .add(CommodityCategoryLoadEvent());
+    BlocProvider.of<KCommodityCategoryBloc>(context)
+        .add(KCommodityCategoryLoadEvent());
     BlocProvider.of<PostBloc>(context).add(PostLoadEvent());
 
     notificationServices.requestNotificationPermission();
@@ -71,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     _tabController = TabController(
       initialIndex: 0,
-      length: 5,
+      length: 4,
       vsync: this,
     );
 
@@ -110,15 +119,17 @@ class _HomeScreenState extends State<HomeScreen>
         }
       case 1:
         {
+          BlocProvider.of<ManagmentShipmentListBloc>(context)
+              .add(ManagmentShipmentListLoadEvent("P"));
           setState(() {
             title = AppLocalizations.of(context)!.translate('shippment_log');
-            currentScreen = ShippmentLogScreen();
+            currentScreen = ManagmentLogScreen();
           });
           break;
         }
       case 2:
         {
-          addShippmentProvider!.initForm();
+          addShippmentProvider!.initShipment();
           setState(() {
             title = AppLocalizations.of(context)!.translate('order_shippment');
             currentScreen = AddShippmentScreen();
@@ -136,17 +147,17 @@ class _HomeScreenState extends State<HomeScreen>
           });
           break;
         }
-      case 4:
-        {
-          BlocProvider.of<ActiveShipmentListBloc>(context)
-              .add(ActiveShipmentListLoadEvent());
-          setState(() {
-            title = AppLocalizations.of(context)!.translate('tasks');
+      // case 4:
+      //   {
+      //     BlocProvider.of<ActiveShipmentListBloc>(context)
+      //         .add(ActiveShipmentListLoadEvent());
+      //     setState(() {
+      //       title = AppLocalizations.of(context)!.translate('tasks');
 
-            currentScreen = ShipmentTaskScreen();
-          });
-          break;
-        }
+      //       currentScreen = ShipmentTaskScreen();
+      //     });
+      //     break;
+      //   }
     }
   }
 
@@ -331,22 +342,28 @@ class _HomeScreenState extends State<HomeScreen>
                                 content: SingleChildScrollView(
                                   child: ListBody(
                                     children: <Widget>[
-                                      Text(AppLocalizations.of(context)!
-                                          .translate('log_out_confirm')),
+                                      Text(
+                                          AppLocalizations.of(context)!
+                                              .translate('log_out_confirm'),
+                                          style: TextStyle(fontSize: 18)),
                                     ],
                                   ),
                                 ),
                                 actions: <Widget>[
                                   TextButton(
-                                    child: Text(AppLocalizations.of(context)!
-                                        .translate('no')),
+                                    child: Text(
+                                        AppLocalizations.of(context)!
+                                            .translate('no'),
+                                        style: TextStyle(fontSize: 18)),
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },
                                   ),
                                   TextButton(
-                                    child: Text(AppLocalizations.of(context)!
-                                        .translate('yes')),
+                                    child: Text(
+                                        AppLocalizations.of(context)!
+                                            .translate('yes'),
+                                        style: TextStyle(fontSize: 18)),
                                     onPressed: () {
                                       BlocProvider.of<AuthBloc>(context)
                                           .add(UserLoggedOut());
@@ -605,116 +622,116 @@ class _HomeScreenState extends State<HomeScreen>
                                         ],
                                       ),
                               ),
-                              Tab(
-                                height: 66.h,
-                                icon: Consumer<TaskNumProvider>(
-                                  builder: (context, value, child) {
-                                    return BlocListener<ActiveShipmentListBloc,
-                                        ActiveShipmentListState>(
-                                      listener: (context, state) {
-                                        if (state
-                                            is ActiveShipmentListLoadedSuccess) {
-                                          var taskNum = 0;
-                                          for (var element in state.shipments) {
-                                            if (element.shipmentinstruction ==
-                                                null) {
-                                              taskNum++;
-                                            }
-                                            if (element.shipmentpayment ==
-                                                null) {
-                                              taskNum++;
-                                            }
-                                          }
-                                          value.setTaskNum(taskNum);
-                                        }
-                                      },
-                                      child: Stack(
-                                        children: [
-                                          navigationValue == 4
-                                              ? Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: [
-                                                    SvgPicture.asset(
-                                                      "assets/icons/task_selected.svg",
-                                                      width: 36.w,
-                                                      height: 36.h,
-                                                    ),
-                                                    localeState.value
-                                                                .languageCode ==
-                                                            'en'
-                                                        ? const SizedBox(
-                                                            height: 4,
-                                                          )
-                                                        : const SizedBox
-                                                            .shrink(),
-                                                    Text(
-                                                      AppLocalizations.of(
-                                                              context)!
-                                                          .translate('tasks'),
-                                                      style: TextStyle(
-                                                          color: AppColor
-                                                              .deepYellow,
-                                                          fontSize: 15.sp),
-                                                    )
-                                                  ],
-                                                )
-                                              : Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: [
-                                                    SvgPicture.asset(
-                                                      "assets/icons/tasks.svg",
-                                                      width: 30.w,
-                                                      height: 30.h,
-                                                    ),
-                                                    localeState.value
-                                                                .languageCode ==
-                                                            'en'
-                                                        ? const SizedBox(
-                                                            height: 4,
-                                                          )
-                                                        : const SizedBox
-                                                            .shrink(),
-                                                    Text(
-                                                      AppLocalizations.of(
-                                                              context)!
-                                                          .translate('tasks'),
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 15.sp),
-                                                    )
-                                                  ],
-                                                ),
-                                          value.taskNum > 0
-                                              ? Positioned(
-                                                  child: Container(
-                                                    height: 25,
-                                                    width: 25,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.red,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              45),
-                                                    ),
-                                                    child: Center(
-                                                      child: Text(
-                                                          value.taskNum
-                                                              .toString(),
-                                                          style:
-                                                              const TextStyle(
-                                                            color: Colors.white,
-                                                          )),
-                                                    ),
-                                                  ),
-                                                )
-                                              : const SizedBox.shrink(),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
+                              // Tab(
+                              //   height: 66.h,
+                              //   icon: Consumer<TaskNumProvider>(
+                              //     builder: (context, value, child) {
+                              //       return BlocListener<ActiveShipmentListBloc,
+                              //           ActiveShipmentListState>(
+                              //         listener: (context, state) {
+                              //           if (state
+                              //               is ActiveShipmentListLoadedSuccess) {
+                              //             var taskNum = 0;
+                              //             // for (var element in state.shipments) {
+                              //             //   if (element.shipmentinstruction ==
+                              //             //       null) {
+                              //             //     taskNum++;
+                              //             //   }
+                              //             //   if (element.shipmentpayment ==
+                              //             //       null) {
+                              //             //     taskNum++;
+                              //             //   }
+                              //             // }
+                              //             value.setTaskNum(taskNum);
+                              //           }
+                              //         },
+                              //         child: Stack(
+                              //           children: [
+                              //             navigationValue == 4
+                              //                 ? Column(
+                              //                     mainAxisAlignment:
+                              //                         MainAxisAlignment.end,
+                              //                     children: [
+                              //                       SvgPicture.asset(
+                              //                         "assets/icons/task_selected.svg",
+                              //                         width: 36.w,
+                              //                         height: 36.h,
+                              //                       ),
+                              //                       localeState.value
+                              //                                   .languageCode ==
+                              //                               'en'
+                              //                           ? const SizedBox(
+                              //                               height: 4,
+                              //                             )
+                              //                           : const SizedBox
+                              //                               .shrink(),
+                              //                       Text(
+                              //                         AppLocalizations.of(
+                              //                                 context)!
+                              //                             .translate('tasks'),
+                              //                         style: TextStyle(
+                              //                             color: AppColor
+                              //                                 .deepYellow,
+                              //                             fontSize: 15.sp),
+                              //                       )
+                              //                     ],
+                              //                   )
+                              //                 : Column(
+                              //                     mainAxisAlignment:
+                              //                         MainAxisAlignment.end,
+                              //                     children: [
+                              //                       SvgPicture.asset(
+                              //                         "assets/icons/tasks.svg",
+                              //                         width: 30.w,
+                              //                         height: 30.h,
+                              //                       ),
+                              //                       localeState.value
+                              //                                   .languageCode ==
+                              //                               'en'
+                              //                           ? const SizedBox(
+                              //                               height: 4,
+                              //                             )
+                              //                           : const SizedBox
+                              //                               .shrink(),
+                              //                       Text(
+                              //                         AppLocalizations.of(
+                              //                                 context)!
+                              //                             .translate('tasks'),
+                              //                         style: TextStyle(
+                              //                             color: Colors.white,
+                              //                             fontSize: 15.sp),
+                              //                       )
+                              //                     ],
+                              //                   ),
+                              //             value.taskNum > 0
+                              //                 ? Positioned(
+                              //                     child: Container(
+                              //                       height: 25,
+                              //                       width: 25,
+                              //                       decoration: BoxDecoration(
+                              //                         color: Colors.red,
+                              //                         borderRadius:
+                              //                             BorderRadius.circular(
+                              //                                 45),
+                              //                       ),
+                              //                       child: Center(
+                              //                         child: Text(
+                              //                             value.taskNum
+                              //                                 .toString(),
+                              //                             style:
+                              //                                 const TextStyle(
+                              //                               color: Colors.white,
+                              //                             )),
+                              //                       ),
+                              //                     ),
+                              //                   )
+                              //                 : const SizedBox.shrink(),
+                              //           ],
+                              //         ),
+                              //       );
+                              //     },
+                              //   ),
+                              // ),
                             ],
                           ),
                         );

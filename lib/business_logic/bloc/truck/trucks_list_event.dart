@@ -12,3 +12,9 @@ class TrucksListLoadEvent extends TrucksListEvent {
 
   TrucksListLoadEvent(this.truckType);
 }
+
+class TrucksListSearchEvent extends TrucksListEvent {
+  final String truckType;
+
+  TrucksListSearchEvent(this.truckType);
+}

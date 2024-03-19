@@ -12,7 +12,7 @@ final class TrucksListInitial extends TrucksListState {}
 class TrucksListLoadingProgress extends TrucksListState {}
 
 class TrucksListLoadedSuccess extends TrucksListState {
-  final List<Truck> trucks;
+  final List<KTruck> trucks;
 
   const TrucksListLoadedSuccess(this.trucks);
 }

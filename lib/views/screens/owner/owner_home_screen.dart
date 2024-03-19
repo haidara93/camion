@@ -1,23 +1,35 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:camion/Localization/app_localizations.dart';
+import 'package:camion/business_logic/bloc/core/auth_bloc.dart';
+import 'package:camion/business_logic/bloc/driver_shipments/unassigned_shipment_list_bloc.dart';
+import 'package:camion/business_logic/bloc/owner_shipments/owner_active_shipments_bloc.dart';
+import 'package:camion/business_logic/bloc/owner_shipments/owner_shipment_list_bloc.dart';
 import 'package:camion/business_logic/bloc/post_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shipment_list_bloc.dart';
+import 'package:camion/business_logic/bloc/truck/owner_trucks_bloc.dart';
 import 'package:camion/business_logic/cubit/bottom_nav_bar_cubit.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
+import 'package:camion/data/models/user_model.dart';
 import 'package:camion/data/services/fcm_service.dart';
 import 'package:camion/helpers/color_constants.dart';
 import 'package:camion/views/screens/merchant/add_shippment_screen.dart';
 import 'package:camion/views/screens/main_screen.dart';
+import 'package:camion/views/screens/owner/all_incoming_shipment_screen.dart';
+import 'package:camion/views/screens/owner/driver_active_shipment_screen.dart';
+import 'package:camion/views/screens/owner/owner_search_shipment_screen.dart';
 import 'package:camion/views/screens/shippment_log_screen.dart';
 import 'package:camion/views/screens/driver/tracking_shippment_screen.dart';
 import 'package:camion/views/widgets/custom_app_bar.dart';
+import 'package:camion/views/widgets/loading_indicator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:location/location.dart' as loc;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OwnerHomeScreen extends StatefulWidget {
   OwnerHomeScreen({Key? key}) : super(key: key);
@@ -30,6 +42,7 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   final loc.Location location = loc.Location();
   StreamSubscription<loc.LocationData>? _locationSubscription;
+  late SharedPreferences prefs;
 
   int currentIndex = 0;
   int navigationValue = 0;
@@ -39,47 +52,25 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen>
   NotificationServices notificationServices = NotificationServices();
   late TabController _tabController;
 
-  _getLocation() async {
-    try {
-      final loc.LocationData _locationResult = await location.getLocation();
-      await FirebaseFirestore.instance.collection('location').doc('user1').set({
-        'latitude': _locationResult.latitude,
-        'longitude': _locationResult.longitude,
-        'name': 'john'
-      }, SetOptions(merge: true));
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future<void> _listenLocation() async {
-    _locationSubscription = location.onLocationChanged.handleError((onError) {
-      print(onError);
-      _locationSubscription?.cancel();
-      setState(() {
-        _locationSubscription = null;
-      });
-    }).listen((loc.LocationData currentlocation) async {
-      await FirebaseFirestore.instance.collection('location').doc('user1').set({
-        'latitude': currentlocation.latitude,
-        'longitude': currentlocation.longitude,
-        'name': 'john'
-      }, SetOptions(merge: true));
-    });
-  }
-
-  _stopListening() {
-    _locationSubscription?.cancel();
+  bool userloading = true;
+  late UserModel _usermodel;
+  getUserData() async {
+    prefs = await SharedPreferences.getInstance();
+    _usermodel =
+        UserModel.fromJson(jsonDecode(prefs.getString("userProfile")!));
     setState(() {
-      _locationSubscription = null;
+      userloading = false;
     });
+    print("_usermodel.truckowner!");
+    print(_usermodel.truckowner!);
+    BlocProvider.of<OwnerTrucksBloc>(context)
+        .add(OwnerTrucksLoadEvent(_usermodel.truckowner!));
   }
 
   @override
   void initState() {
     super.initState();
-    _getLocation();
-    _listenLocation();
+    getUserData();
     BlocProvider.of<PostBloc>(context).add(PostLoadEvent());
 
     notificationServices.requestNotificationPermission();
@@ -106,7 +97,6 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen>
     // Remove the WidgetsBindingObserver when the state is disposed
     // scroll.dispose();
     _tabController.dispose();
-    _stopListening();
     super.dispose();
   }
 
@@ -130,31 +120,35 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen>
         }
       case 1:
         {
-          BlocProvider.of<ShipmentListBloc>(context)
-              .add(ShipmentListLoadEvent("P"));
+          BlocProvider.of<OwnerShipmentListBloc>(context)
+              .add(OwnerShipmentListLoadEvent("P"));
           setState(() {
-            title = AppLocalizations.of(context)!.translate('shippment_log');
-            currentScreen = ShippmentLogScreen();
+            title = AppLocalizations.of(context)!.translate('incoming_orders');
+            currentScreen = AllIncomingShippmentLogScreen();
           });
           break;
         }
       case 2:
         {
+          BlocProvider.of<UnassignedShipmentListBloc>(context)
+              .add(UnassignedShipmentListLoadEvent());
           setState(() {
-            title = AppLocalizations.of(context)!.translate('order_shippment');
-            currentScreen = AddShippmentScreen();
+            title = AppLocalizations.of(context)!.translate('shipment_search');
+            currentScreen = OwnerSearchShippmentScreen();
           });
           break;
         }
-      case 3:
-        {
-          setState(() {
-            title = AppLocalizations.of(context)!.translate('tracking');
+      // case 3:
+      //   {
+      //     BlocProvider.of<OwnerActiveShipmentsBloc>(context)
+      //         .add(OwnerActiveShipmentsLoadEvent());
+      //     setState(() {
+      //       title = AppLocalizations.of(context)!.translate('tracking');
 
-            currentScreen = ActiveShipmentDetailsScreen();
-          });
-          break;
-        }
+      //       currentScreen = OwnerActiveShipmentScreen();
+      //     });
+      //     break;
+      //   }
     }
   }
 
@@ -178,6 +172,245 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen>
                 appBar: CustomAppBar(
                   title: title,
                   scaffoldKey: _scaffoldKey,
+                ),
+                drawer: Drawer(
+                  backgroundColor: AppColor.deepBlack,
+                  elevation: 1,
+                  width: MediaQuery.of(context).size.width * .85,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12.w),
+                    child: ListView(children: [
+                      SizedBox(
+                        height: 35.h,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: AppColor.deepYellow,
+                            radius: 35.h,
+                            child: userloading
+                                ? const Center(
+                                    child: LoadingIndicator(),
+                                  )
+                                : (_usermodel.image!.isNotEmpty ||
+                                        _usermodel.image! != null)
+                                    ? ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(180),
+                                        child: Image.network(
+                                          _usermodel.image!,
+                                          fit: BoxFit.fill,
+                                        ),
+                                      )
+                                    : Center(
+                                        child: Text(
+                                          "${_usermodel.firstName![0].toUpperCase()} ${_usermodel.lastName![0].toUpperCase()}",
+                                          style: TextStyle(
+                                            fontSize: 28.sp,
+                                          ),
+                                        ),
+                                      ),
+                          ),
+                          userloading
+                              ? Text(
+                                  "",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 26.sp,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              : Text(
+                                  "${_usermodel.firstName!} ${_usermodel.lastName!}",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 26.sp,
+                                      fontWeight: FontWeight.bold),
+                                )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 15.h,
+                      ),
+                      const Divider(
+                        color: Colors.white,
+                      ),
+                      GestureDetector(
+                        onTap: () async {
+                          if (AppLocalizations.of(context)!.isEnLocale!) {
+                            BlocProvider.of<LocaleCubit>(context).toArabic();
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            prefs.setString("language", "ar");
+                          } else {
+                            BlocProvider.of<LocaleCubit>(context).toEnglish();
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            prefs.setString("language", "en");
+                          }
+                          Future.delayed(const Duration(milliseconds: 500))
+                              .then((value) {
+                            _scaffoldKey.currentState!.closeDrawer();
+                            switch (navigationValue) {
+                              case 0:
+                                {
+                                  setState(() {
+                                    title = AppLocalizations.of(context)!
+                                        .translate('home');
+                                  });
+                                  break;
+                                }
+                              case 1:
+                                {
+                                  setState(() {
+                                    title = AppLocalizations.of(context)!
+                                        .translate('incoming_orders');
+                                  });
+                                  break;
+                                }
+                              case 2:
+                                {
+                                  setState(() {
+                                    title = AppLocalizations.of(context)!
+                                        .translate('shipment_search');
+                                  });
+                                  break;
+                                }
+                              case 3:
+                                {
+                                  setState(() {
+                                    title = AppLocalizations.of(context)!
+                                        .translate('my_path');
+                                  });
+                                  break;
+                                }
+                            }
+                          });
+                        },
+                        child: ListTile(
+                          leading: SvgPicture.asset(
+                            "assets/icons/settings.svg",
+                            height: 20.h,
+                          ),
+                          title: Text(
+                            localeState.value.languageCode != 'en'
+                                ? "English"
+                                : "العربية",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          // trailing: Container(
+                          //   width: 35.w,
+                          //   height: 20.h,
+                          //   decoration: BoxDecoration(
+                          //       color: AppColor.deepYellow,
+                          //       borderRadius: BorderRadius.circular(2)),
+                          //   child: Center(
+                          //     child: Text(
+                          //       "soon",
+                          //       style: TextStyle(
+                          //         color: Colors.white,
+                          //         fontSize: 12.sp,
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                        ),
+                      ),
+                      const Divider(
+                        color: Colors.white,
+                      ),
+                      ListTile(
+                        leading: SvgPicture.asset(
+                          "assets/icons/help_info.svg",
+                          height: 20.h,
+                        ),
+                        title: Text(
+                          AppLocalizations.of(context)!.translate('help'),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        trailing: Container(
+                          width: 35.w,
+                          height: 20.h,
+                          decoration: BoxDecoration(
+                              color: AppColor.deepYellow,
+                              borderRadius: BorderRadius.circular(2)),
+                          child: Center(
+                            child: Text(
+                              "soon",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12.sp,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const Divider(
+                        color: Colors.white,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          showDialog<void>(
+                            context: context,
+                            barrierDismissible: false, // user must tap button!
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                // <-- SEE HERE
+                                backgroundColor: Colors.white,
+                                title: Text(AppLocalizations.of(context)!
+                                    .translate('log_out')),
+                                content: SingleChildScrollView(
+                                  child: ListBody(
+                                    children: <Widget>[
+                                      Text(AppLocalizations.of(context)!
+                                          .translate('log_out_confirm')),
+                                    ],
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text(AppLocalizations.of(context)!
+                                        .translate('no')),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text(AppLocalizations.of(context)!
+                                        .translate('yes')),
+                                    onPressed: () {
+                                      BlocProvider.of<AuthBloc>(context)
+                                          .add(UserLoggedOut());
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: ListTile(
+                          leading: SvgPicture.asset(
+                            "assets/icons/log_out.svg",
+                            height: 20.h,
+                          ),
+                          title: Text(
+                            AppLocalizations.of(context)!.translate('log_out'),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ]),
+                  ),
                 ),
                 bottomNavigationBar:
                     BlocBuilder<BottomNavBarCubit, BottomNavBarState>(
@@ -266,12 +499,20 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen>
                                                 height: 4,
                                               )
                                             : const SizedBox.shrink(),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .translate('shippment_log'),
-                                          style: TextStyle(
-                                              color: AppColor.deepYellow,
-                                              fontSize: 15.sp),
+                                        FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 1,
+                                            ),
+                                            child: Text(
+                                              AppLocalizations.of(context)!
+                                                  .translate('incoming_orders'),
+                                              style: TextStyle(
+                                                  color: AppColor.deepYellow,
+                                                  fontSize: 15.sp),
+                                            ),
+                                          ),
                                         )
                                       ],
                                     )
@@ -288,18 +529,25 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen>
                                                 height: 4,
                                               )
                                             : const SizedBox.shrink(),
-                                        Text(
-                                          AppLocalizations.of(context)!
-                                              .translate('shippment_log'),
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 15.sp),
+                                        FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 1,
+                                            ),
+                                            child: Text(
+                                              AppLocalizations.of(context)!
+                                                  .translate('incoming_orders'),
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15.sp),
+                                            ),
+                                          ),
                                         )
                                       ],
                                     ),
                             ),
                             Tab(
-                              // text: "الرئيسية",
                               height: 66.h,
                               icon: navigationValue == 2
                                   ? Column(
@@ -317,12 +565,17 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen>
                                             : const SizedBox.shrink(),
                                         FittedBox(
                                           fit: BoxFit.scaleDown,
-                                          child: Text(
-                                            AppLocalizations.of(context)!
-                                                .translate('order_shippment'),
-                                            style: TextStyle(
-                                                color: AppColor.deepYellow,
-                                                fontSize: 15.sp),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 1,
+                                            ),
+                                            child: Text(
+                                              AppLocalizations.of(context)!
+                                                  .translate('shipment_search'),
+                                              style: TextStyle(
+                                                  color: AppColor.deepYellow,
+                                                  fontSize: 15.sp),
+                                            ),
                                           ),
                                         )
                                       ],
@@ -342,12 +595,17 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen>
                                             : const SizedBox.shrink(),
                                         FittedBox(
                                           fit: BoxFit.scaleDown,
-                                          child: Text(
-                                            AppLocalizations.of(context)!
-                                                .translate('order_shippment'),
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 15.sp),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 1,
+                                            ),
+                                            child: Text(
+                                              AppLocalizations.of(context)!
+                                                  .translate('shipment_search'),
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15.sp),
+                                            ),
                                           ),
                                         )
                                       ],

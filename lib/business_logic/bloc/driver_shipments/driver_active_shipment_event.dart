@@ -12,3 +12,10 @@ class DriverActiveShipmentLoadEvent extends DriverActiveShipmentEvent {
 
   DriverActiveShipmentLoadEvent(this.state);
 }
+
+class DriverActiveShipmentForOwnerLoadEvent extends DriverActiveShipmentEvent {
+  final String state;
+  final int driver;
+
+  DriverActiveShipmentForOwnerLoadEvent(this.state, this.driver);
+}

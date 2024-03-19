@@ -12,7 +12,7 @@ final class ActiveShipmentListInitial extends ActiveShipmentListState {}
 class ActiveShipmentListLoadingProgress extends ActiveShipmentListState {}
 
 class ActiveShipmentListLoadedSuccess extends ActiveShipmentListState {
-  final List<Shipment> shipments;
+  final List<KShipment> shipments;
 
   const ActiveShipmentListLoadedSuccess(this.shipments);
 }

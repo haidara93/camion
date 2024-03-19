@@ -8,7 +8,6 @@ sealed class ShippmentCreateEvent extends Equatable {
 }
 
 class ShippmentCreateButtonPressed extends ShippmentCreateEvent {
-  final Shipment shipment;
-  final int driver;
-  ShippmentCreateButtonPressed(this.shipment, this.driver);
+  final KShipment shipment;
+  ShippmentCreateButtonPressed(this.shipment);
 }

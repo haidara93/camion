@@ -30,7 +30,7 @@ dependencies:
   like_button: ^2.0.5
   firebase_core: ^2.24.2
   firebase_messaging: ^14.7.8
-  cached_network_image: ^3.2.3
+  cached_network_image: ^3.3.1
   flutter_img: ^0.1.5+111
   timeline_tile: ^2.0.0
   ensure_visible_when_focused: ^1.2.0

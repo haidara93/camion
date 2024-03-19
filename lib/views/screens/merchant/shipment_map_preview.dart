@@ -121,14 +121,20 @@ class _ShipmentMapPreviewState extends State<ShipmentMapPreview> {
                       markers: {
                         Marker(
                           markerId: const MarkerId("pickup"),
-                          position: LatLng(shippmentProvider.pickup_lat,
-                              shippmentProvider.pickup_lang),
+                          position: LatLng(
+                              double.parse(shippmentProvider.pickup_location
+                                  .split(",")[0]),
+                              double.parse(shippmentProvider.pickup_location
+                                  .split(",")[1])),
                           icon: pickupicon,
                         ),
                         Marker(
                           markerId: const MarkerId("delivery"),
-                          position: LatLng(shippmentProvider.delivery_lat,
-                              shippmentProvider.delivery_lang),
+                          position: LatLng(
+                              double.parse(shippmentProvider.delivery_location
+                                  .split(",")[0]),
+                              double.parse(shippmentProvider.delivery_location
+                                  .split(",")[1])),
                           icon: deliveryicon,
                         ),
                       },

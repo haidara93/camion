@@ -41,7 +41,7 @@ class Truck {
   Truck.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     truckuser = json['truckuser'] != null
-        ? new Truckuser.fromJson(json['truckuser'])
+        ? Truckuser.fromJson(json['truckuser'])
         : null;
     truckType = json['truck_type'];
     location = json['location'];
@@ -67,29 +67,73 @@ class Truck {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    if (this.truckuser != null) {
-      data['truckuser'] = this.truckuser!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    if (truckuser != null) {
+      data['truckuser'] = truckuser!.toJson();
     }
-    data['truck_type'] = this.truckType;
-    data['location'] = this.location;
-    data['location_lat'] = this.locationLat;
-    data['location_lang'] = this.locationLang;
-    data['height'] = this.height;
-    data['width'] = this.width;
-    data['long'] = this.long;
-    data['number_of_axels'] = this.numberOfAxels;
-    data['empty_weight'] = this.emptyWeight;
-    data['rating'] = this.rating;
-    data['price'] = this.price;
-    data['fees'] = this.fees;
-    data['extra_fees'] = this.extraFees;
-    data['isOn'] = this.isOn;
-    data['currentShipmentId'] = this.currentShipmentId;
-    if (this.images != null) {
-      data['images'] = this.images!.map((v) => v.toJson()).toList();
+    data['truck_type'] = truckType;
+    data['location'] = location;
+    data['location_lat'] = locationLat;
+    data['location_lang'] = locationLang;
+    data['height'] = height;
+    data['width'] = width;
+    data['long'] = long;
+    data['number_of_axels'] = numberOfAxels;
+    data['empty_weight'] = emptyWeight;
+    data['rating'] = rating;
+    data['price'] = price;
+    data['fees'] = fees;
+    data['extra_fees'] = extraFees;
+    data['isOn'] = isOn;
+    data['currentShipmentId'] = currentShipmentId;
+    if (images != null) {
+      data['images'] = images!.map((v) => v.toJson()).toList();
     }
+    return data;
+  }
+}
+
+class UserInfo {
+  int? id;
+  String? username;
+  String? firstName;
+  String? lastName;
+  String? phone;
+  String? image;
+  int? merchant;
+  int? truckowner;
+  int? truckuser;
+
+  UserInfo(
+      {this.id,
+      this.username,
+      this.firstName,
+      this.lastName,
+      this.phone,
+      this.image,
+      this.merchant,
+      this.truckowner,
+      this.truckuser});
+
+  UserInfo.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    username = json['username'];
+    firstName = json['first_name'];
+    lastName = json['last_name'];
+    phone = json['phone'] ?? "";
+    image = json['image'] ?? "";
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['username'] = username;
+    data['first_name'] = firstName;
+    data['last_name'] = lastName;
+    data['phone'] = phone;
+    data['image'] = image;
+
     return data;
   }
 }
@@ -97,7 +141,7 @@ class Truck {
 class Truckuser {
   int? id;
   bool? isTruckowner;
-  int? user;
+  UserInfo? user;
 
   Truckuser({
     this.id,
@@ -108,13 +152,13 @@ class Truckuser {
   Truckuser.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     isTruckowner = json['is_truckowner'];
-    user = json['user'];
+    user = json['user'] != null ? UserInfo.fromJson(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['is_truckowner'] = this.isTruckowner;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['is_truckowner'] = isTruckowner;
     return data;
   }
 }
@@ -131,9 +175,9 @@ class TruckImages {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    data['image'] = this.image;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['image'] = image;
     return data;
   }
 }
@@ -164,13 +208,13 @@ class TruckPaper {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['paper_type'] = this.paperType;
-    data['image'] = this.image;
-    data['start_date'] = this.startDate.toString();
-    data['expire_date'] = this.expireDate.toString();
-    data['truck'] = this.truck;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['paper_type'] = paperType;
+    data['image'] = image;
+    data['start_date'] = startDate.toString();
+    data['expire_date'] = expireDate.toString();
+    data['truck'] = truck;
     return data;
   }
 }
@@ -204,14 +248,190 @@ class TruckExpense {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['fix_type'] = this.fixType;
-    data['amount'] = this.amount;
-    data['dob'] = this.dob;
-    data['is_fixes'] = this.isFixes;
-    data['truck'] = this.truck;
-    data['expense_type'] = this.expenseType;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['fix_type'] = fixType;
+    data['amount'] = amount;
+    data['dob'] = dob;
+    data['is_fixes'] = isFixes;
+    data['truck'] = truck;
+    data['expense_type'] = expenseType;
+    return data;
+  }
+}
+
+class KTruck {
+  int? id;
+  KTuckUser? truckuser;
+  int? owner;
+  KTuckType? truckType;
+  int? location;
+  String? locationLat;
+  int? height;
+  int? width;
+  int? long;
+  int? numberOfAxels;
+  int? truckNumber;
+  int? emptyWeight;
+  int? grossWeight;
+  int? rating;
+  int? traffic;
+  int? price;
+  int? fees;
+  int? extraFees;
+  bool? isOn;
+  List<TruckImages>? images;
+
+  KTruck({
+    this.id,
+    this.truckuser,
+    this.owner,
+    this.truckType,
+    this.location,
+    this.locationLat,
+    this.height,
+    this.width,
+    this.long,
+    this.numberOfAxels,
+    this.truckNumber,
+    this.emptyWeight,
+    this.grossWeight,
+    this.traffic,
+    this.rating,
+    this.price,
+    this.fees,
+    this.extraFees,
+    this.isOn,
+    this.images,
+  });
+
+  KTruck.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    truckuser = json['truckuser'] != null
+        ? KTuckUser.fromJson(json['truckuser'])
+        : null;
+    owner = json['owner'];
+    truckType = json['truck_type'] != null
+        ? KTuckType.fromJson(json['truck_type'])
+        : null;
+    location = json['location'];
+    locationLat = json['location_lat'];
+    height = json['height'];
+    width = json['width'];
+    long = json['long'];
+    numberOfAxels = json['number_of_axels'];
+    truckNumber = json['truck_number'];
+    emptyWeight = json['empty_weight'];
+    grossWeight = json['gross_weight'];
+    traffic = json['traffic'];
+    rating = json['rating'];
+    price = json['price'];
+    fees = json['fees'];
+    extraFees = json['extra_fees'];
+    isOn = json['isOn'];
+    if (json['images'] != null) {
+      images = <TruckImages>[];
+      json['images'].forEach((v) {
+        images!.add(TruckImages.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+
+    data['owner'] = owner!;
+    data['truckuser'] = truckuser!;
+    data['truck_type'] = truckType;
+    data['location'] = location;
+    data['location_lat'] = locationLat;
+    data['height'] = height;
+    data['width'] = width;
+    data['long'] = long;
+    data['number_of_axels'] = numberOfAxels;
+    data['empty_weight'] = emptyWeight;
+    data['rating'] = rating;
+    data['price'] = price;
+    data['fees'] = fees;
+    data['extra_fees'] = extraFees;
+    data['isOn'] = isOn;
+    if (images != null) {
+      data['images'] = images!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class KTuckUser {
+  int? id;
+  Usertruck? usertruck;
+
+  KTuckUser({this.id, this.usertruck});
+
+  KTuckUser.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    usertruck = json['user'] != null ? Usertruck.fromJson(json['user']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (usertruck != null) {
+      data['user'] = usertruck!.toJson();
+    }
+    return data;
+  }
+}
+
+class Usertruck {
+  int? id;
+  String? firstName;
+  String? lastName;
+  String? id_number;
+  String? phone;
+
+  Usertruck(
+      {this.id, this.firstName, this.lastName, this.id_number, this.phone});
+
+  Usertruck.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    firstName = json['first_name'];
+    lastName = json['last_name'];
+    id_number = json['id_number'];
+    phone = json['phone'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['first_name'] = firstName;
+    data['last_name'] = lastName;
+    data['id_number'] = id_number;
+    data['phone'] = phone;
+    return data;
+  }
+}
+
+class KTuckType {
+  int? id;
+  String? name;
+  String? nameAr;
+  String? image;
+
+  KTuckType({this.id, this.name, this.nameAr});
+
+  KTuckType.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    nameAr = json['name_ar'];
+    image = json['image'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['name_ar'] = nameAr;
+    data['image'] = image;
     return data;
   }
 }

@@ -194,9 +194,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                   SizedBox(
                                     width: 350.w,
                                     child: TextFormField(
-                                      // focusNode: focusNode,
-                                      // keyboardType: TextInputType.phone,
-                                      // initialValue: widget.initialValue,
                                       controller: _passwordController,
                                       onTap: () {
                                         _passwordController.selection =
@@ -226,13 +223,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                             horizontal: 20.w, vertical: 2.h),
                                         hintText: AppLocalizations.of(context)!
                                             .translate('password'),
-                                        // labelText: AppLocalizations.of(context)!
-                                        //     .translate('password'),
-                                        // floatingLabelStyle: TextStyle(
-                                        //   color: AppColor.deepYellow,
-                                        //   fontSize: 24.sp,
-                                        //   fontWeight: FontWeight.bold,
-                                        // ),
                                         hintStyle: TextStyle(
                                           color: Colors.grey,
                                           fontSize: 19.sp,
@@ -247,7 +237,11 @@ class _SignInScreenState extends State<SignInScreen> {
                                   ),
                                   BlocConsumer<AuthBloc, AuthState>(
                                     listener: (context, state) {
-                                      if (state is AuthDriverSuccessState) {
+                                      if (state is AuthDriverSuccessState ||
+                                          state is AuthOwnerSuccessState ||
+                                          state is AuthMerchentSuccessState ||
+                                          state is AuthManagmentSuccessState ||
+                                          state is AuthCheckPointSuccessState) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                           backgroundColor: AppColor.deepGreen,
@@ -277,66 +271,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                           (route) => false,
                                         );
                                       }
-                                      if (state is AuthOwnerSuccessState) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                          backgroundColor: AppColor.deepGreen,
-                                          dismissDirection: DismissDirection.up,
-                                          behavior: SnackBarBehavior.floating,
-                                          margin: EdgeInsets.only(
-                                              bottom: MediaQuery.of(context)
-                                                      .size
-                                                      .height -
-                                                  150,
-                                              left: 10,
-                                              right: 10),
-                                          content: localeState.value.languageCode ==
-                                                  'en'
-                                              ? const Text(
-                                                  'sign in successfully, welcome.')
-                                              : const Text(
-                                                  'تم تسجيل الدخول بنجاح! أهلا بك.'),
-                                          duration: const Duration(seconds: 3),
-                                        ));
 
-                                        Navigator.pushAndRemoveUntil(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => ControlView(),
-                                          ),
-                                          (route) => false,
-                                        );
-                                      }
-                                      if (state is AuthMerchentSuccessState) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                          backgroundColor: AppColor.deepGreen,
-                                          dismissDirection: DismissDirection.up,
-                                          behavior: SnackBarBehavior.floating,
-                                          margin: EdgeInsets.only(
-                                              bottom: MediaQuery.of(context)
-                                                      .size
-                                                      .height -
-                                                  150,
-                                              left: 10,
-                                              right: 10),
-                                          content: localeState.value.languageCode ==
-                                                  'en'
-                                              ? const Text(
-                                                  'sign in successfully, welcome.')
-                                              : const Text(
-                                                  'تم تسجيل الدخول بنجاح! أهلا بك.'),
-                                          duration: const Duration(seconds: 3),
-                                        ));
-
-                                        Navigator.pushAndRemoveUntil(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => ControlView(),
-                                          ),
-                                          (route) => false,
-                                        );
-                                      }
                                       if (state is AuthLoginErrorState) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(

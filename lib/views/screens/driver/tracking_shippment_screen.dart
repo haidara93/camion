@@ -27,18 +27,19 @@ import 'package:provider/provider.dart';
 import 'package:timelines/timelines.dart';
 import 'package:intl/intl.dart' as intel;
 
-class ActiveShipmentDetailsScreen extends StatefulWidget {
-  ActiveShipmentDetailsScreen({
+class DriverActiveShipmentDetailsScreen extends StatefulWidget {
+  DriverActiveShipmentDetailsScreen({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<ActiveShipmentDetailsScreen> createState() =>
-      _ActiveShipmentDetailsScreenState();
+  State<DriverActiveShipmentDetailsScreen> createState() =>
+      _DriverActiveShipmentDetailsScreenState();
 }
 
-class _ActiveShipmentDetailsScreenState
-    extends State<ActiveShipmentDetailsScreen> with TickerProviderStateMixin {
+class _DriverActiveShipmentDetailsScreenState
+    extends State<DriverActiveShipmentDetailsScreen>
+    with TickerProviderStateMixin {
   late Timer timer;
   final loc.Location location = loc.Location();
   late GoogleMapController _controller;
@@ -506,17 +507,6 @@ class _ActiveShipmentDetailsScreenState
         );
       },
     );
-  }
-
-  int getunfinishedTasks(Shipment shipment) {
-    var count = 0;
-    if (shipment.shipmentinstruction == null) {
-      count++;
-    }
-    if (shipment.shipmentpayment == null) {
-      count++;
-    }
-    return count;
   }
 
   Future<void> mymap(

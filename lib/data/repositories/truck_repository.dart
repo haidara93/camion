@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 
 class TruckRepository {
   List<Truck> trucks = [];
+  List<KTruck> ktrucks = [];
   List<TruckPaper> truckPapers = [];
   List<TruckExpense> truckExpenses = [];
   late SharedPreferences prefs;
@@ -24,6 +25,71 @@ class TruckRepository {
       var myDataString = utf8.decode(rs.bodyBytes);
 
       var result = jsonDecode(myDataString);
+      for (var element in result) {
+        trucks.add(Truck.fromJson(element));
+      }
+    }
+    return trucks;
+  }
+
+  Future<List<KTruck>> getKTrucks(int type) async {
+    prefs = await SharedPreferences.getInstance();
+    var jwt = prefs.getString("token");
+
+    var rs = await HttpHelper.get('$KTRUCKS_ENDPOINT?truck_type=$type',
+        apiToken: jwt);
+    ktrucks = [];
+    print(rs.statusCode);
+    if (rs.statusCode == 200) {
+      var myDataString = utf8.decode(rs.bodyBytes);
+
+      print(myDataString);
+      var result = jsonDecode(myDataString);
+      for (var element in result) {
+        ktrucks.add(KTruck.fromJson(element));
+      }
+    }
+    return ktrucks;
+  }
+
+  Future<List<KTruck>> searchKTrucks(String query) async {
+    prefs = await SharedPreferences.getInstance();
+    var jwt = prefs.getString("token");
+
+    var rs =
+        await HttpHelper.get('$KTRUCKS_ENDPOINT?search=$query', apiToken: jwt);
+    ktrucks = [];
+    print(rs.statusCode);
+    if (rs.statusCode == 200) {
+      var myDataString = utf8.decode(rs.bodyBytes);
+
+      var result = jsonDecode(myDataString);
+      for (var element in result) {
+        ktrucks.add(KTruck.fromJson(element));
+      }
+    }
+    return ktrucks;
+  }
+
+  Future<List<Truck>> getTrucksForOwner(int ownerId) async {
+    prefs = await SharedPreferences.getInstance();
+    var jwt = prefs.getString("token");
+
+    var rs =
+        await HttpHelper.get('$TRUCKS_ENDPOINT?owner=$ownerId', apiToken: jwt);
+    trucks = [];
+    print(rs.statusCode);
+    if (rs.statusCode == 200) {
+      var myDataString = utf8.decode(rs.bodyBytes);
+
+      var result = jsonDecode(myDataString);
+      trucks.add(Truck(
+        id: 0,
+        truckuser: Truckuser(
+          id: 0,
+          user: UserInfo(id: 0, firstName: "All", lastName: ""),
+        ),
+      ));
       for (var element in result) {
         trucks.add(Truck.fromJson(element));
       }

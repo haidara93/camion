@@ -101,20 +101,20 @@ class SelectTruckScreen extends StatelessWidget {
                                       //     .difference(state.offers[index].createdDate!);
                                       return GestureDetector(
                                         onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  TruckDetailsScreen(
-                                                truck: state.trucks[index],
-                                                commodityName_controllers:
-                                                    commodityName_controllers,
-                                                commodityWeight_controllers:
-                                                    commodityWeight_controllers,
-                                                truckType: truckType,
-                                              ),
-                                            ),
-                                          );
+                                          // Navigator.push(
+                                          //   context,
+                                          //   MaterialPageRoute(
+                                          //     builder: (context) =>
+                                          //         TruckDetailsScreen(
+                                          //       truck: state.trucks[index],
+                                          //       commodityName_controllers:
+                                          //           commodityName_controllers,
+                                          //       commodityWeight_controllers:
+                                          //           commodityWeight_controllers,
+                                          //       truckType: truckType,
+                                          //     ),
+                                          //   ),
+                                          // );
                                         },
                                         child: Card(
                                           elevation: 1,
@@ -187,13 +187,30 @@ class SelectTruckScreen extends StatelessWidget {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
-                                                    Text(
-                                                      '${AppLocalizations.of(context)!.translate('truck_type')}: ${localeState.value.languageCode == 'en' ? getEnTruckType(state.trucks[index].truckType!) : getTruckType(state.trucks[index].truckType!)}',
-                                                      style: TextStyle(
-                                                          // color: AppColor.lightBlue,
-                                                          fontSize: 18.sp,
-                                                          fontWeight:
-                                                              FontWeight.bold),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                          '${AppLocalizations.of(context)!.translate('truck_type')}: ${localeState.value.languageCode == 'en' ? state.trucks[index].truckType!.name : state.trucks[index].truckType!.nameAr}',
+                                                          style: TextStyle(
+                                                              // color: AppColor.lightBlue,
+                                                              fontSize: 18.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                        Text(
+                                                          '${AppLocalizations.of(context)!.translate('truck_number')}: ${state.trucks[index].truckNumber}',
+                                                          style: TextStyle(
+                                                              // color: AppColor.lightBlue,
+                                                              fontSize: 18.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                      ],
                                                     ),
                                                     SizedBox(
                                                       height: 7.h,

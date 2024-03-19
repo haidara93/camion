@@ -1,12 +1,21 @@
+import 'package:camion/business_logic/bloc/check_point/charge_types_list_bloc.dart';
+import 'package:camion/business_logic/bloc/check_point/check_point_list_bloc.dart';
 import 'package:camion/business_logic/bloc/core/auth_bloc.dart';
 import 'package:camion/business_logic/bloc/core/notification_bloc.dart';
+import 'package:camion/business_logic/bloc/managment/complete_managment_shipment_list_bloc.dart';
+import 'package:camion/business_logic/bloc/managment/managment_shipment_list_bloc.dart';
+import 'package:camion/business_logic/bloc/managment/price_request_bloc.dart';
+import 'package:camion/business_logic/bloc/managment/simple_category_list_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/active_shipment_list_bloc.dart';
 import 'package:camion/business_logic/cubit/internet_cubit.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
+import 'package:camion/views/screens/check_point/home_screen.dart';
 import 'package:camion/views/screens/driver/driver_home_screen.dart';
+import 'package:camion/views/screens/managment/managment_home_screen.dart';
 import 'package:camion/views/screens/merchant/home_screen.dart';
 import 'package:camion/views/screens/owner/owner_home_screen.dart';
 import 'package:camion/views/screens/select_user_type.dart';
+import 'package:camion/views/screens/select_user_type_screen.dart';
 import 'package:camion/views/widgets/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -65,6 +74,18 @@ class _ControlViewState extends State<ControlView> {
                   return DriverHomeScreen();
                 } else if (state is AuthOwnerSuccessState) {
                   return OwnerHomeScreen();
+                } else if (state is AuthManagmentSuccessState) {
+                  BlocProvider.of<ManagmentShipmentListBloc>(context)
+                      .add(ManagmentShipmentListLoadEvent("P"));
+                  BlocProvider.of<PriceRequestBloc>(context)
+                      .add(PriceRequestLoadEvent());
+                  BlocProvider.of<SimpleCategoryListBloc>(context)
+                      .add(SimpleCategoryListLoadEvent());
+                  return ManagmentHomeScreen();
+                } else if (state is AuthCheckPointSuccessState) {
+                  BlocProvider.of<CompleteManagmentShipmentListBloc>(context)
+                      .add(CompleteManagmentShipmentListLoadEvent("C"));
+                  return CheckPointHomeScreen();
                 } else if (state is AuthMerchentSuccessState) {
                   BlocProvider.of<ActiveShipmentListBloc>(context)
                       .add(ActiveShipmentListLoadEvent());
@@ -75,7 +96,7 @@ class _ControlViewState extends State<ControlView> {
                     child: LoadingIndicator(),
                   );
                 } else {
-                  return SelectUserType();
+                  return SelectUserTypeScreen();
                 }
               },
             );

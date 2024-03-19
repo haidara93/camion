@@ -22,6 +22,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           if (userType != null) {
             if (hastoken) {
               switch (userType) {
+                case "Managment":
+                  emit(AuthManagmentSuccessState());
+                  break;
+                case "CheckPoint":
+                  emit(AuthCheckPointSuccessState());
+                  break;
                 case "Driver":
                   emit(AuthDriverSuccessState());
                   break;
@@ -55,6 +61,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             username: event.username, password: event.password);
         if (data["status"] == 200) {
           switch (userType) {
+            case "Managment":
+              emit(AuthManagmentSuccessState());
+              break;
+            case "CheckPoint":
+              emit(AuthCheckPointSuccessState());
+              break;
             case "Driver":
               emit(AuthDriverSuccessState());
               break;

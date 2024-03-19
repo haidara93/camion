@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:camion/Localization/app_localizations.dart';
 import 'package:camion/business_logic/bloc/order_truck_bloc.dart';
 import 'package:camion/business_logic/bloc/driver_shipments/shipment_update_status_bloc.dart';
+import 'package:camion/business_logic/bloc/truck/owner_trucks_bloc.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/constants/enums.dart';
 import 'package:camion/data/models/shipment_model.dart';
@@ -28,8 +29,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchShipmentDetailsScreen extends StatefulWidget {
   final Shipment shipment;
-  SearchShipmentDetailsScreen({Key? key, required this.shipment})
-      : super(key: key);
+  bool? isOwner;
+  SearchShipmentDetailsScreen({
+    Key? key,
+    required this.shipment,
+    this.isOwner = false,
+  }) : super(key: key);
 
   @override
   State<SearchShipmentDetailsScreen> createState() =>
@@ -293,7 +298,7 @@ class _SearchShipmentDetailsScreenState
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  ControlView(),
+                                                  const ControlView(),
                                             ),
                                             (route) => false);
                                       }
@@ -325,16 +330,137 @@ class _SearchShipmentDetailsScreenState
                                             ),
                                           ),
                                           onTap: () async {
-                                            SharedPreferences prefs =
-                                                await SharedPreferences
-                                                    .getInstance();
-                                            var driver =
-                                                prefs.getInt("truckuser");
-                                            BlocProvider.of<OrderTruckBloc>(
-                                                    context)
-                                                .add(OrderTruckButtonPressed(
-                                                    widget.shipment.id!,
-                                                    driver!));
+                                            if (widget.isOwner ?? false) {
+                                              showModalBottomSheet(
+                                                context: context,
+                                                isScrollControlled: true,
+                                                useSafeArea: true,
+                                                builder: (context) => Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: SizedBox(
+                                                    width: double.infinity,
+                                                    child: Column(
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              GestureDetector(
+                                                                onTap: () {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                                child:
+                                                                    AbsorbPointer(
+                                                                  absorbing:
+                                                                      false,
+                                                                  child:
+                                                                      Padding(
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                            .all(
+                                                                            8.0),
+                                                                    child: localeState.value.countryCode ==
+                                                                            'en'
+                                                                        ? const Icon(Icons
+                                                                            .arrow_forward)
+                                                                        : const Icon(
+                                                                            Icons.arrow_back),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Text(
+                                                                AppLocalizations.of(
+                                                                        context)!
+                                                                    .translate(
+                                                                        'select_driver'),
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize:
+                                                                      18.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 5.h,
+                                                        ),
+                                                        BlocBuilder<
+                                                            OwnerTrucksBloc,
+                                                            OwnerTrucksState>(
+                                                          builder:
+                                                              (context, state) {
+                                                            if (state
+                                                                is OwnerTrucksLoadedSuccess) {
+                                                              return state.trucks
+                                                                      .isEmpty
+                                                                  ? Center(
+                                                                      child: Text(AppLocalizations.of(
+                                                                              context)!
+                                                                          .translate(
+                                                                              'no_shipments')),
+                                                                    )
+                                                                  : ListView
+                                                                      .separated(
+                                                                          shrinkWrap:
+                                                                              true,
+                                                                          itemBuilder: (context,
+                                                                              index) {
+                                                                            return index != 0
+                                                                                ? GestureDetector(
+                                                                                    onTap: () {
+                                                                                      BlocProvider.of<OrderTruckBloc>(context).add(OrderTruckButtonPressed(widget.shipment.id!, state.trucks[index].truckuser!.id!));
+                                                                                      Navigator.pop(context);
+                                                                                    },
+                                                                                    child: Padding(
+                                                                                      padding: const EdgeInsets.all(8.0),
+                                                                                      child: Text(
+                                                                                        "${state.trucks[index].truckuser!.user!.firstName!} ${state.trucks[index].truckuser!.user!.lastName!}",
+                                                                                        style: TextStyle(
+                                                                                          fontSize: 18.sp,
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  )
+                                                                                : const SizedBox.shrink();
+                                                                          },
+                                                                          separatorBuilder: (context, index) =>
+                                                                              const Divider(),
+                                                                          itemCount: state
+                                                                              .trucks
+                                                                              .length);
+                                                            } else {
+                                                              return Container();
+                                                            }
+                                                          },
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              SharedPreferences prefs =
+                                                  await SharedPreferences
+                                                      .getInstance();
+                                              var driver =
+                                                  prefs.getInt("truckuser");
+                                              BlocProvider.of<OrderTruckBloc>(
+                                                      context)
+                                                  .add(OrderTruckButtonPressed(
+                                                      widget.shipment.id!,
+                                                      driver!));
+                                            }
                                           },
                                           color: Colors.white,
                                         );

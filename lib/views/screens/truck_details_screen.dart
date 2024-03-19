@@ -1,16 +1,11 @@
-import 'dart:convert';
-
 import 'package:camion/Localization/app_localizations.dart';
-import 'package:camion/business_logic/bloc/order_truck_bloc.dart';
 import 'package:camion/business_logic/bloc/shipments/shippment_create_bloc.dart';
 import 'package:camion/business_logic/cubit/locale_cubit.dart';
 import 'package:camion/data/models/shipment_model.dart';
-import 'package:camion/data/models/stripe_model.dart';
 import 'package:camion/data/models/truck_model.dart';
 import 'package:camion/data/models/truck_type_model.dart';
 import 'package:camion/data/providers/add_shippment_provider.dart';
 import 'package:camion/helpers/color_constants.dart';
-import 'package:camion/helpers/http_helper.dart';
 import 'package:camion/views/screens/control_view.dart';
 import 'package:camion/views/widgets/custom_app_bar.dart';
 import 'package:camion/views/widgets/custom_botton.dart';
@@ -465,69 +460,69 @@ class _TruckDetailsScreenState extends State<TruckDetailsScreen> {
                                           ),
                                         ),
                                         onTap: () {
-                                          Shipment shipment = Shipment();
+                                          // Shipment shipment = Shipment();
 
-                                          shipment.truckType =
-                                              TruckType(id: widget.truckType);
-                                          shipment.pickupCityLocation =
-                                              shippmentProvider
-                                                  .pickup_location_name;
-                                          shipment.pickupCityLat =
-                                              shippmentProvider.pickup_lat;
-                                          shipment.pickupCityLang =
-                                              shippmentProvider.pickup_lang;
-                                          shipment.deliveryCityLocation =
-                                              shippmentProvider
-                                                  .delivery_location_name;
-                                          shipment.deliveryCityLat =
-                                              shippmentProvider.delivery_lat;
-                                          shipment.deliveryCityLang =
-                                              shippmentProvider.delivery_lang;
+                                          // shipment.truckType =
+                                          //     TruckType(id: widget.truckType);
+                                          // shipment.pickupCityLocation =
+                                          //     shippmentProvider
+                                          //         .pickup_location_name;
+                                          // shipment.pickupCityLat =
+                                          //     shippmentProvider.pickup_lat;
+                                          // shipment.pickupCityLang =
+                                          //     shippmentProvider.pickup_lang;
+                                          // shipment.deliveryCityLocation =
+                                          //     shippmentProvider
+                                          //         .delivery_location_name;
+                                          // shipment.deliveryCityLat =
+                                          //     shippmentProvider.delivery_lat;
+                                          // shipment.deliveryCityLang =
+                                          //     shippmentProvider.delivery_lang;
 
-                                          var totalWeight = 0;
-                                          List<ShipmentItems> items = [];
-                                          for (var i = 0;
-                                              i <
-                                                  widget
-                                                      .commodityWeight_controllers!
-                                                      .length;
-                                              i++) {
-                                            ShipmentItems item = ShipmentItems(
-                                              commodityName: widget
-                                                  .commodityName_controllers![i]
-                                                  .text,
-                                              commodityWeight: double.parse(widget
-                                                      .commodityWeight_controllers![
-                                                          i]
-                                                      .text
-                                                      .replaceAll(",", ""))
-                                                  .toInt(),
-                                            );
-                                            items.add(item);
-                                            totalWeight += double.parse(widget
-                                                    .commodityWeight_controllers![
-                                                        i]
-                                                    .text
-                                                    .replaceAll(",", ""))
-                                                .toInt();
-                                          }
-                                          shipment.totalWeight = totalWeight;
-                                          shipment.shipmentItems = items;
-                                          // shipment.pickupDate = DateTime.now();
-                                          shipment.pickupDate = DateTime(
-                                            shippmentProvider.loadDate!.year,
-                                            shippmentProvider.loadDate!.month,
-                                            shippmentProvider.loadDate!.day,
-                                            shippmentProvider.loadTime!.hour,
-                                            shippmentProvider.loadTime!.day,
-                                          );
-                                          print("sdf");
-                                          BlocProvider.of<ShippmentCreateBloc>(
-                                                  context)
-                                              .add(ShippmentCreateButtonPressed(
-                                                  shipment,
-                                                  widget
-                                                      .truck.truckuser!.user!));
+                                          // var totalWeight = 0;
+                                          // List<ShipmentItems> items = [];
+                                          // for (var i = 0;
+                                          //     i <
+                                          //         widget
+                                          //             .commodityWeight_controllers!
+                                          //             .length;
+                                          //     i++) {
+                                          //   ShipmentItems item = ShipmentItems(
+                                          //     commodityName: widget
+                                          //         .commodityName_controllers![i]
+                                          //         .text,
+                                          //     commodityWeight: double.parse(widget
+                                          //             .commodityWeight_controllers![
+                                          //                 i]
+                                          //             .text
+                                          //             .replaceAll(",", ""))
+                                          //         .toInt(),
+                                          //   );
+                                          //   items.add(item);
+                                          //   totalWeight += double.parse(widget
+                                          //           .commodityWeight_controllers![
+                                          //               i]
+                                          //           .text
+                                          //           .replaceAll(",", ""))
+                                          //       .toInt();
+                                          // }
+                                          // shipment.totalWeight = totalWeight;
+                                          // shipment.shipmentItems = items;
+                                          // // shipment.pickupDate = DateTime.now();
+                                          // shipment.pickupDate = DateTime(
+                                          //   shippmentProvider.loadDate!.year,
+                                          //   shippmentProvider.loadDate!.month,
+                                          //   shippmentProvider.loadDate!.day,
+                                          //   shippmentProvider.loadTime!.hour,
+                                          //   shippmentProvider.loadTime!.day,
+                                          // );
+                                          // print("sdf");
+                                          // BlocProvider.of<ShippmentCreateBloc>(
+                                          //         context)
+                                          //     .add(ShippmentCreateButtonPressed(
+                                          //         shipment,
+                                          //         widget.truck.truckuser!.user!
+                                          //             .id!));
                                           // BlocProvider.of<OrderTruckBloc>(
                                           //         context)
                                           //     .add(OrderTruckButtonPressed(

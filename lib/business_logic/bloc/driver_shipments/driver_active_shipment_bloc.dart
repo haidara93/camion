@@ -21,5 +21,16 @@ class DriverActiveShipmentBloc
         emit(DriverActiveShipmentLoadedFailed(e.toString()));
       }
     });
+
+    on<DriverActiveShipmentForOwnerLoadEvent>((event, emit) async {
+      emit(DriverActiveShipmentLoadingProgress());
+      try {
+        var result = await shippmentRerository.getActiveDriverShipmentForOwner(
+            event.state, event.driver);
+        emit(DriverActiveShipmentLoadedSuccess(result));
+      } catch (e) {
+        emit(DriverActiveShipmentLoadedFailed(e.toString()));
+      }
+    });
   }
 }

@@ -1,21 +1,17 @@
-import 'dart:convert';
-
 import 'package:camion/data/providers/add_shippment_provider.dart';
 import 'package:camion/views/widgets/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:camion/views/widgets/custom_botton.dart';
-import 'package:camion/data/models/co2_report.dart';
-import 'package:camion/data/services/co2_service.dart';
 
 class ShippmentPickUpMapScreen extends StatefulWidget {
   int type;
+  int? index;
   LatLng? location;
-  ShippmentPickUpMapScreen({Key? key, required this.type, this.location})
+  ShippmentPickUpMapScreen(
+      {Key? key, required this.type, this.index, this.location})
       : super(key: key);
 
   @override
@@ -73,104 +69,59 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
     super.initState();
   }
 
-  bool evaluateCo2() {
-    if (addShippmentProvider!.delivery_location_name.isNotEmpty &&
-        addShippmentProvider!.pickup_location_name.isNotEmpty) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  // bool evaluateCo2() {
+  //   if (addShippmentProvider!.delivery_location_name.isNotEmpty &&
+  //       addShippmentProvider!.pickup_location_name.isNotEmpty) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
-  void calculateCo2Report() {
-    ShippmentDetail detail = ShippmentDetail();
-    detail.legs = [];
-    detail.load = [];
-    Legs leg = Legs();
-    leg.mode = "LTL";
-    print("report!.title!");
-    Origin origin = Origin();
-    leg.origin = origin;
-    Origin destination = Origin();
-    leg.destination = destination;
+  // void calculateCo2Report() {
+  //   ShippmentDetail detail = ShippmentDetail();
+  //   detail.legs = [];
+  //   detail.load = [];
+  //   Legs leg = Legs();
+  //   leg.mode = "LTL";
+  //   print("report!.title!");
+  //   Origin origin = Origin();
+  //   leg.origin = origin;
+  //   Origin destination = Origin();
+  //   leg.destination = destination;
 
-    leg.origin!.latitude = addShippmentProvider!.pickup_lat;
-    leg.origin!.longitude = addShippmentProvider!.pickup_lang;
-    leg.destination!.latitude = addShippmentProvider!.delivery_lat;
-    leg.destination!.longitude = addShippmentProvider!.delivery_lang;
+  //   leg.origin!.latitude = addShippmentProvider!.pickup_lat;
+  //   leg.origin!.longitude = addShippmentProvider!.pickup_lang;
+  //   leg.destination!.latitude = addShippmentProvider!.delivery_lat;
+  //   leg.destination!.longitude = addShippmentProvider!.delivery_lang;
 
-    detail.legs!.add(leg);
+  //   detail.legs!.add(leg);
 
-    // for (var i = 0; i < commodityWeight_controllers.length; i++) {
-    // }
-    Load load = Load();
-    load.unitWeightKg = 25000;
-    load.unitType = "pallets";
-    detail.load!.add(load);
+  //   // for (var i = 0; i < commodityWeight_controllers.length; i++) {
+  //   // }
+  //   Load load = Load();
+  //   load.unitWeightKg = 25000;
+  //   load.unitType = "pallets";
+  //   detail.load!.add(load);
 
-    // for (var i = 0; i < commodityWeight_controllers.length; i++) {
-    //   Load load = Load();
-    //   load.unitWeightKg =
-    //       double.parse(commodityWeight_controllers[i].text.replaceAll(",", ""));
-    //   load.unitType = "pallets";
-    //   detail.load!.add(load);
-    // }
+  //   // for (var i = 0; i < commodityWeight_controllers.length; i++) {
+  //   //   Load load = Load();
+  //   //   load.unitWeightKg =
+  //   //       double.parse(commodityWeight_controllers[i].text.replaceAll(",", ""));
+  //   //   load.unitType = "pallets";
+  //   //   detail.load!.add(load);
+  //   // }
 
-    Co2Service.getCo2Calculate(
-            detail,
-            LatLng(addShippmentProvider!.pickup_lat,
-                addShippmentProvider!.pickup_lang),
-            LatLng(addShippmentProvider!.delivery_lat,
-                addShippmentProvider!.delivery_lang))
-        .then((value) => addShippmentProvider!.setCo2Report(value!));
+  //   Co2Service.getCo2Calculate(
+  //           detail,
+  //           LatLng(addShippmentProvider!.pickup_lat,
+  //               addShippmentProvider!.pickup_lang),
+  //           LatLng(addShippmentProvider!.delivery_lat,
+  //               addShippmentProvider!.delivery_lang))
+  //       .then((value) => addShippmentProvider!.setCo2Report(value!));
 
-    print("calculation end");
-  }
-
-  Future<void> _getAddressForPickupFromLatLng(LatLng position) async {
-    var response = await http.get(
-      Uri.parse(
-          "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=AIzaSyADOoc8dgS4K4_qk9Hyp441jWtDSumfU7w"),
-    );
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      var result = jsonDecode(response.body);
-      addShippmentProvider!.setPickupName(
-          '${(result["results"][0]["address_components"][3]["long_name"]) ?? ""},${(result["results"][0]["address_components"][1]["long_name"]) ?? ""}');
-      addShippmentProvider!.pickup_controller.text =
-          '${(result["results"][0]["address_components"][3]["long_name"]) ?? ""},${(result["results"][0]["address_components"][1]["long_name"]) ?? ""}';
-    }
-    setState(() {
-      pickupLoading = false;
-    });
-    calculateCo2Report();
-    if (evaluateCo2()) {
-      calculateCo2Report();
-    }
-    Navigator.pop(context);
-  }
-
-  Future<void> _getAddressForDeliveryFromLatLng(LatLng position) async {
-    var response = await http.get(
-      Uri.parse(
-          "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=AIzaSyADOoc8dgS4K4_qk9Hyp441jWtDSumfU7w"),
-    );
-    if (response.statusCode == 200) {
-      var result = jsonDecode(response.body);
-      addShippmentProvider!.setDeliveryName(
-          '${(result["results"][0]["address_components"][3]["long_name"]) ?? ""},${(result["results"][0]["address_components"][1]["long_name"]) ?? ""}');
-      addShippmentProvider!.delivery_controller.text =
-          '${(result["results"][0]["address_components"][3]["long_name"]) ?? ""},${(result["results"][0]["address_components"][1]["long_name"]) ?? ""}';
-    }
-    setState(() {
-      pickupLoading = false;
-    });
-    calculateCo2Report();
-    if (evaluateCo2()) {
-      calculateCo2Report();
-    }
-    Navigator.pop(context);
-  }
+  //   print("calculation end");
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -197,10 +148,6 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
                   zoomControlsEnabled: false,
 
                   onCameraMove: (position) {
-                    // controller.address_latitude =
-                    //     (position.target.latitude.toString());
-                    // controller.address_longitude =
-                    //     (position.target.longitude.toString());
                     setState(() {
                       selectedPosition = LatLng(
                           position.target.latitude, position.target.longitude);
@@ -250,19 +197,26 @@ class _ShippmentPickUpMapScreenState extends State<ShippmentPickUpMapScreen> {
                                 pickupLoading = true;
                               });
                               if (widget.type == 0) {
-                                addShippmentProvider!.setPickupLatLang(
-                                    selectedPosition!.latitude,
-                                    selectedPosition!.longitude);
-
-                                _getAddressForPickupFromLatLng(
-                                    selectedPosition!);
+                                addShippmentProvider!
+                                    .getAddressForPickupFromMapPicker(
+                                      LatLng(selectedPosition!.latitude,
+                                          selectedPosition!.longitude),
+                                    )
+                                    .then((value) => Navigator.pop(context));
                               } else if (widget.type == 1) {
-                                addShippmentProvider!.setDeliveryLatLang(
-                                    selectedPosition!.latitude,
-                                    selectedPosition!.longitude);
-
-                                _getAddressForDeliveryFromLatLng(
-                                    selectedPosition!);
+                                addShippmentProvider!
+                                    .getAddressForDeliveryFromMapPicker(
+                                      LatLng(selectedPosition!.latitude,
+                                          selectedPosition!.longitude),
+                                    )
+                                    .then((value) => Navigator.pop(context));
+                              } else if (widget.type == 2) {
+                                addShippmentProvider!
+                                    .getAddressForStopPointFromMapPicker(
+                                        LatLng(selectedPosition!.latitude,
+                                            selectedPosition!.longitude),
+                                        widget.index!)
+                                    .then((value) => Navigator.pop(context));
                               }
                             },
                             title: Container(

@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:camion/data/repositories/shipmment_repository.dart';
 import 'package:equatable/equatable.dart';
-import 'package:camion/data/models/shipment_model.dart';
+import 'package:camion/data/models/kshipment_model.dart';
 part 'shipment_list_event.dart';
 part 'shipment_list_state.dart';
 
@@ -12,7 +12,7 @@ class ShipmentListBloc extends Bloc<ShipmentListEvent, ShipmentListState> {
     on<ShipmentListLoadEvent>((event, emit) async {
       emit(ShipmentListLoadingProgress());
       try {
-        var result = await shippmentRerository.getShipmentList(event.state);
+        var result = await shippmentRerository.getKShipmentList(event.state);
         emit(ShipmentListLoadedSuccess(result));
       } catch (e) {
         emit(ShipmentListLoadedFailed(e.toString()));

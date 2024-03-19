@@ -5,10 +5,10 @@ import 'package:equatable/equatable.dart';
 part 'shipment_update_status_event.dart';
 part 'shipment_update_status_state.dart';
 
-class ShipmentUpdateStatusBloc
+class DriverShipmentUpdateStatusBloc
     extends Bloc<ShipmentUpdateStatusEvent, ShipmentUpdateStatusState> {
   late ShippmentRerository shippmentRepository;
-  ShipmentUpdateStatusBloc({required this.shippmentRepository})
+  DriverShipmentUpdateStatusBloc({required this.shippmentRepository})
       : super(ShipmentUpdateStatusInitial()) {
     on<UpdateShipmentStatusEvent>(
       (event, emit) async {

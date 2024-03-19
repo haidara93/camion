@@ -1,3 +1,4 @@
+import 'package:camion/data/models/kshipment_model.dart';
 import 'package:camion/data/models/shipment_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -57,7 +58,7 @@ class ActiveShippmentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  getpolylineCoordinates(List<Shipment> shipments) async {
+  getpolylineCoordinates(List<KShipment> shipments) async {
     List<LatLng> _polyline = [];
     _polylineCoordinates = [];
     for (var i = 0; i < shipments.length; i++) {
@@ -66,9 +67,28 @@ class ActiveShippmentProvider extends ChangeNotifier {
 
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         "AIzaSyADOoc8dgS4K4_qk9Hyp441jWtDSumfU7w",
-        PointLatLng(shipments[i].pickupCityLat!, shipments[i].pickupCityLang!),
         PointLatLng(
-            shipments[i].deliveryCityLat!, shipments[i].deliveryCityLang!),
+            double.parse(shipments[i]
+                .pathPoints!
+                .singleWhere((element) => element.pointType == "P")
+                .location!
+                .split(",")[0]),
+            double.parse(shipments[i]
+                .pathPoints!
+                .singleWhere((element) => element.pointType == "P")
+                .location!
+                .split(",")[1])),
+        PointLatLng(
+            double.parse(shipments[i]
+                .pathPoints!
+                .singleWhere((element) => element.pointType == "D")
+                .location!
+                .split(",")[0]),
+            double.parse(shipments[i]
+                .pathPoints!
+                .singleWhere((element) => element.pointType == "D")
+                .location!
+                .split(",")[1])),
       );
       _polyline = [];
       if (result.points.isNotEmpty) {
@@ -88,15 +108,33 @@ class ActiveShippmentProvider extends ChangeNotifier {
       markers.add(
         Marker(
           markerId: MarkerId("pickup"),
-          position:
-              LatLng(shipments[i].pickupCityLat!, shipments[i].pickupCityLang!),
+          position: LatLng(
+              double.parse(shipments[i]
+                  .pathPoints!
+                  .singleWhere((element) => element.pointType == "P")
+                  .location!
+                  .split(",")[0]),
+              double.parse(shipments[i]
+                  .pathPoints!
+                  .singleWhere((element) => element.pointType == "P")
+                  .location!
+                  .split(",")[1])),
         ),
       );
       markers.add(
         Marker(
           markerId: MarkerId("delivery"),
           position: LatLng(
-              shipments[i].deliveryCityLat!, shipments[i].deliveryCityLang!),
+              double.parse(shipments[i]
+                  .pathPoints!
+                  .singleWhere((element) => element.pointType == "D")
+                  .location!
+                  .split(",")[0]),
+              double.parse(shipments[i]
+                  .pathPoints!
+                  .singleWhere((element) => element.pointType == "D")
+                  .location!
+                  .split(",")[1])),
         ),
       );
       getBounds(markers, _maps[i]!);

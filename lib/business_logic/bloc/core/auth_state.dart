@@ -21,23 +21,15 @@ class AuthResgisteringSuccess extends AuthState {}
 
 // class AuthActivateLoadingState extends AuthState {}
 
-class AuthDriverSuccessState extends AuthState {
-  // final String token;
+class AuthDriverSuccessState extends AuthState {}
 
-  // AuthSuccessState(this.token);
-}
+class AuthOwnerSuccessState extends AuthState {}
 
-class AuthOwnerSuccessState extends AuthState {
-  // final String token;
+class AuthMerchentSuccessState extends AuthState {}
 
-  // AuthSuccessState(this.token);
-}
+class AuthManagmentSuccessState extends AuthState {}
 
-class AuthMerchentSuccessState extends AuthState {
-  // final String token;
-
-  // AuthSuccessState(this.token);
-}
+class AuthCheckPointSuccessState extends AuthState {}
 
 class AuthLoginErrorState extends AuthState {
   final String? error;

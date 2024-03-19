@@ -26,7 +26,9 @@ import 'package:intl/intl.dart' as intel;
 
 class IncomingShipmentDetailsScreen extends StatefulWidget {
   final Shipment shipment;
-  IncomingShipmentDetailsScreen({Key? key, required this.shipment})
+  final int? driverId;
+  IncomingShipmentDetailsScreen(
+      {Key? key, required this.shipment, this.driverId})
       : super(key: key);
 
   @override
@@ -284,7 +286,7 @@ class _IncomingShipmentDetailsScreenState
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  BlocBuilder<ShipmentUpdateStatusBloc,
+                                  BlocBuilder<DriverShipmentUpdateStatusBloc,
                                       ShipmentUpdateStatusState>(
                                     builder: (context, state) {
                                       if (state
@@ -316,7 +318,7 @@ class _IncomingShipmentDetailsScreenState
                                           onTap: () {
                                             rejectbotton = true;
                                             BlocProvider.of<
-                                                        ShipmentUpdateStatusBloc>(
+                                                        DriverShipmentUpdateStatusBloc>(
                                                     context)
                                                 .add(
                                               UpdateShipmentStatusEvent(
@@ -328,7 +330,7 @@ class _IncomingShipmentDetailsScreenState
                                       }
                                     },
                                   ),
-                                  BlocConsumer<ShipmentUpdateStatusBloc,
+                                  BlocConsumer<DriverShipmentUpdateStatusBloc,
                                       ShipmentUpdateStatusState>(
                                     listener: (context, state) {
                                       if (state
@@ -372,7 +374,7 @@ class _IncomingShipmentDetailsScreenState
                                           onTap: () {
                                             rejectbotton = false;
                                             BlocProvider.of<
-                                                        ShipmentUpdateStatusBloc>(
+                                                        DriverShipmentUpdateStatusBloc>(
                                                     context)
                                                 .add(
                                               UpdateShipmentStatusEvent(

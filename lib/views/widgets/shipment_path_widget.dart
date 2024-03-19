@@ -4,14 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 
 class ShipmentPathWidget extends StatelessWidget {
-  final String loadDate;
+  final String? loadDate;
   final String pickupName;
   final String deliveryName;
   final double width;
   final double pathwidth;
   const ShipmentPathWidget({
     Key? key,
-    required this.loadDate,
+    this.loadDate,
     required this.pickupName,
     required this.deliveryName,
     required this.width,
@@ -24,17 +24,19 @@ class ShipmentPathWidget extends StatelessWidget {
       width: width,
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                loadDate,
-              ),
-              Text(
-                loadDate,
-              ),
-            ],
-          ),
+          loadDate != null
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      loadDate!,
+                    ),
+                    Text(
+                      loadDate!,
+                    ),
+                  ],
+                )
+              : const SizedBox.shrink(),
           SizedBox(
             height: 7.h,
           ),
@@ -72,17 +74,17 @@ class ShipmentPathWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SizedBox(
-                width: MediaQuery.of(context).size.width * .3,
+                width: MediaQuery.of(context).size.width * .33,
                 child: Text(
                   pickupName,
                   textAlign: TextAlign.start,
                 ),
               ),
               SizedBox(
-                width: MediaQuery.of(context).size.width * .3,
+                width: MediaQuery.of(context).size.width * .33,
                 child: Text(
                   deliveryName,
-                  textAlign: TextAlign.end,
+                  textAlign: TextAlign.start,
                 ),
               ),
             ],

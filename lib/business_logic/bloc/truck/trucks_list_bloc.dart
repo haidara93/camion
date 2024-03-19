@@ -8,11 +8,22 @@ part 'trucks_list_state.dart';
 
 class TrucksListBloc extends Bloc<TrucksListEvent, TrucksListState> {
   late TruckRepository truckRepository;
-  TrucksListBloc({required this.truckRepository}) : super(TrucksListInitial()) {
+  TrucksListBloc({required this.truckRepository})
+      : super(TrucksListLoadedSuccess([])) {
     on<TrucksListLoadEvent>((event, emit) async {
       emit(TrucksListLoadingProgress());
       try {
-        var result = await truckRepository.getTrucks(event.truckType);
+        var result = await truckRepository.getKTrucks(event.truckType);
+        emit(TrucksListLoadedSuccess(result));
+      } catch (e) {
+        emit(TrucksListLoadedFailed(e.toString()));
+      }
+    });
+
+    on<TrucksListSearchEvent>((event, emit) async {
+      emit(TrucksListLoadingProgress());
+      try {
+        var result = await truckRepository.searchKTrucks(event.truckType);
         emit(TrucksListLoadedSuccess(result));
       } catch (e) {
         emit(TrucksListLoadedFailed(e.toString()));

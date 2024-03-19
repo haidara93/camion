@@ -167,14 +167,14 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                   GestureDetector(
                                                     onTap: () {
                                                       print(
-                                                          'driver${state.shipments[index].driver!.user!.id!}');
+                                                          'driver${state.shipments[index].truck!.truckuser!.id!}');
                                                       Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
                                                             builder: (context) =>
                                                                 ActiveShipmentDetailsScreen(
                                                               user_id:
-                                                                  'driver${state.shipments[index].driver!.user!.id!}',
+                                                                  'driver${state.shipments[index].truck!.truckuser!.id!}',
                                                               shipment: state
                                                                       .shipments[
                                                                   index],
@@ -247,7 +247,7 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                                   ),
                                                                 ),
                                                                 Text(
-                                                                  "${AppLocalizations.of(context)!.translate('commodity_name')}: ${state.shipments[index].shipmentItems![0].commodityName!}",
+                                                                  "${AppLocalizations.of(context)!.translate('commodity_name')}: ${state.shipments[index].shipmentItems![0].commodityCategory!}",
                                                                   style:
                                                                       TextStyle(
                                                                     fontSize:
@@ -316,13 +316,14 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                                           const MarkerId(
                                                                               "pickup"),
                                                                       position: LatLng(
-                                                                          state
-                                                                              .shipments[
-                                                                                  index]
-                                                                              .pickupCityLat!,
-                                                                          state
+                                                                          double.parse(state.shipments[index].pathPoints!.singleWhere((element) => element.pointType == "P").location!.split(",")[
+                                                                              0]),
+                                                                          double.parse(state
                                                                               .shipments[index]
-                                                                              .pickupCityLang!),
+                                                                              .pathPoints!
+                                                                              .singleWhere((element) => element.pointType == "P")
+                                                                              .location!
+                                                                              .split(",")[1])),
                                                                       icon:
                                                                           pickupicon,
                                                                     ),
@@ -331,13 +332,14 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                                           const MarkerId(
                                                                               "delivery"),
                                                                       position: LatLng(
-                                                                          state
-                                                                              .shipments[
-                                                                                  index]
-                                                                              .deliveryCityLat!,
-                                                                          state
+                                                                          double.parse(state.shipments[index].pathPoints!.singleWhere((element) => element.pointType == "D").location!.split(",")[
+                                                                              0]),
+                                                                          double.parse(state
                                                                               .shipments[index]
-                                                                              .deliveryCityLang!),
+                                                                              .pathPoints!
+                                                                              .singleWhere((element) => element.pointType == "D")
+                                                                              .location!
+                                                                              .split(",")[1])),
                                                                       icon:
                                                                           deliveryicon,
                                                                     ),
@@ -364,19 +366,26 @@ class _ActiveShipmentScreenState extends State<ActiveShipmentScreen> {
                                                             ),
                                                           ),
                                                           ShipmentPathWidget(
-                                                            loadDate:
-                                                                setLoadDate(state
-                                                                    .shipments[
-                                                                        index]
-                                                                    .pickupDate!),
                                                             pickupName: state
                                                                 .shipments[
                                                                     index]
-                                                                .pickupCityLocation!,
+                                                                .pathPoints!
+                                                                .singleWhere(
+                                                                    (element) =>
+                                                                        element
+                                                                            .pointType ==
+                                                                        "P")
+                                                                .name!,
                                                             deliveryName: state
                                                                 .shipments[
                                                                     index]
-                                                                .deliveryCityLocation!,
+                                                                .pathPoints!
+                                                                .singleWhere(
+                                                                    (element) =>
+                                                                        element
+                                                                            .pointType ==
+                                                                        "D")
+                                                                .name!,
                                                             width: MediaQuery.of(
                                                                         context)
                                                                     .size

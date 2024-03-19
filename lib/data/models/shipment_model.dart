@@ -5,10 +5,10 @@ import 'package:camion/data/models/user_model.dart';
 class Shipment {
   int? id;
   int? merchant;
+  String? shipmentStatus;
   Shipmentinstruction? shipmentinstruction;
   ShipmentPayment? shipmentpayment;
   Driver? driver;
-  String? shipmentStatus;
   int? totalWeight;
   // int? totalWeightWithTruck;
   // String? commodityImage;

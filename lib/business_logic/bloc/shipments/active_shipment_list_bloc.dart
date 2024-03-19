@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:camion/data/models/kshipment_model.dart';
 import 'package:camion/data/models/shipment_model.dart';
 import 'package:camion/data/repositories/shipmment_repository.dart';
 import 'package:equatable/equatable.dart';
@@ -14,7 +15,7 @@ class ActiveShipmentListBloc
     on<ActiveShipmentListLoadEvent>((event, emit) async {
       emit(ActiveShipmentListLoadingProgress());
       try {
-        var result = await shippmentRerository.getShipmentList("R");
+        var result = await shippmentRerository.getKShipmentList("C");
         emit(ActiveShipmentListLoadedSuccess(result));
       } catch (e) {
         emit(ActiveShipmentListLoadedFailed(e.toString()));

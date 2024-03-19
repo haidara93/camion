@@ -191,7 +191,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
           setState(() {
             title = AppLocalizations.of(context)!.translate('my_path');
 
-            currentScreen = ActiveShipmentDetailsScreen();
+            currentScreen = DriverActiveShipmentDetailsScreen();
           });
           break;
         }

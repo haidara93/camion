@@ -1,1 +1,1 @@
-enum UserType { driver, owner, merchent, none }
+enum UserType { driver, owner, merchent, managment, checkpoint, none }

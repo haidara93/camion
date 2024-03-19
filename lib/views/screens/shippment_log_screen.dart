@@ -9,7 +9,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timelines/timelines.dart';
 import 'package:intl/intl.dart' as intel;
@@ -41,6 +40,9 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
   }
 
   String setLoadDate(DateTime date) {
+    if (date == null) {
+      return "";
+    }
     List months = [
       'jan',
       'feb',
@@ -282,19 +284,26 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                                                   .start,
                                                           children: [
                                                             ShipmentPathWidget(
-                                                              loadDate:
-                                                                  setLoadDate(state
-                                                                      .shipments[
-                                                                          index]
-                                                                      .pickupDate!),
                                                               pickupName: state
                                                                   .shipments[
                                                                       index]
-                                                                  .pickupCityLocation!,
+                                                                  .pathPoints!
+                                                                  .singleWhere(
+                                                                      (element) =>
+                                                                          element
+                                                                              .pointType ==
+                                                                          "P")
+                                                                  .name!,
                                                               deliveryName: state
                                                                   .shipments[
                                                                       index]
-                                                                  .deliveryCityLocation!,
+                                                                  .pathPoints!
+                                                                  .singleWhere(
+                                                                      (element) =>
+                                                                          element
+                                                                              .pointType ==
+                                                                          "D")
+                                                                  .name!,
                                                               width: MediaQuery.of(
                                                                           context)
                                                                       .size
@@ -318,7 +327,7 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                                               height: 7.h,
                                                             ),
                                                             Text(
-                                                              '${AppLocalizations.of(context)!.translate('commodity_type')}: ${state.shipments[index].shipmentItems![0].commodityName!}',
+                                                              '${AppLocalizations.of(context)!.translate('commodity_type')}: ${state.shipments[index].shipmentItems![0].commodityCategory!}',
                                                               style: TextStyle(
                                                                 // color: AppColor.lightBlue,
                                                                 fontSize: 17.sp,
@@ -469,129 +478,51 @@ class _ShippmentLogScreenState extends State<ShippmentLogScreen>
                                                               CrossAxisAlignment
                                                                   .start,
                                                           children: [
-                                                            SizedBox(
-                                                              height: (state.shipments[index].pickupCityLocation!.length >
-                                                                          11 ||
-                                                                      state.shipments[index].deliveryCityLocation!
-                                                                              .length >
-                                                                          11)
-                                                                  ? 100
-                                                                  : 70.h,
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                children: [
-                                                                  TimelineTile(
-                                                                    direction: Axis
-                                                                        .horizontal,
-                                                                    oppositeContents:
-                                                                        Text(
-                                                                      setLoadDate(state
-                                                                          .shipments[
-                                                                              index]
-                                                                          .pickupDate!),
-                                                                    ),
-                                                                    contents:
-                                                                        SizedBox(
-                                                                      width: MediaQuery.of(context)
-                                                                              .size
-                                                                              .width *
-                                                                          .18,
-                                                                      child:
-                                                                          Text(
-                                                                        state
-                                                                            .shipments[index]
-                                                                            .pickupCityLocation!,
-                                                                        maxLines:
-                                                                            2,
-                                                                      ),
-                                                                    ),
-                                                                    node:
-                                                                        SizedBox(
-                                                                      width: MediaQuery.of(context)
-                                                                              .size
-                                                                              .width *
-                                                                          .18,
-                                                                      child:
-                                                                          TimelineNode(
-                                                                        indicator:
-                                                                            DotIndicator(color: AppColor.deepYellow),
-                                                                        // startConnector: SolidLineConnector(),
-                                                                        endConnector:
-                                                                            DashedLineConnector(color: AppColor.deepYellow),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  TimelineTile(
-                                                                    direction: Axis
-                                                                        .horizontal,
-                                                                    oppositeContents:
-                                                                        const SizedBox
-                                                                            .shrink(),
-                                                                    contents:
-                                                                        const SizedBox
-                                                                            .shrink(),
-                                                                    node:
-                                                                        SizedBox(
-                                                                      width: MediaQuery.of(context)
-                                                                              .size
-                                                                              .width *
-                                                                          .18,
-                                                                      child: DashedLineConnector(
-                                                                          color:
-                                                                              AppColor.deepYellow),
-                                                                    ),
-                                                                  ),
-                                                                  TimelineTile(
-                                                                    direction: Axis
-                                                                        .horizontal,
-                                                                    oppositeContents:
-                                                                        Text(
-                                                                      setLoadDate(state
-                                                                          .shipments[
-                                                                              index]
-                                                                          .pickupDate!),
-                                                                    ),
-                                                                    contents:
-                                                                        SizedBox(
-                                                                      width: MediaQuery.of(context)
-                                                                              .size
-                                                                              .width *
-                                                                          .18,
-                                                                      child:
-                                                                          Text(
-                                                                        state
-                                                                            .shipments[index]
-                                                                            .deliveryCityLocation!,
-                                                                        maxLines:
-                                                                            2,
-                                                                      ),
-                                                                    ),
-                                                                    node:
-                                                                        SizedBox(
-                                                                      width: MediaQuery.of(context)
-                                                                              .size
-                                                                              .width *
-                                                                          .3,
-                                                                      child:
-                                                                          TimelineNode(
-                                                                        indicator:
-                                                                            DotIndicator(color: AppColor.deepYellow),
-                                                                        startConnector:
-                                                                            DashedLineConnector(color: AppColor.deepYellow),
-                                                                        // endConnector: SolidLineConnector(),
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            ),
+                                                            ShipmentPathWidget(
+                                                              pickupName: state
+                                                                  .shipments[
+                                                                      index]
+                                                                  .pathPoints!
+                                                                  .singleWhere(
+                                                                      (element) =>
+                                                                          element
+                                                                              .pointType ==
+                                                                          "P")
+                                                                  .name!,
+                                                              deliveryName: state
+                                                                  .shipments[
+                                                                      index]
+                                                                  .pathPoints!
+                                                                  .singleWhere(
+                                                                      (element) =>
+                                                                          element
+                                                                              .pointType ==
+                                                                          "D")
+                                                                  .name!,
+                                                              width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  .66,
+                                                              pathwidth:
+                                                                  MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      .56,
+                                                            ).animate().slideX(
+                                                                duration:
+                                                                    300.ms,
+                                                                delay: 0.ms,
+                                                                begin: 1,
+                                                                end: 0,
+                                                                curve: Curves
+                                                                    .easeInOutSine),
                                                             SizedBox(
                                                               height: 7.h,
                                                             ),
                                                             Text(
-                                                              '${AppLocalizations.of(context)!.translate('commodity_type')}: ${state.shipments[index].shipmentItems![0].commodityName!}',
+                                                              '${AppLocalizations.of(context)!.translate('commodity_type')}: ${state.shipments[index].shipmentItems![0].commodityCategory!}',
                                                               style: TextStyle(
                                                                 // color: AppColor.lightBlue,
                                                                 fontSize: 17.sp,
