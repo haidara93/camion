@@ -1114,11 +1114,14 @@ class _AddShippmentScreenState extends State<AddShippmentScreen> {
                                                                           20),
                                                               decoration:
                                                                   InputDecoration(
-                                                                labelText: weightLabel(
-                                                                    shipmentProvider
+                                                                labelText: shipmentProvider.commodityCategoriesObjects[
+                                                                            index] !=
+                                                                        null
+                                                                    ? weightLabel(shipmentProvider
                                                                         .commodityCategoriesObjects[
                                                                             index]!
-                                                                        .unit_type!),
+                                                                        .unit_type!)
+                                                                    : "وزن البضاعة",
                                                                 suffix:
                                                                     shipmentProvider.commodityCategoriesObjects[index] !=
                                                                             null
