@@ -32,7 +32,7 @@ class _AddNewPriceScreenState extends State<AddNewPriceScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   SimpleCategory? simplecategory;
-
+  List<SimpleCategory> categories = [];
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LocaleCubit, LocaleState>(
@@ -238,139 +238,96 @@ class _AddNewPriceScreenState extends State<AddNewPriceScreen> {
                                 ),
                               ],
                             ),
-                            SizedBox(
-                              width: 350.w,
-                              child: BlocBuilder<SimpleCategoryListBloc,
-                                  SimpleCategoryListState>(
-                                builder: (context, state2) {
-                                  if (state2
-                                      is SimpleCategoryListLoadedSuccess) {
-                                    return DropdownButtonHideUnderline(
-                                      child: DropdownButton2<SimpleCategory>(
-                                        isExpanded: true,
-                                        hint: Text(
-                                          "اختر نوع الصنف",
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: Theme.of(context).hintColor,
-                                          ),
-                                        ),
-                                        items: state2.categories
-                                            .map((SimpleCategory item) =>
-                                                DropdownMenuItem<
-                                                    SimpleCategory>(
-                                                  value: item,
-                                                  child: SizedBox(
-                                                    width: 300.w,
-                                                    child: Column(
-                                                      children: [
-                                                        Text(
-                                                          item.nameAr!,
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 17,
-                                                          ),
-                                                        ),
-                                                        Divider(
-                                                          height: 5,
-                                                          color:
-                                                              Colors.grey[200],
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ))
-                                            .toList(),
-                                        value: simplecategory,
-                                        onChanged: (SimpleCategory? value) {
-                                          setState(() {
-                                            simplecategory = value;
-                                          });
-                                        },
-                                        buttonStyleData: ButtonStyleData(
-                                          height: 50,
-                                          width: double.infinity,
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 9.0,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            border: Border.all(
-                                              color: Colors.black26,
-                                            ),
-                                            color: Colors.white,
-                                          ),
-                                          // elevation: 2,
-                                        ),
-                                        iconStyleData: IconStyleData(
-                                          icon: const Icon(
-                                            Icons.keyboard_arrow_down_sharp,
-                                          ),
-                                          iconSize: 20,
-                                          iconEnabledColor: AppColor.deepYellow,
-                                          iconDisabledColor: Colors.grey,
-                                        ),
-                                        dropdownStyleData: DropdownStyleData(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(14),
-                                            color: Colors.white,
-                                          ),
-                                          scrollbarTheme: ScrollbarThemeData(
-                                            radius: const Radius.circular(40),
-                                            thickness:
-                                                MaterialStateProperty.all(6),
-                                            thumbVisibility:
-                                                MaterialStateProperty.all(true),
-                                          ),
-                                        ),
-                                        menuItemStyleData:
-                                            const MenuItemStyleData(
-                                          height: 40,
-                                        ),
-                                      ),
-                                    );
-                                  } else if (state2
-                                      is SimpleCategoryListLoadingProgress) {
-                                    return const Center(
-                                      child: LinearProgressIndicator(),
-                                    );
-                                  } else if (state2
-                                      is SimpleCategoryListLoadedFailed) {
-                                    return Center(
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          BlocProvider.of<
-                                                      SimpleCategoryListBloc>(
-                                                  context)
-                                              .add(
-                                                  SimpleCategoryListLoadEvent());
-                                        },
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              AppLocalizations.of(context)!
-                                                  .translate('list_error'),
-                                              style: const TextStyle(
-                                                  color: Colors.red),
-                                            ),
-                                            const Icon(
-                                              Icons.refresh,
-                                              color: Colors.grey,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  } else {
-                                    return Container();
-                                  }
-                                },
+                            BlocListener<SimpleCategoryListBloc,
+                                SimpleCategoryListState>(
+                              listener: (context, state2) {
+                                if (state2 is SimpleCategoryListLoadedSuccess) {
+                                  setState(() {
+                                    categories = state2.categories;
+                                  });
+                                }
+                              },
+                              child: const SizedBox(
+                                height: 12,
                               ),
                             ),
+                            categories.isNotEmpty
+                                ? DropdownButtonHideUnderline(
+                                    child: DropdownButton2<SimpleCategory>(
+                                      isExpanded: true,
+                                      hint: Text(
+                                        "اختر المعبر",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Theme.of(context).hintColor,
+                                        ),
+                                      ),
+                                      items: categories
+                                          .map((SimpleCategory item) =>
+                                              DropdownMenuItem<SimpleCategory>(
+                                                value: item,
+                                                child: SizedBox(
+                                                  width: 200,
+                                                  child: Text(
+                                                    item.name!,
+                                                    style: const TextStyle(
+                                                      fontSize: 17,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ))
+                                          .toList(),
+                                      value: simplecategory,
+                                      onChanged: (SimpleCategory? value) {
+                                        setState(() {
+                                          simplecategory = value;
+                                        });
+                                      },
+                                      buttonStyleData: ButtonStyleData(
+                                        height: 50,
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 9.0,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          border: Border.all(
+                                            color: Colors.black26,
+                                          ),
+                                          color: Colors.white,
+                                        ),
+                                        // elevation: 2,
+                                      ),
+                                      iconStyleData: IconStyleData(
+                                        icon: const Icon(
+                                          Icons.keyboard_arrow_down_sharp,
+                                        ),
+                                        iconSize: 20,
+                                        iconEnabledColor: AppColor.deepYellow,
+                                        iconDisabledColor: Colors.grey,
+                                      ),
+                                      dropdownStyleData: DropdownStyleData(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          color: Colors.white,
+                                        ),
+                                        scrollbarTheme: ScrollbarThemeData(
+                                          radius: const Radius.circular(40),
+                                          thickness:
+                                              MaterialStateProperty.all(6),
+                                          thumbVisibility:
+                                              MaterialStateProperty.all(true),
+                                        ),
+                                      ),
+                                      menuItemStyleData:
+                                          const MenuItemStyleData(
+                                        height: 40,
+                                      ),
+                                    ),
+                                  )
+                                : SizedBox.shrink(),
                             SizedBox(
                               height: 30.h,
                             )
@@ -419,6 +376,8 @@ class _AddNewPriceScreenState extends State<AddNewPriceScreen> {
                                         category.price =
                                             int.parse(_priceController.text);
                                         category.category = simplecategory!.id!;
+                                        category.weight = 70;
+                                        category.unit_type = "طن";
 
                                         BlocProvider.of<CreateCategoryBloc>(
                                                 context)

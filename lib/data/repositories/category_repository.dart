@@ -19,7 +19,9 @@ class CategoryRepository {
           "name": category.name,
           "name_ar": category.nameAr,
           "price": category.price,
-          "category": category.category
+          "category": category.category,
+          "weight": category.weight,
+          "unit_type": category.unit_type
         },
         apiToken: token);
     print(response.body);
